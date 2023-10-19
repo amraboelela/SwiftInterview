@@ -1,3 +1,4 @@
+import Foundation
 
 // Reverse a String
 
@@ -243,3 +244,259 @@ if index != -1 {
 } else {
     print("The target value is not in the array.")
 }
+
+// Anagram Detection
+
+func areAnagrams(_ str1: String, _ str2: String) -> Bool {
+    // Remove spaces and convert to lowercase for case-insensitive comparison
+    let cleanStr1 = str1.lowercased().replacing(" ", with: "")
+    let cleanStr2 = str2.lowercased().replacing(" ", with: "")
+
+    // Check if the sorted characters of both strings are equal
+    return cleanStr1.sorted() == cleanStr2.sorted()
+}
+
+let string1 = "listen"
+let string2 = "silent"
+if areAnagrams(string1, string2) {
+    print("The strings are anagrams.")
+} else {
+    print("The strings are not anagrams.")
+}
+
+
+// Find the Largest Element in a Binary Tree
+
+class TreeNode {
+    var value: Int
+    var left: TreeNode?
+    var right: TreeNode?
+
+    init(_ value: Int) {
+        self.value = value
+    }
+}
+
+func findLargestElement(_ root: TreeNode?) -> Int? {
+    if root == nil {
+        return nil // Tree is empty
+    }
+
+    // Traverse to the rightmost node
+    var current = root
+    while current?.right != nil {
+        current = current?.right
+    }
+
+    return current?.value
+}
+
+let root = TreeNode(10)
+root.left = TreeNode(5)
+root.right = TreeNode(15)
+root.left?.left = TreeNode(3)
+root.left?.right = TreeNode(8)
+root.right?.right = TreeNode(20)
+
+if let largest = findLargestElement(root) {
+    print("The largest element in the binary tree is \(largest).")
+} else {
+    print("The tree is empty.")
+}
+
+
+// Fibonacci sequence
+
+func generateFibonacciSequence(upTo n: Int) -> [Int] {
+    var fibonacciSequence: [Int] = []
+    
+    if n <= 0 {
+        return fibonacciSequence
+    }
+    
+    var a = 0
+    var b = 1
+    
+    while a <= n {
+        fibonacciSequence.append(a)
+        let next = a + b
+        a = b
+        b = next
+    }
+    
+    return fibonacciSequence
+}
+
+let n = 50
+let fibonacciSequence = generateFibonacciSequence(upTo: n)
+
+print("Fibonacci sequence up to \(n):")
+print(fibonacciSequence)
+
+
+// Find mismatches entries
+
+func mismatches(records: [[String]]) -> (Set<String>, Set<String>) {
+    var missingExitArray = Set<String>()
+    var missingEnterArray = Set<String>()
+    var dic = [String: String]()
+    for record in records {
+        let name = record[0]
+        let action = record[1]
+        if dic[name] == nil {
+            if action == "exit" {
+                missingEnterArray.insert(name)
+            }
+        } else {
+            if action == dic[name] {
+                if action == "enter" {
+                    missingExitArray.insert(name)
+                } else {
+                    missingEnterArray.insert(name)
+                }
+            }
+        }
+        dic[name] = action
+    }
+    for (name, action) in dic {
+        if action == "enter" {
+            missingExitArray.insert(name)
+        }
+        
+    }
+    return (missingExitArray, missingEnterArray)
+}
+
+let records1 = [
+    ["Nana", "enter"],
+    ["Jone", "enter"],
+    ["Doe", "exit"],
+    ["Nana", "enter"],
+    ["Bilal", "enter"],
+    ["Bilal", "exit"],
+    ["Bilal", "exit"]
+]
+
+var output = mismatches(records: records1)
+print("records1 output: \(output)")
+
+// Find Unusual Badge Entries
+
+var badgeTimes: [[String]] = [
+  ["Paul", "1355"],
+  ["Jennifer", "1910"],
+  ["Jose", "835"],
+  ["Jose", "830"],
+  ["Paul", "1315"],
+  ["Chloe", "0"],
+  ["Chloe", "1910"],
+  ["Jose", "1615"],
+  ["Jose", "1640"],
+  ["Paul", "1405"],
+  ["Jose", "855"],
+  ["Jose", "930"],
+  ["Jose", "915"],
+  ["Jose", "730"],
+  ["Jose", "940"],
+  ["Jennifer", "1335"],
+  ["Jennifer", "730"],
+  ["Jose", "1630"],
+  ["Jennifer", "5"],
+  ["Chloe", "1909"],
+  ["Zhang", "1"],
+  ["Zhang", "10"],
+  ["Zhang", "109"],
+  ["Zhang", "110"],
+  ["Amos", "1"],
+  ["Amos", "2"],
+  ["Amos", "400"],
+  ["Amos", "500"],
+  ["Amos", "503"],
+  ["Amos", "504"],
+  ["Amos", "601"],
+  ["Amos", "602"],
+  ["Paul", "1416"],
+]
+
+func withinOneHour(time1: String, time2: String) -> Bool {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "HHmm"
+    
+    let time1Date = dateFormatter.date(from: time1)
+    let time2Date = dateFormatter.date(from: time2)
+    
+    if let time1Date = time1Date, let time2Date = time2Date {
+        let timeDifference = time2Date.timeIntervalSince(time1Date)
+        
+        // Convert the time difference to hours.
+        let timeDifferenceInHours = timeDifference / 3600
+        
+        // Return true if the time difference is less than one hour.
+        return timeDifferenceInHours <= 1
+    } else {
+        // If the dates could not be parsed, return false.
+        return false
+    }
+}
+
+print("lessThanOneHour: \(withinOneHour(time1: "0200",time2: "0300"))")
+
+func manyTimes(badgeTimes: [[String]]) -> [String: [String]] {
+    var result = [String: [String]]()
+    var dic: [String: Array<String>] = [String: Array<String>]()
+    for badgeTime in badgeTimes {
+        let name = badgeTime[0]
+        let time = badgeTime[1]
+        if dic[name] == nil {
+            dic[name] = [time]
+        } else {
+            if var times = dic[name] {
+                times.append(time)
+                dic[name] = times
+            }
+        }
+    }
+    for (name, times) in dic {
+        var paddedTimes = times.map { timeString in
+            let paddedString = String(repeating: "0", count: 4 - timeString.count) + timeString
+            return paddedString
+        }
+        paddedTimes = paddedTimes.sorted()
+        print("name: \(name), paddedTimes: \(paddedTimes)")
+        var frequentTimes = [String]()
+        var longestFrequentTimes = [String]()
+        var timeIndex = 0
+        var time = ""
+        while longestFrequentTimes.count < 3 && timeIndex < paddedTimes.count {
+            time = paddedTimes[timeIndex]
+            if let firstTime = frequentTimes.first {
+                if !withinOneHour(time1: firstTime, time2: time) {
+                    if frequentTimes.count > longestFrequentTimes.count {
+                        longestFrequentTimes = frequentTimes
+                    }
+                    frequentTimes.removeFirst()
+                }
+            }
+            frequentTimes.append(time)
+            timeIndex += 1
+        }
+        if let firstTime = frequentTimes.first {
+            if withinOneHour(time1: firstTime, time2: time) &&
+                frequentTimes.count > longestFrequentTimes.count {
+                longestFrequentTimes = frequentTimes
+            }
+        }
+        print("longestFrequentTimes: \(longestFrequentTimes)")
+        if longestFrequentTimes.count > 2 {
+            var unpaddedTimes = longestFrequentTimes.map { timeString in
+                let paddedString = "\(Int(timeString) ?? 0)"
+                return paddedString
+            }
+            result[name] = unpaddedTimes
+        }
+    }
+    return result
+}
+
+print(manyTimes(badgeTimes: badgeTimes))
+
