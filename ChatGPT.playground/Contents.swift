@@ -307,17 +307,17 @@ if let largest = findLargestElement(root) {
 
 // Fibonacci sequence
 
-func generateFibonacciSequence(upTo n: Int) -> [Int] {
+func fibonacci(upTo number: Int) -> [Int] {
     var fibonacciSequence: [Int] = []
     
-    if n <= 0 {
+    if number <= 0 {
         return fibonacciSequence
     }
     
     var a = 0
     var b = 1
     
-    while a <= n {
+    while a <= number {
         fibonacciSequence.append(a)
         let next = a + b
         a = b
@@ -327,9 +327,4 @@ func generateFibonacciSequence(upTo n: Int) -> [Int] {
     return fibonacciSequence
 }
 
-let n = 50
-let fibonacciSequence = generateFibonacciSequence(upTo: n)
-
-print("Fibonacci sequence up to \(n):")
-print(fibonacciSequence)
-
+print(fibonacci(upTo: 50))

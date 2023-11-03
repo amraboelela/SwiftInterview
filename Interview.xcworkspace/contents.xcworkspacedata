@@ -5,12 +5,21 @@
       location = "group:README.md">
    </FileRef>
    <FileRef
+      location = "group:/Users/amraboelela/swift/SwiftInterview/Bard1.md">
+   </FileRef>
+   <FileRef
       location = "group:ChatGPT1.md">
    </FileRef>
    <FileRef
-      location = "group:ChatGPT1.playground">
+      location = "group:/Users/amraboelela/swift/SwiftInterview/Bard1.playground">
    </FileRef>
    <FileRef
-      location = "group:KaratInterview.playground">
+      location = "group:/Users/amraboelela/swift/SwiftInterview/ChatGPT.playground">
+   </FileRef>
+   <FileRef
+      location = "group:/Users/amraboelela/swift/SwiftInterview/Karat.playground">
+   </FileRef>
+   <FileRef
+      location = "group:/Users/amraboelela/swift/SwiftInterview/Walmart.playground">
    </FileRef>
 </Workspace>
