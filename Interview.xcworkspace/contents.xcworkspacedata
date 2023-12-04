@@ -22,4 +22,7 @@
    <FileRef
       location = "group:/Users/amraboelela/swift/SwiftInterview/Karat.playground">
    </FileRef>
+   <FileRef
+      location = "group:Photon.playground">
+   </FileRef>
 </Workspace>
