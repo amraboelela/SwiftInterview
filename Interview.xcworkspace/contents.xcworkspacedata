@@ -5,10 +5,16 @@
       location = "group:README.md">
    </FileRef>
    <FileRef
-      location = "group:/Users/amraboelela/swift/SwiftInterview/Bard1.md">
+      location = "group:/Users/amraboelela/swift/SwiftInterview/General iOS.md">
    </FileRef>
    <FileRef
-      location = "group:ChatGPT1.md">
+      location = "group:RealmDB.md">
+   </FileRef>
+   <FileRef
+      location = "group:SwiftUI.md">
+   </FileRef>
+   <FileRef
+      location = "group:SwiftUI.playground">
    </FileRef>
    <FileRef
       location = "group:/Users/amraboelela/swift/SwiftInterview/Bard1.playground">
