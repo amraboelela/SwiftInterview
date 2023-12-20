@@ -15,6 +15,13 @@
 		F5F720612B324FD900D1ED38 /* SwiftUIAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F720602B324FD900D1ED38 /* SwiftUIAppUITests.swift */; };
 		F5F720632B324FD900D1ED38 /* SwiftUIAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F720622B324FD900D1ED38 /* SwiftUIAppUITestsLaunchTests.swift */; };
 		F5F720702B32588800D1ED38 /* ToggleButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F7206F2B32588800D1ED38 /* ToggleButtonView.swift */; };
+		F5F720722B325B5000D1ED38 /* ItemListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F720712B325B5000D1ED38 /* ItemListView.swift */; };
+		F5F720742B325BDD00D1ED38 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F720732B325BDD00D1ED38 /* ContentView.swift */; };
+		F5F720762B325DA400D1ED38 /* UserInputFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F720752B325DA400D1ED38 /* UserInputFormView.swift */; };
+		F5F720782B325EB900D1ED38 /* CustomCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F720772B325EB900D1ED38 /* CustomCard.swift */; };
+		F5F7207A2B32616500D1ED38 /* PostListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F720792B32616500D1ED38 /* PostListView.swift */; };
+		F5F7207C2B326A3400D1ED38 /* TaskListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F7207B2B326A3400D1ED38 /* TaskListView.swift */; };
+		F5F7207F2B32811800D1ED38 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F5F7207E2B32811800D1ED38 /* RealmSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +54,12 @@
 		F5F720602B324FD900D1ED38 /* SwiftUIAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIAppUITests.swift; sourceTree = "<group>"; };
 		F5F720622B324FD900D1ED38 /* SwiftUIAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		F5F7206F2B32588800D1ED38 /* ToggleButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToggleButtonView.swift; sourceTree = "<group>"; };
+		F5F720712B325B5000D1ED38 /* ItemListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemListView.swift; sourceTree = "<group>"; };
+		F5F720732B325BDD00D1ED38 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F5F720752B325DA400D1ED38 /* UserInputFormView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInputFormView.swift; sourceTree = "<group>"; };
+		F5F720772B325EB900D1ED38 /* CustomCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCard.swift; sourceTree = "<group>"; };
+		F5F720792B32616500D1ED38 /* PostListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostListView.swift; sourceTree = "<group>"; };
+		F5F7207B2B326A3400D1ED38 /* TaskListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +67,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F5F7207F2B32811800D1ED38 /* RealmSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,8 +112,14 @@
 			isa = PBXGroup;
 			children = (
 				F5F720442B324FD700D1ED38 /* SwiftUIAppApp.swift */,
+				F5F720732B325BDD00D1ED38 /* ContentView.swift */,
+				F5F720752B325DA400D1ED38 /* UserInputFormView.swift */,
+				F5F720772B325EB900D1ED38 /* CustomCard.swift */,
 				F5F720462B324FD700D1ED38 /* HelloWorld.swift */,
 				F5F7206F2B32588800D1ED38 /* ToggleButtonView.swift */,
+				F5F720712B325B5000D1ED38 /* ItemListView.swift */,
+				F5F720792B32616500D1ED38 /* PostListView.swift */,
+				F5F7207B2B326A3400D1ED38 /* TaskListView.swift */,
 				F5F720482B324FD900D1ED38 /* Assets.xcassets */,
 				F5F7204A2B324FD900D1ED38 /* SwiftUIApp.entitlements */,
 				F5F7204B2B324FD900D1ED38 /* Preview Content */,
@@ -148,6 +168,9 @@
 			dependencies = (
 			);
 			name = SwiftUIApp;
+			packageProductDependencies = (
+				F5F7207E2B32811800D1ED38 /* RealmSwift */,
+			);
 			productName = SwiftUIApp;
 			productReference = F5F720412B324FD700D1ED38 /* SwiftUIApp.app */;
 			productType = "com.apple.product-type.application";
@@ -220,6 +243,9 @@
 				Base,
 			);
 			mainGroup = F5F720382B324FD700D1ED38;
+			packageReferences = (
+				F5F7207D2B32811800D1ED38 /* XCRemoteSwiftPackageReference "realm-cocoa" */,
+			);
 			productRefGroup = F5F720422B324FD700D1ED38 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -263,8 +289,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				F5F720472B324FD700D1ED38 /* HelloWorld.swift in Sources */,
+				F5F720742B325BDD00D1ED38 /* ContentView.swift in Sources */,
+				F5F7207C2B326A3400D1ED38 /* TaskListView.swift in Sources */,
+				F5F7207A2B32616500D1ED38 /* PostListView.swift in Sources */,
 				F5F720702B32588800D1ED38 /* ToggleButtonView.swift in Sources */,
 				F5F720452B324FD700D1ED38 /* SwiftUIAppApp.swift in Sources */,
+				F5F720762B325DA400D1ED38 /* UserInputFormView.swift in Sources */,
+				F5F720722B325B5000D1ED38 /* ItemListView.swift in Sources */,
+				F5F720782B325EB900D1ED38 /* CustomCard.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -613,6 +645,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F5F7207D2B32811800D1ED38 /* XCRemoteSwiftPackageReference "realm-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-cocoa.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F5F7207E2B32811800D1ED38 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F5F7207D2B32811800D1ED38 /* XCRemoteSwiftPackageReference "realm-cocoa" */;
+			productName = RealmSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F5F720392B324FD700D1ED38 /* Project object */;
 }

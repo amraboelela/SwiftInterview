@@ -6,12 +6,24 @@
 //
 
 import SwiftUI
+import RealmSwift
 
 @main
-struct SwiftUIAppApp: App {
+struct SwiftUIAppApp: SwiftUI.App {
     var body: some Scene {
         WindowGroup {
-            ToggleButtonView()
+            TaskListView()
+        }
+    }
+    
+    init() {
+        // Set up Realm configuration
+        let config = Realm.Configuration(schemaVersion: 1)
+        do {
+            let realm = try Realm(configuration: config)
+            print("Realm file path: \(realm.configuration.fileURL?.absoluteString ?? "")")
+        } catch {
+            print("Error initializing Realm: \(error)")
         }
     }
 }

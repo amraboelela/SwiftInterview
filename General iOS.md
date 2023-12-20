@@ -78,41 +78,41 @@ The Model-View-Controller (MVC) architecture is a design pattern commonly used i
 
 ### Model:
 
-- **Responsibility:** The Model represents the application's data and business logic. It manages the data's storage, retrieval, and manipulation.
+- Responsibility: The Model represents the application's data and business logic. It manages the data's storage, retrieval, and manipulation.
 
-- **Characteristics:** Contains the data structures and business rules.
+- Characteristics: Contains the data structures and business rules.
 Independent of the user interface (UI).
 Notifies observers (usually Views) about changes in the data.
 
 ### View:
 
-- **Responsibility:** The View is responsible for presenting the user interface and displaying information to the user. It receives input from the user and sends it to the Controller for processing.
+- Responsibility: The View is responsible for presenting the user interface and displaying information to the user. It receives input from the user and sends it to the Controller for processing.
 
-- **Characteristics:** Displays information to the user.
+- Characteristics: Displays information to the user.
 Sends user input to the Controller for processing.
 Often observes the Model for changes to update the UI.
 
 ### Controller:
 
-- **Responsibility:** The Controller acts as an intermediary between the Model and the View. It processes user input, updates the Model, and manages the flow of data between the Model and the View.
+- Responsibility: The Controller acts as an intermediary between the Model and the View. It processes user input, updates the Model, and manages the flow of data between the Model and the View.
 
-- **Characteristics:** Receives user input from the View.
+- Characteristics: Receives user input from the View.
 Interacts with the Model to perform business logic and update data.
 Updates the View based on changes in the Model.
 
 ### Benefits of MVC Architecture in iOS:
 
-- **Separation of Concerns:** MVC separates the application into distinct components, making it easier to manage and understand each component's responsibilities.
+- Separation of Concerns: MVC separates the application into distinct components, making it easier to manage and understand each component's responsibilities.
 
-- **Modularity:** Each component (Model, View, Controller) is modular and can be developed, tested, and maintained independently. Changes in one component have minimal impact on others.
+- Modularity: Each component (Model, View, Controller) is modular and can be developed, tested, and maintained independently. Changes in one component have minimal impact on others.
 
-- **Reusability:** The separation of concerns allows for better code reuse. For example, a Model can be reused with different Views or Controllers.
+- Reusability: The separation of concerns allows for better code reuse. For example, a Model can be reused with different Views or Controllers.
  
-- **Maintainability:** Changes or updates to one component do not require modifications to the entire application. This simplifies maintenance and enhances code maintainability.
+- Maintainability: Changes or updates to one component do not require modifications to the entire application. This simplifies maintenance and enhances code maintainability.
 
-- **Testability:** Components can be tested independently, facilitating unit testing. For example, the business logic in the Controller and data manipulation in the Model can be tested separately.
+- Testability: Components can be tested independently, facilitating unit testing. For example, the business logic in the Controller and data manipulation in the Model can be tested separately.
 
-- **Scalability:** As the application grows, MVC provides a scalable structure. Additional features can be added by extending existing components or introducing new ones.
+- Scalability: As the application grows, MVC provides a scalable structure. Additional features can be added by extending existing components or introducing new ones.
 
 In summary, the MVC architecture in iOS promotes a clear separation of concerns, making code more modular, maintainable, and scalable. Each component plays a specific role, contributing to the overall organization and structure of the application.
 
@@ -120,21 +120,21 @@ In summary, the MVC architecture in iOS promotes a clear separation of concerns,
 
 Optionals are a fundamental concept in Swift that allows variables to have a "no-value" state. This is particularly useful for scenarios where a value might be absent, either because it hasn't been set yet or because it doesn't exist.
  
-- **Force Unwrapping:** To use the value inside an optional, you "force unwrap" it using !. However, this should be done cautiously, as it can lead to a runtime crash if the optional is nil.
+- Force Unwrapping: To use the value inside an optional, you "force unwrap" it using !. However, this should be done cautiously, as it can lead to a runtime crash if the optional is nil.
 
-- **Conditional Unwrapping (if let):** A safer way to unwrap optionals is using if let or guard let statements, which check for the presence of a value before unwrapping.
+- Conditional Unwrapping (if let): A safer way to unwrap optionals is using if let or guard let statements, which check for the presence of a value before unwrapping.
 
 ### When to Use Guard Statements:
 
-- **Early Exit in Functions:** guard statements are often used for early exit from functions or methods when a certain condition is not met.
+- Early Exit in Functions: guard statements are often used for early exit from functions or methods when a certain condition is not met.
 
-- **Clarity and Readability:** guard statements make the code more readable by explicitly stating the conditions under which execution should continue.
+- Clarity and Readability: guard statements make the code more readable by explicitly stating the conditions under which execution should continue.
 
 ## Describe the purpose of delegates and protocols in iOS development. Provide an example of when you might use them.
 
-- **Delegates:** Delegates are a design pattern used in iOS development to allow one object to communicate with another. They provide a way for objects to send messages and data to a delegate, enabling customization and flexibility in the behavior of objects.
+- Delegates: Delegates are a design pattern used in iOS development to allow one object to communicate with another. They provide a way for objects to send messages and data to a delegate, enabling customization and flexibility in the behavior of objects.
 
-- **Protocols:** Protocols define a blueprint of methods, properties, and other requirements that can be adopted by classes, structures, or enumerations. They allow objects to conform to a set of rules, promoting a common interface for different types.
+- Protocols: Protocols define a blueprint of methods, properties, and other requirements that can be adopted by classes, structures, or enumerations. They allow objects to conform to a set of rules, promoting a common interface for different types.
 
 This pattern promotes separation of concerns and modular design, making the code more maintainable and extensible. It allows different parts of the application to communicate without creating tight dependencies between them.
 

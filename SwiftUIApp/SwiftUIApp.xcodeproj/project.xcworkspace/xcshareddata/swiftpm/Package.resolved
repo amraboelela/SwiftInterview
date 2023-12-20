@@ -1,0 +1,23 @@
+{
+  "pins" : [
+    {
+      "identity" : "realm-cocoa",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/realm/realm-cocoa.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "a73034c496d61a3adfd18436e9e886bfc31383ac"
+      }
+    },
+    {
+      "identity" : "realm-core",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/realm/realm-core.git",
+      "state" : {
+        "revision" : "71f94d75e25bfc8913fcd93ae8de550b57577a4a",
+        "version" : "13.25.0"
+      }
+    }
+  ],
+  "version" : 2
+}
