@@ -76,7 +76,6 @@ class MailCenter: ObservableObject {
         for i in 0..<emails.count {
             if emails[i].id == id {
                 emails[i].isRead = true
-                self.emails = emails
                 return
             }
         }

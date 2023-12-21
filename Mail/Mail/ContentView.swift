@@ -8,17 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var mailCenter: MailCenter
+    //@EnvironmentObject var mailCenter: MailCenter
+    @ObservedObject var mailCenter: MailCenter
     
     var body: some View {
         NavigationView {
             List(mailCenter.emails) { email in
-                NavigationLink(destination: DetailView(email: email)) {
+                NavigationLink(destination: DetailView(mailCenter: mailCenter, email: email)) {
                     VStack(alignment: .leading) {
                         HStack {
                             Circle()
                                 .fill(email.isRead ? Color.white : Color.blue)
-                                .stroke(Color.blue, lineWidth: 1)
+                                //.stroke(Color.blue, lineWidth: 1)
                                 .frame(width: 10, height: 10)
                             Image(systemName: "flag")
                                 .imageScale(.small)

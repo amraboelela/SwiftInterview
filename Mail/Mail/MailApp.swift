@@ -11,8 +11,8 @@ import SwiftUI
 struct MailApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environmentObject(MailCenter())
+            ContentView(mailCenter: MailCenter())
+                //.environmentObject(MailCenter())
         }
     }
 }

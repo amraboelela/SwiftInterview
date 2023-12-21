@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct DetailView: View {
-    @EnvironmentObject var mailCenter: MailCenter
+    //@EnvironmentObject var mailCenter: MailCenter
+    @ObservedObject var mailCenter: MailCenter
     var email: EmailMessage
     
     var body: some View {
