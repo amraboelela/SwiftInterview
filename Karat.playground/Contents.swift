@@ -5,16 +5,16 @@ import Foundation
 func mismatches(records: [[String]]) -> (Set<String>, Set<String>) {
     var missingExitArray = Set<String>()
     var missingEnterArray = Set<String>()
-    var dic = [String: String]()
+    var lastActionDictionary = [String: String]()
     for record in records {
         let name = record[0]
         let action = record[1]
-        if dic[name] == nil {
+        if lastActionDictionary[name] == nil {
             if action == "exit" {
                 missingEnterArray.insert(name)
             }
         } else {
-            if action == dic[name] {
+            if action == lastActionDictionary[name] {
                 if action == "enter" {
                     missingExitArray.insert(name)
                 } else {
@@ -22,9 +22,9 @@ func mismatches(records: [[String]]) -> (Set<String>, Set<String>) {
                 }
             }
         }
-        dic[name] = action
+        lastActionDictionary[name] = action
     }
-    for (name, action) in dic {
+    for (name, action) in lastActionDictionary {
         if action == "enter" {
             missingExitArray.insert(name)
         }
@@ -88,17 +88,15 @@ func withinOneHour(time1: String, time2: String) -> Bool {
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "HHmm"
     
-    let time1Date = dateFormatter.date(from: time1)
-    let time2Date = dateFormatter.date(from: time2)
-    
-    if let time1Date = time1Date, let time2Date = time2Date {
+    if let time1Date = dateFormatter.date(from: time1),
+        let time2Date = dateFormatter.date(from: time2) {
         let timeDifference = time2Date.timeIntervalSince(time1Date)
-        
+        let oneHour = 60.0 * 60.0 // in seconds
         // Convert the time difference to hours.
-        let timeDifferenceInHours = timeDifference / 3600
+        //let timeDifferenceInHours = timeDifference / oneHour
         
         // Return true if the time difference is less than one hour.
-        return timeDifferenceInHours <= 1
+        return timeDifference <= oneHour
     } else {
         // If the dates could not be parsed, return false.
         return false
@@ -106,13 +104,40 @@ func withinOneHour(time1: String, time2: String) -> Bool {
 }
 
 print("lessThanOneHour: \(withinOneHour(time1: "0200",time2: "0300"))")
+print("lessThanOneHour: \(withinOneHour(time1: "0200",time2: "0301"))")
+
+func minutesFrom(timeString: String) -> Int {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "HHmm"
+    let paddedString = String(repeating: "0", count: 4 - timeString.count) + timeString
+    if let referenceTimeDate = dateFormatter.date(from: "0000"),
+       let timeDate = dateFormatter.date(from: paddedString) {
+        let timeDifference = timeDate.timeIntervalSince(referenceTimeDate)
+        return Int(timeDifference / 60)
+    }
+    return 0
+}
+
+print("minutes: \(minutesFrom(timeString: "0200"))")
+print("minutes: \(minutesFrom(timeString: "0301"))")
+
+func timeStringFrom(minutes: Int) -> String {
+    let hours = String(minutes / 60)
+    let minutes = String(minutes % 60)
+    //let paddedHours = String(repeating: "0", count: 2 - hours.count) + hours
+    let paddedMinutes = String(repeating: "0", count: 2 - minutes.count) + minutes
+    return hours + paddedMinutes
+}
+
+print("minutes: \(timeStringFrom(minutes: 120))")
+print("minutes: \(timeStringFrom(minutes: 181))")
 
 func manyTimes(badgeTimes: [[String]]) -> [String: [String]] {
     var result = [String: [String]]()
-    var dic: [String: Array<String>] = [String: Array<String>]()
+    var dic = [String: Array<Int>]()
     for badgeTime in badgeTimes {
         let name = badgeTime[0]
-        let time = badgeTime[1]
+        let time = minutesFrom(timeString: badgeTime[1])
         if dic[name] == nil {
             dic[name] = [time]
         } else {
@@ -123,20 +148,22 @@ func manyTimes(badgeTimes: [[String]]) -> [String: [String]] {
         }
     }
     for (name, times) in dic {
-        var paddedTimes = times.map { timeString in
+        /*var paddedTimes = times.map { timeString in
             let paddedString = String(repeating: "0", count: 4 - timeString.count) + timeString
             return paddedString
-        }
-        paddedTimes = paddedTimes.sorted()
-        print("name: \(name), paddedTimes: \(paddedTimes)")
-        var frequentTimes = [String]()
-        var longestFrequentTimes = [String]()
+        }*/
+        let sortedTimes = times.sorted()
+        //paddedTimes = paddedTimes.sorted()
+        print("name: \(name), sortedTimes: \(sortedTimes)")
+        var frequentTimes = [Int]()
+        var longestFrequentTimes = [Int]()
         var timeIndex = 0
-        var time = ""
-        while longestFrequentTimes.count < 3 && timeIndex < paddedTimes.count {
-            time = paddedTimes[timeIndex]
+        var time = 0
+        while longestFrequentTimes.count < 3 && timeIndex < sortedTimes.count {
+            time = sortedTimes[timeIndex]
             if let firstTime = frequentTimes.first {
-                if !withinOneHour(time1: firstTime, time2: time) {
+                //if !withinOneHour(time1: firstTime, time2: time) {
+                if time - firstTime > 60 {
                     if frequentTimes.count > longestFrequentTimes.count {
                         longestFrequentTimes = frequentTimes
                     }
@@ -147,15 +174,15 @@ func manyTimes(badgeTimes: [[String]]) -> [String: [String]] {
             timeIndex += 1
         }
         if let firstTime = frequentTimes.first {
-            if withinOneHour(time1: firstTime, time2: time) &&
+            if time - firstTime <= 60 &&
                 frequentTimes.count > longestFrequentTimes.count {
                 longestFrequentTimes = frequentTimes
             }
         }
         print("longestFrequentTimes: \(longestFrequentTimes)")
         if longestFrequentTimes.count > 2 {
-            var unpaddedTimes = longestFrequentTimes.map { timeString in
-                let paddedString = "\(Int(timeString) ?? 0)"
+            var unpaddedTimes = longestFrequentTimes.map { time in
+                let paddedString = timeStringFrom(minutes: time) //"\(Int(timeString) ?? 0)"
                 return paddedString
             }
             result[name] = unpaddedTimes

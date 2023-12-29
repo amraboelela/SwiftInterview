@@ -5,6 +5,7 @@ import Foundation
 func reverse(string: String) -> String {
     var reversedString = ""
     let array = Array(string)
+    //return String(array.reversed())
     for i in (0..<array.count).reversed() {
         reversedString.append(array[i])
     }
