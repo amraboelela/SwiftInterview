@@ -1,3 +1,42 @@
+// List buildings which can see the sea shore, example, buildings = [4,2,3,1] as shore is at the end of the buildings
+
+//In Swift, to determine which buildings can see the sea shore given that the sea is at the end of the building array, you need to find all buildings that are not blocked by a taller building between them and the sea. In your example with `buildings = [4, 2, 3, 1]`, a building can see the sea if there is no taller building to its right.
+//
+//Here's how you can implement this in Swift:
+//
+//1. Traverse the array from right to left (since the sea is at the end).
+//2. Keep track of the tallest building seen so far.
+//3. If a building is taller than the tallest building seen so far, it can see the sea.
+//
+//Here's the Swift code for this logic:
+
+func buildingsWithSeaView(buildings: [Int]) -> [Int] {
+    var buildingsWithView: [Int] = []
+    var currentMaxHeight = 0
+
+    for building in buildings.reversed() {
+        if building > currentMaxHeight {
+            buildingsWithView.append(building)
+            currentMaxHeight = building
+        }
+    }
+
+    return buildingsWithView.reversed()
+}
+
+let buildings = [4, 2, 3, 1]
+let viewBuildings = buildingsWithSeaView(buildings: buildings)
+print(viewBuildings) // Output will be [4, 3, 1]
+
+//In this code:
+//
+//- We traverse the `buildings` array in reverse order.
+//- We maintain a `currentMaxHeight` variable to keep track of the tallest building seen so far.
+//- If we encounter a building taller than `currentMaxHeight`, we add it to the `buildingsWithView` array and update `currentMaxHeight`.
+//- Finally, we reverse the `buildingsWithView` array to return the result in the original order of the input array.
+//
+//The output for your example `[4, 2, 3, 1]` would be `[4, 3]` since buildings 4 and 3 are the only ones that can see the sea without being blocked by a taller building in front of them.
+                
 // Do a cache with capacity and if it hits the capacity then remove the least used item in the list, and using a queue data structure
                                             
 
