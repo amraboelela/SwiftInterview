@@ -14,6 +14,9 @@
       location = "group:SwiftUI.md">
    </FileRef>
    <FileRef
+      location = "group:Kaiser.playground">
+   </FileRef>
+   <FileRef
       location = "group:Meta.playground">
    </FileRef>
    <FileRef
