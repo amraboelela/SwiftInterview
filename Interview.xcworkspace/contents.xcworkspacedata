@@ -17,6 +17,9 @@
       location = "group:Kaiser.playground">
    </FileRef>
    <FileRef
+      location = "group:Kaiser2.playground">
+   </FileRef>
+   <FileRef
       location = "group:Meta.playground">
    </FileRef>
    <FileRef

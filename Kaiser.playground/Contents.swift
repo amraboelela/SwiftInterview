@@ -8,13 +8,18 @@ import Foundation
 
 // Define a custom protocol
 protocol Addable {
-    static func +(lhs: Self, rhs: Self) -> Self
+    static func + (lhs: Self, rhs: Self) -> Self
 }
 
 // Extend existing types to conform to the Addable protocol
-extension Int: Addable {}
-extension Double: Addable {}
-extension String: Addable {}
+extension Int: Addable {
+}
+
+extension Double: Addable {
+}
+
+extension String: Addable {
+}
 
 // Define a generic function
 func addOrConcatenate<T: Addable>(_ a: T, _ b: T) -> T {

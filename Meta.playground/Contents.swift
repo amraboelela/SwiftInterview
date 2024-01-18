@@ -14,10 +14,10 @@ func buildingsWithSeaView(buildings: [Int]) -> [Int] {
     var buildingsWithView: [Int] = []
     var currentMaxHeight = 0
 
-    for building in buildings.reversed() {
-        if building > currentMaxHeight {
-            buildingsWithView.append(building)
-            currentMaxHeight = building
+    for i in (0..<buildings.count).reversed() {
+        if buildings[i] > currentMaxHeight {
+            buildingsWithView.append(i)
+            currentMaxHeight = buildings[i]
         }
     }
 
@@ -26,7 +26,7 @@ func buildingsWithSeaView(buildings: [Int]) -> [Int] {
 
 let buildings = [4, 2, 3, 1]
 let viewBuildings = buildingsWithSeaView(buildings: buildings)
-print(viewBuildings) // Output will be [4, 3, 1]
+print(viewBuildings)
 
 //In this code:
 //
@@ -228,18 +228,18 @@ if let value = cache.getValue(for: "Item1") {
 
 // What if we use queue instead of linked list
 
-//Using a queue for implementing an LRU (Least Recently Used) cache in Swift is possible, but it's important to note that a standard queue (FIFO - First In, First Out) doesn't naturally support the operations needed for an LRU cache, such as moving an accessed item to the back of the queue or efficiently removing items from the middle of the queue.
+// Using a queue for implementing an LRU (Least Recently Used) cache in Swift is possible, but it's important to note that a standard queue (FIFO - First In, First Out) doesn't naturally support the operations needed for an LRU cache, such as moving an accessed item to the back of the queue or efficiently removing items from the middle of the queue.
 //
-//In an LRU cache, you need to be able to quickly:
+// In an LRU cache, you need to be able to quickly:
 //
 //1. Add items to the cache.
 //2. Retrieve items and mark them as recently used (moving them to the back of the queue).
 //3. Remove the least recently used item when the cache is full (the item at the front of the queue).
 //4. Potentially remove items from the middle of the queue if they are accessed and moved to the back.
 //
-//A standard queue doesn't efficiently support the third and fourth operations. However, you can simulate these operations by using a combination of a queue and a hash table (dictionary in Swift), where the queue is used to track the usage order and the hash table is used for fast access to the queue nodes.
+// A standard queue doesn't efficiently support the third and fourth operations. However, you can simulate these operations by using a combination of a queue and a hash table (dictionary in Swift), where the queue is used to track the usage order and the hash table is used for fast access to the queue nodes.
 //
-//Here’s a basic structure of how this might be implemented:
+// Here’s a basic structure of how this might be implemented:
 
 class LRUCacheWithQueue<Key: Hashable, Value> {
     private var cache: [Key: Value] = [:]
@@ -288,7 +288,7 @@ class LRUCacheWithQueue<Key: Hashable, Value> {
 //- When an item is accessed or added, it is moved to the back of the `usageQueue` to mark it as recently used.
 //- If adding a new item exceeds the cache's capacity, the least recently used item (the item at the front of the `usageQueue`) is removed.
 //
-//This approach has a drawback in terms of efficiency. The `moveToBack` method has a linear complexity (`O(n)`) because it involves searching for the item in the `usageQueue`. For an LRU cache that handles a large number of items or frequent accesses, using a doubly linked list (as in the previous example) is more efficient due to its `O(1)` complexity for additions, removals, and moving items.
+// This approach has a drawback in terms of efficiency. The `moveToBack` method has a linear complexity (`O(n)`) because it involves searching for the item in the `usageQueue`. For an LRU cache that handles a large number of items or frequent accesses, using a doubly linked list (as in the previous example) is more efficient due to its `O(1)` complexity for additions, removals, and moving items.
 
 // Create a cache with a capacity of 3
 let cacheWithQueue = LRUCacheWithQueue<String, Int>(capacity: 3)
