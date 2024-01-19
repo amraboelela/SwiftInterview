@@ -12,8 +12,6 @@
 		F5F720492B324FD900D1ED38 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F5F720482B324FD900D1ED38 /* Assets.xcassets */; };
 		F5F7204D2B324FD900D1ED38 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F5F7204C2B324FD900D1ED38 /* Preview Assets.xcassets */; };
 		F5F720572B324FD900D1ED38 /* SwiftUIAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F720562B324FD900D1ED38 /* SwiftUIAppTests.swift */; };
-		F5F720612B324FD900D1ED38 /* SwiftUIAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F720602B324FD900D1ED38 /* SwiftUIAppUITests.swift */; };
-		F5F720632B324FD900D1ED38 /* SwiftUIAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F720622B324FD900D1ED38 /* SwiftUIAppUITestsLaunchTests.swift */; };
 		F5F720702B32588800D1ED38 /* ToggleButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F7206F2B32588800D1ED38 /* ToggleButtonView.swift */; };
 		F5F720722B325B5000D1ED38 /* ItemListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F720712B325B5000D1ED38 /* ItemListView.swift */; };
 		F5F720742B325BDD00D1ED38 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F720732B325BDD00D1ED38 /* ContentView.swift */; };
@@ -51,8 +49,6 @@
 		F5F720522B324FD900D1ED38 /* SwiftUIAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftUIAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5F720562B324FD900D1ED38 /* SwiftUIAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIAppTests.swift; sourceTree = "<group>"; };
 		F5F7205C2B324FD900D1ED38 /* SwiftUIAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftUIAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F5F720602B324FD900D1ED38 /* SwiftUIAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIAppUITests.swift; sourceTree = "<group>"; };
-		F5F720622B324FD900D1ED38 /* SwiftUIAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		F5F7206F2B32588800D1ED38 /* ToggleButtonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToggleButtonView.swift; sourceTree = "<group>"; };
 		F5F720712B325B5000D1ED38 /* ItemListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemListView.swift; sourceTree = "<group>"; };
 		F5F720732B325BDD00D1ED38 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -93,7 +89,6 @@
 			children = (
 				F5F720432B324FD700D1ED38 /* SwiftUIApp */,
 				F5F720552B324FD900D1ED38 /* SwiftUIAppTests */,
-				F5F7205F2B324FD900D1ED38 /* SwiftUIAppUITests */,
 				F5F720422B324FD700D1ED38 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -141,15 +136,6 @@
 				F5F720562B324FD900D1ED38 /* SwiftUIAppTests.swift */,
 			);
 			path = SwiftUIAppTests;
-			sourceTree = "<group>";
-		};
-		F5F7205F2B324FD900D1ED38 /* SwiftUIAppUITests */ = {
-			isa = PBXGroup;
-			children = (
-				F5F720602B324FD900D1ED38 /* SwiftUIAppUITests.swift */,
-				F5F720622B324FD900D1ED38 /* SwiftUIAppUITestsLaunchTests.swift */,
-			);
-			path = SwiftUIAppUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -312,8 +298,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F5F720632B324FD900D1ED38 /* SwiftUIAppUITestsLaunchTests.swift in Sources */,
-				F5F720612B324FD900D1ED38 /* SwiftUIAppUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

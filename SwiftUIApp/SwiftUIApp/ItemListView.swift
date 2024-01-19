@@ -19,7 +19,6 @@ struct ItemListView: View {
     }
 }
 
-
 #Preview {
     ItemListView()
 }

@@ -10,14 +10,14 @@
 import SwiftUI
 import RealmSwift
 
-class Task: Object, Identifiable {
-    @objc dynamic var id = UUID().uuidString
+class TaskObject: Object, Identifiable {
+    @Persisted @objc dynamic var id = UUID().uuidString
     @Persisted var title: String = ""
     @Persisted var isCompleted: Bool = false
 }
 
 struct TaskListView: View {
-    @ObservedResults(Task.self) var tasks
+    @ObservedResults(TaskObject.self) var tasks
 
     var body: some View {
         NavigationView {
@@ -27,7 +27,7 @@ struct TaskListView: View {
                 Text(task.title)
                     .foregroundColor(task.isCompleted ? .green : .red)
             }
-            .navigationBarTitle("Task List")
+            .navigationBarTitle("TaskObject List")
         }
         .onAppear {
             // Fill the tasks list with sample data on view appearance
@@ -41,21 +41,21 @@ struct TaskListView: View {
             let realm = try Realm()
 
             // Check if sample data is already added
-            guard realm.objects(Task.self).isEmpty else {
+            guard realm.objects(TaskObject.self).isEmpty else {
                 return
             }
 
             // Create and persist sample tasks
             try realm.write {
-                let task1 = Task()
+                let task1 = TaskObject()
                 task1.title = "Complete assignment"
                 realm.add(task1)
 
-                let task2 = Task()
+                let task2 = TaskObject()
                 task2.title = "Read a book"
                 realm.add(task2)
 
-                let task3 = Task()
+                let task3 = TaskObject()
                 task3.title = "Go for a run"
                 task3.isCompleted = true
                 realm.add(task3)

@@ -26,7 +26,6 @@ struct UserInputFormView: View {
     }
 }
 
-
 #Preview {
     UserInputFormView()
 }

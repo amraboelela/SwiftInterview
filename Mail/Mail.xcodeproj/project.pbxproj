@@ -11,7 +11,7 @@
 		F5F7208F2B334B8200D1ED38 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F7208E2B334B8200D1ED38 /* ContentView.swift */; };
 		F5F720912B334B8700D1ED38 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F5F720902B334B8700D1ED38 /* Assets.xcassets */; };
 		F5F720942B334B8700D1ED38 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F5F720932B334B8700D1ED38 /* Preview Assets.xcassets */; };
-		F5F7209B2B334BF600D1ED38 /* MailFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F7209A2B334BF600D1ED38 /* MailFetch.swift */; };
+		F5F7209B2B334BF600D1ED38 /* MailCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F7209A2B334BF600D1ED38 /* MailCenter.swift */; };
 		F5F720AB2B33523100D1ED38 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F720AA2B33523100D1ED38 /* DetailView.swift */; };
 /* End PBXBuildFile section */
 
@@ -21,7 +21,7 @@
 		F5F7208E2B334B8200D1ED38 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F5F720902B334B8700D1ED38 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F5F720932B334B8700D1ED38 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		F5F7209A2B334BF600D1ED38 /* MailFetch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MailFetch.swift; sourceTree = "<group>"; };
+		F5F7209A2B334BF600D1ED38 /* MailCenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MailCenter.swift; sourceTree = "<group>"; };
 		F5F720AA2B33523100D1ED38 /* DetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -58,7 +58,7 @@
 				F5F7208C2B334B8200D1ED38 /* MailApp.swift */,
 				F5F7208E2B334B8200D1ED38 /* ContentView.swift */,
 				F5F720AA2B33523100D1ED38 /* DetailView.swift */,
-				F5F7209A2B334BF600D1ED38 /* MailFetch.swift */,
+				F5F7209A2B334BF600D1ED38 /* MailCenter.swift */,
 				F5F720902B334B8700D1ED38 /* Assets.xcassets */,
 				F5F720922B334B8700D1ED38 /* Preview Content */,
 			);
@@ -146,7 +146,7 @@
 				F5F7208F2B334B8200D1ED38 /* ContentView.swift in Sources */,
 				F5F720AB2B33523100D1ED38 /* DetailView.swift in Sources */,
 				F5F7208D2B334B8200D1ED38 /* MailApp.swift in Sources */,
-				F5F7209B2B334BF600D1ED38 /* MailFetch.swift in Sources */,
+				F5F7209B2B334BF600D1ED38 /* MailCenter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

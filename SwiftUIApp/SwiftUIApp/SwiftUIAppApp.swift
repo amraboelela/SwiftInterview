@@ -18,7 +18,7 @@ struct SwiftUIAppApp: SwiftUI.App {
     
     init() {
         // Set up Realm configuration
-        let config = Realm.Configuration(schemaVersion: 1)
+        let config = Realm.Configuration(schemaVersion: 2)
         do {
             let realm = try Realm(configuration: config)
             print("Realm file path: \(realm.configuration.fileURL?.absoluteString ?? "")")
