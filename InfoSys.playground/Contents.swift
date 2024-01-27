@@ -15,8 +15,20 @@ let mySubscriber = Subscribers.Sink<Int, Never> { completion in
     print("Received value: \(value)")
 }
 
+let mySubscriber2 = Subscribers.Sink<Int, Never> { completion in
+    switch completion {
+    case .finished:
+        print("mySubscriber2 Finished")
+    case .failure(let error):
+        print("mySubscriber2 Received error: \(error)")
+    }
+} receiveValue: { value in
+    print("mySubscriber2 Received value: \(value)")
+}
+
 // Connect the publisher and subscriber
 myPublisher.subscribe(mySubscriber)
+myPublisher.subscribe(mySubscriber2)
 
 //## Give me an example
 
@@ -200,4 +212,91 @@ dispatchGroup.notify(queue: DispatchQueue.main) {
 /*
 In this example, the `dispatchGroup.notify` block will be executed after both tasks have called `dispatchGroup.leave()`, indicating they are complete. The `notify` block runs on the main queue, but you can specify a different queue if needed. This method ensures that your code waits for the grouped tasks to finish without blocking the thread on which the tasks are enqueued.
  */
-                                                                                                                                                                                                                                            
+
+
+//## give me a combine example to publish var posts: [Post] from TwisterViewModel to TwisterViewController
+
+/*Certainly! To demonstrate using Combine to publish a variable `posts: [Post]` from `TwisterViewModel` to `TwisterViewController`, I'll break down the process into steps. First, ensure that you have imported the Combine framework.
+
+1. **Define Your Post Model**: I'll assume you have a `Post` model.
+*/
+/*
+struct Post {
+    // Your Post model properties
+    var title: String
+    var content: String
+}*/
+
+/*
+2. **Create TwisterViewModel with a Published Property**:
+*/
+
+class TwisterViewModel {
+    @Published var posts: [Post] = []
+    
+    // Other properties and methods of your ViewModel
+    // ...
+    init() {
+        Task {
+            sleep(4)
+            posts = [Post(id: 1, userId: 1, title: "New Post", body: "Content of the new post")]
+            sleep(2)
+            posts = [Post(id: 2, userId: 2, title: "Post 2", body: "Content of post2")]
+        }
+    }
+}
+
+/*
+    Here, `@Published` is a property wrapper provided by Combine, which creates a publisher for `posts`.
+
+3. **TwisterViewController Subscribes to the ViewModel's Publisher**:
+
+    In `TwisterViewController`, you'll want to keep a reference to any subscriptions to avoid them being deallocated. You can do this using an instance of `AnyCancellable`.
+*/
+
+import UIKit
+
+class TwisterViewController: UIViewController {
+    var viewModel = TwisterViewModel()
+    private var cancellables: Set<AnyCancellable> = []
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        observeViewModel()
+    }
+    
+    private func observeViewModel() {
+        viewModel.$posts
+            .receive(on: RunLoop.main)
+            .sink { [weak self] in
+                self?.updateUI(with: $0)
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func updateUI(with posts: [Post]) {
+        // Update your UI with the posts
+        // ...
+        print("Updating UI for posts: \(posts)")
+    }
+}
+
+/*
+    - `viewModel.$posts` creates a publisher that emits values whenever `posts` is updated.
+    - `receive(on: RunLoop.main)` ensures that the updates are received on the main thread, which is important for UI updates.
+    - `sink` is used to subscribe to the publisher and provide a closure that gets called with the new values.
+    - `store(in: &cancellables)` stores the subscription in a set of `AnyCancellable`, keeping the subscription alive.
+
+Now, whenever `posts` in `TwisterViewModel` is updated, `TwisterViewController` will receive these updates and can act accordingly, such as updating the UI.
+
+This example demonstrates a simple one-way binding from the ViewModel to the ViewController using Combine. Remember to import Combine in any file where you're using it, and be aware of thread safety when dealing with UI updates.
+*/
+
+//## How to test it
+
+let viewController = TwisterViewController()
+
+// Simulate ViewDidLoad
+viewController.viewDidLoad()
+
+
