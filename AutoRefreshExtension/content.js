@@ -71,14 +71,10 @@ function getDifferentLines(str1, str2) {
     return result.trim();
 }
 
-function refresh() {
-    
+function checkChanges() {
     retrieveTextFromStorage(function(previousContent) {
         let content = document.documentElement.outerHTML;
-        if (content == previousContent) {
-            //alert("content is the same");
-            //openMailApp('content is the same', 'content == previousContent');
-        } else {
+        if (content != previousContent) {
             let differentLines = getDifferentLines(previousContent, content)
             previousContent = content;
             if (differentLines.length === 0) {
@@ -87,13 +83,17 @@ function refresh() {
                 saveTextToStorage(previousContent);
             }
         }
-        document.location.reload()
     });
 }
 
+window.addEventListener("load", function() {
+    // Code to execute after reload
+    checkChanges();
+});
+
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.action === 'refresh') {
-        refresh();
+        document.location.reload();
     }
 });
 

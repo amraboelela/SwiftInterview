@@ -22,7 +22,7 @@
     },
     "content_scripts": [
         {
-            "matches": ["*://www.indeed.com/*", "*://www.linkedin.com/*"],
+            "matches": ["*://www.indeed.com/*", "*://www.linkedin.com/jobs/search/*"],
             "js": ["content.js"]
         }
     ]
