@@ -1,31 +1,34 @@
-//let previousContent = '';
 
-
+let url = new URL(location.href);
+let hostname = url.hostname;
+let storageKey = hostname + '-previousContent';
 
 // Save text to storage
 function saveTextToStorage(text) {
-    
-    chrome.storage.local.set({ previousContent: text }, function() {
-      //console.log('Values stored in local storage');
-        //alert('Text saved to storage:' + text);
+    var storageObject = {};
+    storageObject[storageKey] = text;
+
+    chrome.storage.local.set(storageObject, function() {
+        console.log('Value stored in local storage');
+        //alert('Text saved to storage: ' + text);
     });
 }
 
-// Retrieve text from storage
 function retrieveTextFromStorage(callback) {
     
-    chrome.storage.local.get(['previousContent'], function(result) {
+    chrome.storage.local.get([storageKey], function(result) {
+        // result is an object with keys corresponding to the provided array, e.g., { 'yourKey': 'storedValue' }
+        var storedText = result[storageKey];
+
         if (callback) {
-            callback(result.previousContent);
+            //openMailApp('storedText', storedText);
+            callback(storedText);
         }
     });
 }
 
 function openMailApp(subject, body) {
     const mailtoLink = document.createElement('a');
-    const url = new URL(location.href);
-    const hostname = url.hostname;
-    
     const encodedSubject = encodeURIComponent(subject);
     const encodedBody = encodeURIComponent(body);
     
@@ -54,16 +57,40 @@ function getDifferentLines(str1, str2) {
         "<link",
         "function ",
         "if (",
+        "{",
         "}",
         ".mosaic",
         "this[",
         "script.",
         "<img ",
         "</main>",
-        "<li>",
+        "<li",
         "</li>",
         "mosaic-zone",
-        "jobsearch-Main"
+        "jobsearch-Main",
+        "<code",
+        "</code",
+        "<!---->",
+        "<div",
+        "</div",
+        "<button",
+        "</svg>",
+        "form>",
+        "</span>",
+        "<path",
+        "performance.mark",
+        "<a ",
+        "<svg",
+        "<span",
+        "artdeco-card",
+        "<title>ios developer Jobs in San Jose",
+        "urn:li:page",
+        "</ul>",
+        "data-ember-action",
+        "<input",
+        "<label",
+        "search-reusables",
+        "Hatch"
     ]
     let filteredLines = uniqueLines2.filter(line => !rejectedTerms.some(substring => line.includes(substring)));
 
@@ -77,10 +104,10 @@ function checkChanges() {
         if (content != previousContent) {
             let differentLines = getDifferentLines(previousContent, content)
             previousContent = content;
-            if (differentLines.length === 0) {
-            } else {
+            //openMailApp('content != previousContent previousContent', previousContent);
+            if (differentLines.length !== 0) {
                 openMailApp('There is new content', differentLines);
-                saveTextToStorage(previousContent);
+                //saveTextToStorage(previousContent);
             }
         }
     });
@@ -92,8 +119,22 @@ window.addEventListener("load", function() {
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request.action === 'refresh') {
-        document.location.reload();
+    // Get the current date and time
+    const currentDate = new Date();
+
+    // Get the current hour (in 24-hour format)
+    const currentHour = currentDate.getHours();
+
+    // Check if the current hour is after 9 PM (21:00) and before 9 AM (09:00)
+    if (currentHour >= 20 || currentHour < 9) {
+        console.log('It is after 8 PM or before 9 AM.');
+    } else {
+        //console.log('It is between 9 AM and 9 PM.');
+        if (request.action === 'refresh') {
+            previousContent = document.documentElement.outerHTML;
+            saveTextToStorage(previousContent);
+            document.location.reload();
+        }
     }
 });
 

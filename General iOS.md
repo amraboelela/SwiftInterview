@@ -131,7 +131,7 @@ Optionals are a fundamental concept in Swift that allows variables to have a "no
 
 - Delegates: Delegates are a design pattern used in iOS development to allow one object to communicate with another. They provide a way for objects to send messages and data to a delegate, enabling customization and flexibility in the behavior of objects.
 
-- Protocols: Protocols define a blueprint of methods, properties, and other requirements that can be adopted by classes, structures, or enumerations. They allow objects to conform to a set of rules, promoting a common interface for different types. ghbhjsu89gCUVY5  EDR67TYCTF`vuzlx;=lLMThis pattern promotes separation of concerns and modular design, making the code more maintainable and extensible. It allows different parts of the application to communicate without creating tight dependencies between them.
+- Protocols: Protocols define a blueprint of methods, properties, and other requirements that can be adopted by classes, structures, or enumerations. They allow objects to conform to a set of rules, promoting a common interface for different types. This pattern promotes separation of concerns and modular design, making the code more maintainable and extensible. It allows different parts of the application to communicate without creating tight dependencies between them.
 
 ## What is the difference between a delegate and a notification?
 
@@ -204,7 +204,7 @@ printMessage(messageProvider: { return "Hello, World!" })
 
 By using @autoclosure, you can achieve a more concise syntax when dealing with simple expressions or literals. Keep in mind that using @autoclosure is most effective when the evaluation of the expression has no side effects and can be safely delayed.
 
-## What is the difference between nsoperation queue and GCD?
+## What is the difference between NSOperation queue and GCD?
 
 `NSOperationQueue` and Grand Central Dispatch (GCD) are both concurrency mechanisms in Swift and Objective-C for executing multiple operations (tasks) concurrently and managing multiple threads. While they share some common goals, they offer different levels of abstraction and features.
 
@@ -711,3 +711,4 @@ myPublisher.subscribe(mySubscriber)
 ```
 
 This framework is particularly powerful for managing complex asynchronous code, streamlining event handling, and binding UI components to data sources, especially in SwiftUI. As with any advanced framework, there's a learning curve, but it brings substantial benefits in terms of code readability, maintainability, and performance in many cases.
+

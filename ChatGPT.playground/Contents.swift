@@ -71,13 +71,18 @@ func isPalindrome(string: String) -> Bool {
     return true
 }
 
+func isPalindrome2(string: String) -> Bool {
+    return Array(string) == Array(string.reversed())
+}
+
 let palindromeString = "racecar"
 if isPalindrome(string: palindromeString) {
     print("The string is a palindrome.")
 } else {
     print("The string is not a palindrome.")
 }
-
+isPalindrome2(string: palindromeString)
+isPalindrome2(string: "palindromeString")
 
 // FizzBuzz
 
@@ -309,7 +314,7 @@ if let largest = findLargestElement(root) {
 // Fibonacci sequence
 
 func fibonacci(upTo number: Int) -> [Int] {
-    var fibonacciSequence: [Int] = []
+    var fibonacciSequence = [Int]()
     
     if number <= 0 {
         return fibonacciSequence

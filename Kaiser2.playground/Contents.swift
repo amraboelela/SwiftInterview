@@ -64,6 +64,13 @@ protocol NetworkServiceProtocol {
     func fetch<T: Decodable>(endpoint: APIEndpoint, completion: @escaping (Result<T, Error>) -> Void)
 }
 
+// Define some common network errors:
+
+enum NetworkError: Error {
+    case invalidURL
+    case noData
+}
+
 // Now, implement the network service:
 
 class NetworkService: NetworkServiceProtocol {
@@ -96,13 +103,6 @@ class NetworkService: NetworkServiceProtocol {
 
         task.resume()
     }
-}
-
-// Define some common network errors:
-
-enum NetworkError: Error {
-    case invalidURL
-    case noData
 }
 
 // Finally, use the network service to fetch data:
@@ -228,11 +228,11 @@ squareSum(numbers: numbers)
 
 protocol Shape {
     func area() -> Int
-    func paremeter() -> Int
+    func parimeter() -> Int
 }
 
 extension Shape {
-    func paremeter() -> Int {
+    func parimeter() -> Int {
         return 0
     }
 }
@@ -241,11 +241,11 @@ class Circle: Shape {
     var radius: Int
     
     func area() -> Int {
-        return radius^2 * PI
+        return radius^2 * Double.pi
     }
     
-    func paremeter() -> Int {
-        return 2 * radius * PI
+    func parimeter() -> Int {
+        return 2 * radius * Double.pi
     }
 }
 
@@ -256,7 +256,7 @@ class Square: Shape {
         return length * length
     }
     
-    /*func paremeter() -> Int {
+    /*func parimeter() -> Int {
         return length * 4
     }*/
 }
@@ -296,6 +296,7 @@ class Cache<V>: CacheProtocol {
         } else {
             let node = priority.removeTail()
             cache[node.key] = nil
+            let item = LinkdedListNode<PayLoad>(key: key, value: v)
             priority.add(node: item)
             cache[key] = v
         }
@@ -310,15 +311,15 @@ class Cache<V>: CacheProtocol {
     
 }
 
-class LinkdedListNode<V> {
+class LinkdedListNode<P> {
     var key: String
-    var value: V
+    var value: P
     
     var prev: LinkdedListNode?
     var next: LinkdedListNode?
 }
 
-class LinkdedList<V> {
+class LinkdedList<P> {
     var head: LinkdedListNode?
     var tail: LinkdedListNode?
     
