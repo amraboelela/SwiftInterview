@@ -25,7 +25,7 @@
             "matches": [
                 "*://www.indeed.com/*",
                 "*://www.linkedin.com/jobs/search/*",
-                "*://www.upwork.com/nx/*"
+                "*://www.upwork.com/nx/search/*"
             ],
             "js": ["content.js"]
         }

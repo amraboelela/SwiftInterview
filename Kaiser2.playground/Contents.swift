@@ -176,7 +176,7 @@ class NetworkServiceSC: NetworkServiceProtocolSC {
 
 let networkServiceSC = NetworkServiceSC()
 
-Task {
+Task { @MainActor in
     do {
         let posts: [Post] = try await networkServiceSC.fetch(endpoint: .fetchPosts)
         // Handle successful response with posts

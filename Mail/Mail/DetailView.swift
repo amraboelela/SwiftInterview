@@ -8,9 +8,7 @@
 import SwiftUI
 
 struct DetailView: View {
-    //@EnvironmentObject var mailCenter: MailCenter
-    @ObservedObject var mailCenter: MailCenter
-    var email: EmailMessage
+    @Binding var email: EmailMessage
     
     var body: some View {
         VStack {
@@ -18,7 +16,7 @@ struct DetailView: View {
                 .navigationBarTitle("Detail")
         }
         .onAppear {
-            mailCenter.markAsRead(id: email.id)
+            email.isRead = true
         }
     }
     

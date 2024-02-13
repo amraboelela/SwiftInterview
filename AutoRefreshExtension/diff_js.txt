@@ -1,7 +1,67 @@
-<input name="company-filter-value" id="company-6601241" class="search-reusables__select-input" type="checkbox" value="6601241">
-        <label for="company-6601241" class="search-reusables__value-label">
-              Hatch
-              Filter by Hatch
-     search-reusables__filter-pill-button search-reusables__all-filters-pill-button" aria-expanded="false" aria-label="Show all filters. Clicking this button displays all available filter options." id="ember106" type="button">
-<label for="adToggle_ember253" data-artdeco-toggle-label="true" class="artdeco-toggle__label default">
-<input role="switch" aria-checked="false" class="input artdeco-toggle__button artdeco-toggle__button--24dp" data-artdeco-toggle-button="true" id="adToggle_ember253" type="checkbox">
+--hc-text-on-selected,var(--text-dark-on-hoverable-light)
+    --reduced-motion,air3-shimmer 1.5s linear 0s forwards infinite
+  );--token-text-interactive-selected:var(--text-on-btn-check-light-selected);--token-border-color-interactive:var(--border-color-btn-check-light);--token-border-color-interactive-selected:var(
+    --reduced-motion,nav-shimmer 1.5s linear 0s forwards infinite
+    --hc-text-on-selected,var(--text-dark-on-hoverable-light)
+            Close the alert
+        My Profile
+        My Project Dashboard
+        Get an Upwork Skill Certification
+      &nbsp;
+    </h4></section> <section class="air3-card-section py-3x"><h4 class="air3-skeleton-shape mb-0 text-base-sm" style="width: 20%">
+      &nbsp;
+    </h4></section> <section class="air3-card-section py-3x"><h4 class="air3-skeleton-shape mb-0 text-base-sm" style="width: 45%">
+      &nbsp;
+          Jobs recommended for you
+                Best Matches
+                Most Recent
+                U.S. Only
+                Saved Jobs
+      Browse jobs that match your experience to a client's hiring preferences. Ordered by most relevant.
+        Posted
+          8 hours ago
+      -
+Your Role:
+- Create high-quality, user-friendly iOS apps from scratch.
+- Collaborate on new features with a cross-functional team.
+- Write clean, maintainable code, adhering to industry best practices.
+- Manage app distribution and tasks via Apple Developer Console.
+Requirements:
+- 3+ years iOS app development experience.
+- Proven track record of App Store releases.
+- Expertise in iOS SDK, SwiftUI, frameworks, and design patterns.
+    Skip skills
+      Previous skills. Update list
+      Next skills. Update list
+    &nbsp;
+      Rating is 4.963 out of 5.
+  $40K+
+    &nbsp;
+    United Arab Emirates
+        Connects to apply:&nbsp;
+        Posted
+          yesterday
+      -
+The dashboard app has 3.5 views:
+1. A list of projects
+2. A spreadsheet for each project with editable, sortable data + a modified view to manage categories (columns)
+3. An individual cell of a spreadsheet (that scrolls to other rows/columns) to manage a record (row)
+Requirements:
+-Establish foundation of a new ipadOS /IOS/ VisionOS app
+-Setup project databases with MongoDB, setup backend/servers &amp; auto deploy GitHub repos
+-Write CRUD API’s for managing the database, display database information with sorting, grouping &amp; loading/saving preset views
+-Manage testflight and deployments
+-double check everything works correct
+-open to collaboration with screen sharing
+Preferences:
+-you can adapt and modify our current MongoDB database structure and backend for this, or at least make sure it can be compatible for merging later
+-if there is any prewritten code we can use to jumpstart— a lot of this is very basic—we would hope to explore.
+    Skip skills
+      Previous skills. Update list
+      Next skills. Update list
+    &nbsp;
+      Rating is 4.998 out of 5.
+  $40K+
+    &nbsp;
+    United States
+        Connects to apply:&nbsp;

@@ -13,21 +13,23 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-            List(mailCenter.emails) { email in
-                NavigationLink(destination: DetailView(mailCenter: mailCenter, email: email)) {
+            List(mailCenter.emails.indices, id: \.self) { index in
+                NavigationLink(destination: DetailView(
+                    email: mailCenter.emailBinding(forIndex: index))
+                ) {
                     VStack(alignment: .leading) {
                         HStack {
                             Circle()
-                                .fill(email.isRead ? Color.white : Color.blue)
+                                .fill(mailCenter.emails[index].isRead ? Color.white : Color.blue)
                                 //.stroke(Color.blue, lineWidth: 1)
                                 .frame(width: 10, height: 10)
                             Image(systemName: "flag")
                                 .imageScale(.small)
                                 .foregroundStyle(.tint)
-                            Text(email.subject)
+                            Text(mailCenter.emails[index].subject)
                                 .font(Font.title2.weight(.bold))
                         }
-                        Text(email.message)
+                        Text(mailCenter.emails[index].message)
                             .font(Font.body)
                     }
                 }

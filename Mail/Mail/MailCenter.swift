@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 struct EmailMessage: Hashable, Identifiable {
     let id: UUID
@@ -68,17 +69,25 @@ struct MailFetch {
 class MailCenter: ObservableObject {
     @Published var emails = [EmailMessage]()
     
+    // Function to get a binding to an email at a specific index
+    func emailBinding(forIndex index: Int) -> Binding<EmailMessage> {
+        Binding(
+            get: { self.emails[index] },
+            set: { self.emails[index] = $0 }
+        )
+    }
+    
     func fetchEmails() {
         emails = MailFetch.fetchNewMail(count: 5)
     }
     
-    func markAsRead(id: UUID) {
+    /*func markAsRead(id: UUID) {
         for i in 0..<emails.count {
             if emails[i].id == id {
                 emails[i].isRead = true
                 return
             }
         }
-    }
+    }*/
 }
 
