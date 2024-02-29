@@ -16,6 +16,8 @@ struct HelloWorld: View {
                 .imageScale(.large)
                 .foregroundStyle(.tint)
             Text("Hello, world!")
+                .foregroundColor(nil)
+                .foregroundColor(.red)
         }
         .padding()
     }

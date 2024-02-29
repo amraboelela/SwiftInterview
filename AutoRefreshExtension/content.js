@@ -83,6 +83,12 @@ function getDifferentLines(str1, str2) {
         "<svg",
         "<span",
         "artdeco-card",
+        "Saved jobs",
+        "(1)",
+        "(32)",
+        "37"
+    ]
+        /*
         "<title>ios developer Jobs in San Jose",
         "urn:li:page",
         "</ul>",
@@ -113,12 +119,33 @@ function getDifferentLines(str1, str2) {
         "Browse jobs",
         "Posted",
         "hours ago",
-        "Saved jobs",
         "Cookie Settings",
         "(4)",
         "(5)",
-        "border-radius: "
-    ]
+        "border-radius: ",
+        ".air3-transition-hide-show-enter-active",
+        "Select Categories",
+        "(6)",
+        "Select client locations",
+        "Select client time zones",
+        "Saving this search will save",
+        "(1)",
+        "Sort by: Newest",
+        "Just not interested",
+        "Vague Description",
+        "Unrealistic Expectations",
+        "Too Many Applicants",
+        "Job posted too long ago",
+        "Poor reviews about the client",
+        "Doesn't Match Skills",
+        "I am overqualified",
+        "Budget too low",
+        "Not in my preferred location",
+        "The client will not be notified.",
+        "8",
+        "+5",
+        "+2"
+    ]*/
     let filteredLines = uniqueLines2.filter(line => !rejectedTerms.some(substring => line.includes(substring)));
 
     result = filteredLines.join('\n');
@@ -152,9 +179,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     // Get the current hour (in 24-hour format)
     const currentHour = currentDate.getHours();
 
-    // Check if the current hour is after 9 PM (21:00) and before 9 AM (09:00)
-    if (currentHour >= 20 || currentHour < 9) {
-        console.log('It is after 8 PM or before 9 AM.');
+    // Check if the current hour is after 10 PM (21:00) and before 9 AM (09:00)
+    if (currentHour >= 22 || currentHour < 9) {
+        console.log('It is after 10 PM or before 9 AM.');
     } else {
         //console.log('It is between 9 AM and 9 PM.');
         if (request.action === 'refresh') {
@@ -165,7 +192,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     }
 });
 
-const minutes = Math.floor(Math.random() * 10) + 5; // between 10 and 20
+const minutes = Math.floor(Math.random() * 10) + 5; // between 5 and 15
 
 setInterval(function() {
     chrome.runtime.sendMessage({ action: 'checkChanges' });
