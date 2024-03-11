@@ -63,16 +63,19 @@ class ViewModel {
 
         // Start the subscription
         myModelPublisher?
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    print("Error: \(error.localizedDescription)")
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        print("Error: \(error.localizedDescription)")
+                    }
+                },
+                receiveValue: { [weak self] model in
+                    self?.handleNewModel(model)
                 }
-            }, receiveValue: { [weak self] model in
-                self?.handleNewModel(model)
-            })
+            )
             .store(in: &cancellables)
     }
 

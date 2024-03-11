@@ -39,3 +39,33 @@ A Binding is a two-way connection to a value that can be passed around in SwiftU
 ## What is the purpose of the EnvironmentObject property wrapper?
 
 EnvironmentObject is used to share an observable object (conforming to ObservableObject) across multiple views in a SwiftUI hierarchy. It allows data to be passed down the view hierarchy without the need for manual passing through each level.
+
+## When do we use some in swift?
+
+In Swift, the `some` keyword is used in a few different contexts:
+
+1. **Opaque Return Types:** When defining functions or properties whose return types are protocols or protocol compositions, you can use `some` to specify an opaque return type. This allows the compiler to infer the concrete type returned by the function or property, without exposing the implementation details. For example:
+
+   ```swift
+   protocol Shape {
+       // protocol definition
+   }
+
+   func createShape() -> some Shape {
+       // return a concrete type that conforms to Shape
+   }
+   ```
+
+2. **View Builders in SwiftUI:** In SwiftUI, `some View` is commonly used in view builders to represent a type-erased view. This allows views to return different types of views dynamically, while ensuring that the views conform to the `View` protocol. For example:
+
+   ```swift
+   struct MyView: View {
+       var body: some View {
+           // return a dynamic view
+       }
+   }
+   ```
+
+3. **Existential Types:** When working with existential types (e.g., protocol types), `some` can be used to refer to a concrete type that conforms to a protocol. This is similar to how `some` is used with opaque return types but can also be used in other contexts where existential types are involved.
+
+Overall, `some` is used to express the idea of an opaque or unknown type, typically when working with protocols, generics, or SwiftUI views. It helps improve type safety and encapsulation while allowing for flexible and dynamic behavior.

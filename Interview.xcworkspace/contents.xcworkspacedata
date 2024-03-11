@@ -46,4 +46,7 @@
    <FileRef
       location = "group:Photon.playground">
    </FileRef>
+   <FileRef
+      location = "group:SwiftConcurrency.playground">
+   </FileRef>
 </Workspace>

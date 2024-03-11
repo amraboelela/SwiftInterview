@@ -86,8 +86,18 @@ function getDifferentLines(str1, str2) {
         "Saved jobs",
         "(1)",
         "(32)",
-        "37"
+        "(34)",
+        "37",
+        "(38)",
+        "42",
+        "--badge-size",
+        "--placement",
+        "border-radius",
+        "background-color",
+        "color: var",
+        "(710)"
     ]
+
         /*
         "<title>ios developer Jobs in San Jose",
         "urn:li:page",

@@ -15,13 +15,15 @@ struct UserInputFormView: View {
     var body: some View {
         Form {
             TextField("Enter text", text: $userInput)
-            
-            Button(action: {
-                // Perform action with userInput
-                print("User input: \(userInput)")
-            }) {
-                Text("Submit")
-            }
+            Button(
+                action: {
+                    // Perform action with userInput
+                    print("User input: \(userInput)")
+                }, 
+                label: {
+                    Text("Submit")
+                }
+            )
         }
     }
 }

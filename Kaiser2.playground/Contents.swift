@@ -20,7 +20,6 @@ class HTTPUtil {
         let request = URLRequest()
         //let url
         request.url = url
-        //request.type = "POST"
         request.httpMethod = "POST"
         let jsonRequest = "{\"param1\":\(param1), \"param2\":\(param2)}"
         request.httpBody = jsonRequest
@@ -61,7 +60,10 @@ enum APIEndpoint {
 // Next, create a protocol for the network layer:
 
 protocol NetworkServiceProtocol {
-    func fetch<T: Decodable>(endpoint: APIEndpoint, completion: @escaping (Result<T, Error>) -> Void)
+    func fetch<T: Decodable>(
+        endpoint: APIEndpoint,
+        completion: @escaping (Result<T, Error>) -> Void
+    )
 }
 
 // Define some common network errors:
@@ -74,7 +76,10 @@ enum NetworkError: Error {
 // Now, implement the network service:
 
 class NetworkService: NetworkServiceProtocol {
-    func fetch<T: Decodable>(endpoint: APIEndpoint, completion: @escaping (Result<T, Error>) -> Void) {
+    func fetch<T: Decodable>(
+        endpoint: APIEndpoint,
+        completion: @escaping (Result<T, Error>) -> Void
+    ) {
         guard let url = URL(string: endpoint.urlString) else {
             completion(.failure(NetworkError.invalidURL))
             return
@@ -282,23 +287,20 @@ class Cache<V>: CacheProtocol {
         self.capacity = capacity
     }
     
-    func setCapacity(capacity: Int) {
-        self.capacity = capacity
-    }
-    
     func setValue(key: String, v: V) {
+        //let item = LinkdedListNode<PayLoad>(key: key, value: v)
         if let item = cache[key] {
+            item.value.value = v
             priority.moveToHead(item)
-            cache[key] = v
-        } else if cache.count < capacity {
-            priority.add(node: item)
-            cache[key] = v
         } else {
-            let node = priority.removeTail()
-            cache[node.key] = nil
             let item = LinkdedListNode<PayLoad>(key: key, value: v)
-            priority.add(node: item)
-            cache[key] = v
+            let node = priority.addHead(node: item)
+            cache[key] = item
+            
+            if cache.count > capacity {
+                let node = priority.removeTail()
+                cache[node.key] = nil
+            }
         }
     }
     

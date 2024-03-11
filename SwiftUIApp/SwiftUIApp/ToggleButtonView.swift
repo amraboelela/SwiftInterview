@@ -13,11 +13,14 @@ struct ToggleButtonView: View {
     @State private var isToggled = false
     
     var body: some View {
-        Button(action: {
-            isToggled.toggle()
-        }) {
-            Text("Toggle: \(isToggled ? "On" : "Off")")
-        }
+        Button(
+            action: {
+                isToggled.toggle()
+            },
+            label: {
+                Text("Toggle: \(isToggled ? "On" : "Off")")
+            }
+        )
         .padding()
     }
 }

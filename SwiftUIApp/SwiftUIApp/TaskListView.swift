@@ -29,7 +29,7 @@ struct TaskListView: View {
             }
             .navigationBarTitle("TaskObject List")
         }
-        .onAppear {
+        .task {
             // Fill the tasks list with sample data on view appearance
             addSampleData()
         }
