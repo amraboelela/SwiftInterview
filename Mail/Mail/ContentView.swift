@@ -14,8 +14,10 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             List(mailCenter.emails.indices, id: \.self) { index in
-                NavigationLink(destination: DetailView(
-                    email: mailCenter.emailBinding(forIndex: index))
+                NavigationLink(
+                    destination: DetailView(
+                        email: mailCenter.emailBinding(forIndex: index)
+                    )
                 ) {
                     VStack(alignment: .leading) {
                         HStack {

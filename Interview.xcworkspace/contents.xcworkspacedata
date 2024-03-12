@@ -49,4 +49,7 @@
    <FileRef
       location = "group:SwiftConcurrency.playground">
    </FileRef>
+   <FileRef
+      location = "group:Walmart.playground">
+   </FileRef>
 </Workspace>
