@@ -28,5 +28,11 @@
             ],
             "js": ["content.js"]
         }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": ["alert1.wav"],
+            "matches": ["<all_urls>"]
+        }
     ]
 }
