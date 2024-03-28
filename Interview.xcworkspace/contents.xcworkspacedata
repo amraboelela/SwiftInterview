@@ -23,6 +23,9 @@
       location = "group:InfoSys.playground">
    </FileRef>
    <FileRef
+      location = "group:Intryst.playground">
+   </FileRef>
+   <FileRef
       location = "group:Kaiser.playground">
    </FileRef>
    <FileRef
