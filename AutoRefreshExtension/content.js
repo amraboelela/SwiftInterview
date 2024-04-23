@@ -118,7 +118,8 @@ function getDifferentLines(str1, str2) {
         "not in my preferred location",
         "unrealistic expectations",
         "saving this search",
-        "sort by"
+        "sort by",
+        "you must provide a name for the search"
     ]
 
         /*
