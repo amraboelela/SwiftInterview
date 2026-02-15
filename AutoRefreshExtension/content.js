@@ -3,8 +3,18 @@ let url = new URL(location.href);
 let hostname = url.hostname;
 let storageKey = hostname + '-previousJobs';
 
+// Check if extension context is still valid
+function isExtensionContextValid() {
+    return !!(chrome.runtime && chrome.runtime.id);
+}
+
 // Save job titles to storage
 function saveJobTitlesToStorage(jobTitles) {
+    if (!isExtensionContextValid()) {
+        console.log('Extension context invalidated - skipping storage operation');
+        return;
+    }
+
     const storageObject = {};
     storageObject[storageKey] = jobTitles;
 
@@ -18,6 +28,12 @@ function saveJobTitlesToStorage(jobTitles) {
 }
 
 function retrieveJobTitlesFromStorage(callback) {
+    if (!isExtensionContextValid()) {
+        console.log('Extension context invalidated - skipping storage retrieval');
+        callback([]);
+        return;
+    }
+
     chrome.storage.local.get([storageKey], (result) => {
         if (chrome.runtime.lastError) {
             console.error('Storage error:', chrome.runtime.lastError);
@@ -87,12 +103,14 @@ function checkChanges() {
             console.log('New jobs detected:\n' + newJobs.join('\n'));
 
             // Use Chrome notifications (more reliable than audio autoplay)
-            chrome.runtime.sendMessage({
-                action: 'showNotification',
-                title: 'New Jobs Found!',
-                message: `${newJobs.length} new job(s) detected`,
-                jobs: newJobs
-            });
+            if (isExtensionContextValid()) {
+                chrome.runtime.sendMessage({
+                    action: 'showNotification',
+                    title: 'New Jobs Found!',
+                    message: `${newJobs.length} new job(s) detected`,
+                    jobs: newJobs
+                });
+            }
 
             // Try to play audio immediately
             playAlertAudio();
@@ -105,6 +123,7 @@ function checkChanges() {
             saveJobTitlesToStorage(currentJobs);
         } else {
             console.log('No new jobs found');
+            playAlertAudio();
         }
     });
 }
@@ -164,7 +183,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 //console.log("before checkChanges();");
 checkChanges();
-const minutes = Math.floor(Math.random() * 10) + 5; // between 5 and 15
+const minutes = Math.floor(Math.random() * 1) + 1; // between 5 and 15
 
 setTimeout(() => {
     console.log("setTimeout - preparing to refresh");
