@@ -5,9 +5,6 @@
       location = "group:README.md">
    </FileRef>
    <FileRef
-      location = "group:/Users/amraboelela/swift/SwiftInterview/General iOS.md">
-   </FileRef>
-   <FileRef
       location = "group:InfoSys.md">
    </FileRef>
    <FileRef
@@ -33,18 +30,6 @@
    </FileRef>
    <FileRef
       location = "group:Meta.playground">
-   </FileRef>
-   <FileRef
-      location = "group:/Users/amraboelela/swift/SwiftInterview/Bard1.playground">
-   </FileRef>
-   <FileRef
-      location = "group:/Users/amraboelela/swift/SwiftInterview/ChatGPT.playground">
-   </FileRef>
-   <FileRef
-      location = "group:/Users/amraboelela/swift/SwiftInterview/MyTime.playground">
-   </FileRef>
-   <FileRef
-      location = "group:/Users/amraboelela/swift/SwiftInterview/Karat.playground">
    </FileRef>
    <FileRef
       location = "group:Photon.playground">

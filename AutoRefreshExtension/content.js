@@ -36,135 +36,40 @@ function openMailApp(subject, body) {
     mailtoLink.click();
 }
 
-function getDifferentLines(str1, str2) {
-    const lines1 = str1.split('\n');
-    const lines2 = str2.split('\n');
-    
-    let uniqueLines2 = lines2
-        .filter(line => !lines1.includes(line))
-        .map(line => line.trim().toLowerCase());
-    
-    let rejectedTerms = [
-        "window.",
-        "<script",
-        "script>",
-        "stylesheet",
-        "<style",
-        "</style>",
-        "<meta",
-        "<body",
-        "jobsearch-JapanPage",
-        "span class=\"date\"",
-        "span class=\"myJobsState\"",
-        "<html",
-        "<link",
-        "function ",
-        "if (",
-        "{",
-        "}",
-        ".mosaic",
-        "this[",
-        "script.",
-        "<img ",
-        "</main>",
-        "<li",
-        "</li>",
-        "mosaic-zone",
-        "jobsearch-Main",
-        "<code",
-        "</code",
-        "<!---->",
-        "<div",
-        "</div",
-        "<button",
-        "</svg>",
-        "form>",
-        "</span>",
-        "<path",
-        "performance.mark",
-        "<a ",
-        "<svg",
-        "<span",
-        "artdeco-card",
-        "saved jobs",
-        "(1)",
-        "(32)",
-        "(34)",
-        "37",
-        "(38)",
-        "42",
-        "--badge-size",
-        "--placement",
-        "border-radius",
-        "background-color",
-        "color: var",
-        "current page",
-        "cookie settings",
-        "time zone",
-        "select categories",
-        "select client",
-        "icon-size",
-        "dropdown-min-width",
-        "transition-hide",
-        "too many applicants",
-        "i am overqualified",
-        "vague description",
-        "job posted too long ago",
-        "just not interested",
-        "budget too low",
-        "doesn't match skills",
-        "the client will not be notified",
-        "poor reviews about the client",
-        "not in my preferred location",
-        "unrealistic expectations",
-        "saving this search",
-        "sort by",
-        "you must provide a name for the search"
-    ]
+// Extract job titles from the page
+function extractJobTitles(htmlString) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlString, 'text/html');
+    const jobTitles = [];
 
-        /*
-        "<title>ios developer Jobs in San Jose",
-        "urn:li:page",
-        "</ul>",
-        "data-ember-action",
-        "<input",
-        "<label",
-        "search-reusables",
-        "Hatch",
-        "Learn how to get started on Upwork",
-        "Upwork 101",
-        "minutes ago",
-        "Boosted Proposals",
-        "Show me",
-        "$200",
-        "<p data-v",
-        "slide 1 of",
-        "data-occludable-job",
-        "Page 1",
-        "Vori",
-        "--",
-        "h4",
-        "My Pro",
-        "Jobs recommended",
-        "Best Matches",
-        "Most Recent",
-        "U.S. Only",
-        "Browse jobs",
-        "Posted",
-        "hours ago",
-        "border-radius: ",
-        "The client will not be notified.",
-        "8",
-        "+5",
-        "+2"
-    ]*/
-    var filteredLines = uniqueLines2.filter(line => !rejectedTerms.some(substring => line.includes(substring)));
-    //console.log('filteredLines: \n' + filteredLines.join('\n'));
-    filteredLines = filteredLines.filter(line => line.length > 5);
-    
-    result = filteredLines.join('\n');
-    //console.log('result: \n' + result);
-    return result.trim();
+    // Upwork uses data-test attribute for job tiles
+    const jobTiles = doc.querySelectorAll('[data-test="job-tile-title"]');
+
+    jobTiles.forEach(tile => {
+        const title = tile.textContent.trim().toLowerCase();
+        if (title) {
+            jobTitles.push(title);
+        }
+    });
+
+    console.log('Found ' + jobTitles.length + ' job titles');
+    return jobTitles;
+}
+
+function getDifferentLines(str1, str2) {
+    // Extract job titles from both HTMLs
+    const oldJobs = extractJobTitles(str1 || '');
+    const newJobs = extractJobTitles(str2);
+
+    // Find jobs that are in the new list but not in the old list
+    const addedJobs = newJobs.filter(job => !oldJobs.includes(job));
+
+    if (addedJobs.length > 0) {
+        console.log('New jobs found:', addedJobs.length);
+        console.log('New job titles:', addedJobs.join('\n'));
+    }
+
+    return addedJobs.join('\n');
 }
 
 function checkChanges() {
