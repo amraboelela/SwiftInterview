@@ -26,13 +26,7 @@
                 "*://www.indeed.com/*",
                 "*://www.upwork.com/nx/search/*"
             ],
-            "js": ["content.js"]
-        }
-    ],
-    "web_accessible_resources": [
-        {
-            "resources": ["alert1.wav"],
-            "matches": ["<all_urls>"]
+            "js": ["alertData.js", "content.js"]
         }
     ]
 }
