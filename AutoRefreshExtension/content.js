@@ -123,7 +123,6 @@ function checkChanges() {
             saveJobTitlesToStorage(currentJobs);
         } else {
             console.log('No new jobs found');
-            playAlertAudio();
         }
     });
 }
@@ -183,7 +182,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 //console.log("before checkChanges();");
 checkChanges();
-const minutes = Math.floor(Math.random() * 1) + 1; // between 5 and 15
+const minutes = Math.floor(Math.random() * 10) + 5; // between 5 and 15
 
 setTimeout(() => {
     console.log("setTimeout - preparing to refresh");
