@@ -30,6 +30,16 @@ This extension helps job seekers stay on top of new opportunities by automatical
 4. Select the `AutoRefreshExtension` directory
 5. The extension icon should appear in your browser toolbar
 
+### Sound Permission Setup
+
+To ensure Upwork notifications can play sound:
+
+1. Open **upwork.com** in Chrome
+2. Click the 🔒 icon in the address bar
+3. Select **Site settings**
+4. Find **Sound**
+5. Set to **Allow**
+
 ### Usage
 
 1. Navigate to a job search page on Indeed or Upwork
