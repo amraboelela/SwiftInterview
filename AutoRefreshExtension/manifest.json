@@ -24,9 +24,11 @@
         {
             "matches": [
                 "*://www.indeed.com/*",
-                "*://www.upwork.com/nx/search/*"
+                "*://www.linkedin.com/jobs/search/*",
+                "*://www.linkedin.com/jobs/search-results/*",
+                "*://www.upwork.com/nx/*"
             ],
-            "js": ["alertData.js", "content.js"]
+            "js": ["alertData.js", "linkedinAlertData.js", "content.js"]
         }
     ]
 }

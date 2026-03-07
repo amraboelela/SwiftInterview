@@ -11,7 +11,7 @@ function isExtensionContextValid() {
 // Save job titles to storage
 function saveJobTitlesToStorage(jobTitles) {
     if (!isExtensionContextValid()) {
-        console.log('Extension context invalidated - skipping storage operation');
+        console.log('#refresh Extension context invalidated - skipping storage operation');
         return;
     }
 
@@ -20,23 +20,23 @@ function saveJobTitlesToStorage(jobTitles) {
 
     chrome.storage.local.set(storageObject, () => {
         if (chrome.runtime.lastError) {
-            console.error('Storage error:', chrome.runtime.lastError);
+            console.error('#refresh Storage error:', chrome.runtime.lastError);
             return;
         }
-        console.log('Job titles stored in local storage');
+        console.log('#refresh Job titles stored in local storage');
     });
 }
 
 function retrieveJobTitlesFromStorage(callback) {
     if (!isExtensionContextValid()) {
-        console.log('Extension context invalidated - skipping storage retrieval');
+        console.log('#refresh Extension context invalidated - skipping storage retrieval');
         callback([]);
         return;
     }
 
     chrome.storage.local.get([storageKey], (result) => {
         if (chrome.runtime.lastError) {
-            console.error('Storage error:', chrome.runtime.lastError);
+            console.error('#refresh Storage error:', chrome.runtime.lastError);
             callback([]);
             return;
         }
@@ -62,17 +62,29 @@ function openMailApp(subject, body) {
 function extractJobTitles() {
     const jobTitles = [];
 
-    // Query the live DOM directly (not parsing HTML string)
-    const jobTiles = document.querySelectorAll('a[data-test*="job-tile-title-link"]');
+    if (hostname.includes('linkedin.com')) {
+        // LinkedIn: job titles and timestamps share span.f5bf1c61; filter out "Posted on..." entries
+        const jobTiles = document.querySelectorAll('span.f5bf1c61');
+        jobTiles.forEach(tile => {
+            let title = tile.textContent.trim().toLowerCase();
+            if (!title || title.startsWith('posted on') || title.length < 10 || title.length > 200) return;
+            title = title.replace(/\s*\(verified job\)\s*$/, '').trim();
+            if (title) {
+                jobTitles.push(title);
+            }
+        });
+    } else {
+        // Upwork/Indeed selectors
+        const jobTiles = document.querySelectorAll('a[data-test*="job-tile-title-link"]');
+        jobTiles.forEach(tile => {
+            const title = tile.textContent.trim().toLowerCase();
+            if (title) {
+                jobTitles.push(title);
+            }
+        });
+    }
 
-    jobTiles.forEach(tile => {
-        const title = tile.textContent.trim().toLowerCase();
-        if (title) {
-            jobTitles.push(title);
-        }
-    });
-
-    console.log('Found ' + jobTitles.length + ' job titles');
+    console.log('#refresh Found ' + jobTitles.length + ' job titles');
     return jobTitles;
 }
 
@@ -83,8 +95,7 @@ function getNewJobs(oldJobs, newJobs) {
     const addedJobs = newJobs.filter(job => !oldSet.has(job));
 
     if (addedJobs.length > 0) {
-        console.log('New jobs found:', addedJobs.length);
-        console.log('New job titles:', addedJobs.join('\n'));
+        console.log('#refresh New jobs found:', addedJobs.length);
     }
 
     return addedJobs;
@@ -93,23 +104,27 @@ function getNewJobs(oldJobs, newJobs) {
 let pendingAudioAlert = false;
 
 function checkChanges() {
-    console.log('checkChanges()');
+    console.log('#refresh checkChanges()');
     retrieveJobTitlesFromStorage((previousJobs) => {
         const currentJobs = extractJobTitles();
         const newJobs = getNewJobs(previousJobs, currentJobs);
 
         // Only alert if this is NOT the first run (previousJobs should exist)
         if (newJobs.length > 0 && previousJobs.length > 0) {
-            console.log('New jobs detected:\n' + newJobs.join('\n'));
+            console.log('#refresh New jobs detected:\n' + newJobs.join('\n'));
 
             // Use Chrome notifications (more reliable than audio autoplay)
             if (isExtensionContextValid()) {
-                chrome.runtime.sendMessage({
-                    action: 'showNotification',
-                    title: 'New Jobs Found!',
-                    message: `${newJobs.length} new job(s) detected`,
-                    jobs: newJobs
-                });
+                try {
+                    chrome.runtime.sendMessage({
+                        action: 'showNotification',
+                        title: 'New Jobs Found!',
+                        message: `${newJobs.length} new job(s) detected`,
+                        jobs: newJobs
+                    });
+                } catch (e) {
+                    console.log('#refresh Could not send message to extension:', e.message);
+                }
             }
 
             // Try to play audio immediately
@@ -118,45 +133,45 @@ function checkChanges() {
             // Save updated job list for next comparison
             saveJobTitlesToStorage(currentJobs);
         } else if (previousJobs.length === 0) {
-            console.log('Initial load - storing', currentJobs.length, 'jobs without alert');
+            console.log('#refresh Initial load - storing', currentJobs.length, 'jobs without alert');
             // Save current jobs for next comparison
             saveJobTitlesToStorage(currentJobs);
         } else {
-            console.log('No new jobs found');
+            console.log('#refresh No new jobs found');
         }
     });
 }
 
 function playAlertAudio() {
-    // Check if alertData is available
-    if (typeof alertData !== 'undefined') {
-        console.log('alertData is available, attempting to play audio');
-        const audio = new Audio("data:audio/mpeg;base64," + alertData);
-        audio.play().then(() => {
-            console.log('Audio played successfully!');
-            pendingAudioAlert = false;
-        }).catch(err => {
-            console.log('Audio autoplay blocked, will retry on user interaction:', err.message);
-            pendingAudioAlert = true;
-        });
+    let audioData, mimeType;
+    if (hostname.includes('linkedin.com') && typeof linkedinAlertData !== 'undefined') {
+        audioData = linkedinAlertData;
+        mimeType = 'audio/wav';
+    } else if (typeof alertData !== 'undefined') {
+        audioData = alertData;
+        mimeType = 'audio/mpeg';
     } else {
-        console.error('alertData is not defined - audio cannot play');
+        console.error('#refresh No alert audio data available');
+        return;
     }
+    console.log('#refresh Attempting to play audio for', hostname);
+    const audio = new Audio('data:' + mimeType + ';base64,' + audioData);
+    audio.play().then(() => {
+        console.log('#refresh Audio played successfully!');
+        pendingAudioAlert = false;
+    }).catch(err => {
+        console.log('#refresh Audio autoplay blocked, will retry on user interaction:', err.message);
+        pendingAudioAlert = true;
+    });
 }
 
 // Listen for ANY user interaction to play pending audio
 document.addEventListener('click', () => {
     if (pendingAudioAlert) {
-        console.log('User clicked - playing pending audio alert');
+        console.log('#refresh User clicked - playing pending audio alert');
         playAlertAudio();
     }
 }, { once: false });
-
-/*window.addEventListener("load", function() {
-    console.log("window.addEventListener(load");
-    // Code to execute after reload
-    checkChanges();
-});*/
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     // Get the current date and time
@@ -168,11 +183,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     // Check if the current hour is after 11 PM and before 5 AM
     const isQuietHours = currentHour >= 23 || currentHour < 5;
     if (isQuietHours) {
-        console.log('It is after 11 PM or before 5 AM - quiet hours.');
+        console.log('#refresh It is after 11 PM or before 5 AM - quiet hours.');
     } else {
-        console.log("(request.action === 'refresh')");
+        console.log("#refresh (request.action === 'refresh')");
         if (request.action === 'refresh') {
-            console.log("yes it is refresh!");
+            console.log("#refresh yes it is refresh!");
             const currentJobs = extractJobTitles();
             saveJobTitlesToStorage(currentJobs);
             document.location.reload();
@@ -181,11 +196,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 //console.log("before checkChanges();");
-checkChanges();
-const minutes = Math.floor(Math.random() * 10) + 5; // between 5 and 15
+if (hostname.includes('linkedin.com')) {
+    setTimeout(checkChanges, 3000);
+} else {
+    checkChanges();
+}
+const minutes = Math.floor(Math.random() * 3) + 2; // between 2 and 5 minutes
 
 setTimeout(() => {
-    console.log("setTimeout - preparing to refresh");
+    console.log("#refresh setTimeout - preparing to refresh");
     const currentJobs = extractJobTitles();
     saveJobTitlesToStorage(currentJobs);
 
@@ -193,7 +212,7 @@ setTimeout(() => {
     if (document.readyState === 'complete') {
         document.location.reload();
     } else {
-        console.log("Page not fully loaded, skipping reload");
+        console.log("#refresh Page not fully loaded, skipping reload");
     }
 }, minutes * 60 * 1000);
 
