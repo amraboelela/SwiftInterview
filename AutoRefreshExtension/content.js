@@ -129,8 +129,7 @@ function checkChanges() {
         const currentJobs = extractJobTitles();
         const newJobs = getNewJobs(previousJobs, currentJobs);
 
-        // Only alert if this is NOT the first run (previousJobs should exist)
-        if (newJobs.length > 0 && previousJobs.length > 0) {
+        if (newJobs.length > 0) {
             console.log('#refresh New jobs detected:\n' + newJobs.join('\n'));
 
             // Use Chrome notifications (more reliable than audio autoplay)
@@ -152,10 +151,6 @@ function checkChanges() {
 
             // Save updated job list for next comparison
             saveJobTitlesToStorage(currentJobs);
-        } else if (previousJobs.length === 0) {
-            console.log('#refresh Initial load - storing', currentJobs.length, 'jobs without alert');
-            // Save current jobs for next comparison
-            saveJobTitlesToStorage(currentJobs);
         } else {
             console.log('#refresh No new jobs found');
         }
@@ -167,6 +162,9 @@ function playAlertAudio() {
     if (hostname.includes('linkedin.com') && typeof linkedinAlertData !== 'undefined') {
         audioData = linkedinAlertData;
         mimeType = 'audio/wav';
+    } else if (hostname.includes('indeed.com') && typeof indeedAlertData !== 'undefined') {
+        audioData = indeedAlertData;
+        mimeType = 'audio/mpeg';
     } else if (typeof alertData !== 'undefined') {
         audioData = alertData;
         mimeType = 'audio/mpeg';

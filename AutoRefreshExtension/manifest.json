@@ -28,7 +28,7 @@
                 "*://www.linkedin.com/jobs/search-results/*",
                 "*://www.upwork.com/nx/*"
             ],
-            "js": ["alertData.js", "linkedinAlertData.js", "content.js"]
+            "js": ["alertData.js", "linkedinAlertData.js", "indeedAlertData.js", "content.js"]
         }
     ]
 }
