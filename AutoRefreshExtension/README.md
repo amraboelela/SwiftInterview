@@ -18,7 +18,7 @@ This extension helps job seekers stay on top of new opportunities by automatical
 
 ## Supported Websites
 
-- **LinkedIn**: `www.linkedin.com/jobs/search/*` and `www.linkedin.com/jobs/search-results/*`
+- **LinkedIn**: `www.linkedin.com/jobs/search/*`
 - **Upwork**: `www.upwork.com/nx/*`
 - **Indeed**: `www.indeed.com/*`
 

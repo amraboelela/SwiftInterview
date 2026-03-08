@@ -63,14 +63,21 @@ function extractJobTitles() {
     const jobTitles = [];
 
     if (hostname.includes('linkedin.com')) {
-        // LinkedIn: job titles and timestamps share span.f5bf1c61; filter out "Posted on..." entries
-        const jobTiles = document.querySelectorAll('span.f5bf1c61');
-        jobTiles.forEach(tile => {
+        const seen = new Set();
+
+        // Layout 1: search results page — span.f5bf1c61 contains titles and timestamps
+        document.querySelectorAll('span.f5bf1c61').forEach(tile => {
             let title = tile.textContent.trim().toLowerCase();
             if (!title || title.startsWith('posted on') || title.length < 10 || title.length > 200) return;
             title = title.replace(/\s*\(verified job\)\s*$/, '').trim();
-            if (title) {
-                jobTitles.push(title);
+            if (title && !seen.has(title)) { seen.add(title); jobTitles.push(title); }
+        });
+
+        // Layout 2: job picks / alert view — titles are in <a><strong>
+        document.querySelectorAll('a strong').forEach(tile => {
+            const title = tile.textContent.trim().toLowerCase();
+            if (title && title.length > 10 && title.length < 150 && !seen.has(title)) {
+                seen.add(title); jobTitles.push(title);
             }
         });
     } else {
