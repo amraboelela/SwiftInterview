@@ -80,8 +80,28 @@ function extractJobTitles() {
                 seen.add(title); jobTitles.push(title);
             }
         });
+    } else if (hostname.includes('indeed.com')) {
+        const seen = new Set();
+
+        // Layout 1: standard search results — h2.jobTitle span
+        document.querySelectorAll('h2.jobTitle span').forEach(tile => {
+            const title = tile.textContent.trim().toLowerCase();
+            if (title && title.length > 5 && title.length < 200 && !seen.has(title)) {
+                seen.add(title); jobTitles.push(title);
+            }
+        });
+
+        // Layout 2: data-testid attribute
+        if (jobTitles.length === 0) {
+            document.querySelectorAll('[data-testid="job-title"] span, [data-testid="job-title"]').forEach(tile => {
+                const title = tile.textContent.trim().toLowerCase();
+                if (title && title.length > 5 && title.length < 200 && !seen.has(title)) {
+                    seen.add(title); jobTitles.push(title);
+                }
+            });
+        }
     } else {
-        // Upwork/Indeed selectors
+        // Upwork selectors
         const jobTiles = document.querySelectorAll('a[data-test*="job-tile-title-link"]');
         jobTiles.forEach(tile => {
             const title = tile.textContent.trim().toLowerCase();
@@ -203,7 +223,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 //console.log("before checkChanges();");
-if (hostname.includes('linkedin.com')) {
+if (hostname.includes('linkedin.com') || hostname.includes('indeed.com')) {
     setTimeout(checkChanges, 3000);
 } else {
     checkChanges();
