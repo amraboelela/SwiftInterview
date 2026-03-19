@@ -8,7 +8,25 @@
       location = "group:InfoSys.md">
    </FileRef>
    <FileRef
+      location = "group:Bard1.playground">
+   </FileRef>
+   <FileRef
+      location = "group:ChatGPT.playground">
+   </FileRef>
+   <FileRef
+      location = "group:Karat.playground">
+   </FileRef>
+   <FileRef
+      location = "group:MyTime.playground">
+   </FileRef>
+   <FileRef
       location = "group:RealmDB.md">
+   </FileRef>
+   <FileRef
+      location = "group:CLAUDE.md">
+   </FileRef>
+   <FileRef
+      location = "group:General iOS.md">
    </FileRef>
    <FileRef
       location = "group:SwiftUI.md">

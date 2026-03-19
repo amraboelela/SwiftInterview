@@ -48,7 +48,7 @@ func twoSum(array: [Int], target: Int) -> [Int]? {
 let twoSumArray = [1, 2, 7, 11, 15]
 let target = 9
 let indices = twoSum(array: twoSumArray, target: target)
-if let indices = indices {
+if let indices {
     print(indices) // [1, 2]
 } else {
     print("No such pair exists.")

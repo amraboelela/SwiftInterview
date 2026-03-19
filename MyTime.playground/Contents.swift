@@ -15,11 +15,9 @@ func threeSumClosest(_ nums: [Int], _ target: Int) -> Int {
             if currentSum == target {
                 return currentSum // If exact match is found
             }
-            
             if abs(currentSum - target) < abs(closestSum - target) {
                 closestSum = currentSum
             }
-            
             if currentSum < target {
                 left += 1
             } else {

@@ -85,37 +85,18 @@ var badgeTimes: [[String]] = [
 ]
 
 func withinOneHour(time1: String, time2: String) -> Bool {
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "HHmm"
-    
-    if let time1Date = dateFormatter.date(from: time1),
-        let time2Date = dateFormatter.date(from: time2) {
-        let timeDifference = time2Date.timeIntervalSince(time1Date)
-        let oneHour = 60.0 * 60.0 // in seconds
-        // Convert the time difference to hours.
-        //let timeDifferenceInHours = timeDifference / oneHour
-        
-        // Return true if the time difference is less than one hour.
-        return timeDifference <= oneHour
-    } else {
-        // If the dates could not be parsed, return false.
-        return false
-    }
+    guard let t1 = Int(time1), let t2 = Int(time2) else { return false }
+    let t1Minutes = (t1 / 100) * 60 + (t1 % 100)
+    let t2Minutes = (t2 / 100) * 60 + (t2 % 100)
+    return abs(t2Minutes - t1Minutes) <= 60
 }
 
 print("lessThanOneHour: \(withinOneHour(time1: "0200",time2: "0300"))")
 print("lessThanOneHour: \(withinOneHour(time1: "0200",time2: "0301"))")
 
 func minutesFrom(timeString: String) -> Int {
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "HHmm"
-    let paddedString = String(repeating: "0", count: 4 - timeString.count) + timeString
-    if let referenceTimeDate = dateFormatter.date(from: "0000"),
-       let timeDate = dateFormatter.date(from: paddedString) {
-        let timeDifference = timeDate.timeIntervalSince(referenceTimeDate)
-        return Int(timeDifference / 60)
-    }
-    return 0
+    guard let t = Int(timeString) else { return 0 }
+    return (t / 100) * 60 + (t % 100)
 }
 
 print("minutes: \(minutesFrom(timeString: "0200"))")
@@ -123,10 +104,9 @@ print("minutes: \(minutesFrom(timeString: "0301"))")
 
 func timeStringFrom(minutes: Int) -> String {
     let hours = String(minutes / 60)
-    let minutes = String(minutes % 60)
-    //let paddedHours = String(repeating: "0", count: 2 - hours.count) + hours
-    let paddedMinutes = String(repeating: "0", count: 2 - minutes.count) + minutes
-    return hours + paddedMinutes
+    let mins = String(minutes % 60)
+    let paddedMins = String(repeating: "0", count: 2 - mins.count) + mins
+    return hours + paddedMins
 }
 
 print("minutes: \(timeStringFrom(minutes: 120))")
@@ -134,57 +114,32 @@ print("minutes: \(timeStringFrom(minutes: 181))")
 
 func manyTimes(badgeTimes: [[String]]) -> [String: [String]] {
     var result = [String: [String]]()
-    var dic = [String: Array<Int>]()
+    var dic = [String: [Int]]()
     for badgeTime in badgeTimes {
         let name = badgeTime[0]
         let time = minutesFrom(timeString: badgeTime[1])
-        if dic[name] == nil {
-            dic[name] = [time]
-        } else {
-            if var times = dic[name] {
-                times.append(time)
-                dic[name] = times
-            }
-        }
+        dic[name, default: []].append(time)
     }
     for (name, times) in dic {
-        /*var paddedTimes = times.map { timeString in
-            let paddedString = String(repeating: "0", count: 4 - timeString.count) + timeString
-            return paddedString
-        }*/
         let sortedTimes = times.sorted()
-        //paddedTimes = paddedTimes.sorted()
         print("name: \(name), sortedTimes: \(sortedTimes)")
         var frequentTimes = [Int]()
         var longestFrequentTimes = [Int]()
-        var timeIndex = 0
-        var time = 0
-        while longestFrequentTimes.count < 3 && timeIndex < sortedTimes.count {
-            time = sortedTimes[timeIndex]
-            if let firstTime = frequentTimes.first {
-                //if !withinOneHour(time1: firstTime, time2: time) {
-                if time - firstTime > 60 {
-                    if frequentTimes.count > longestFrequentTimes.count {
-                        longestFrequentTimes = frequentTimes
-                    }
-                    frequentTimes.removeFirst()
-                }
-            }
-            frequentTimes.append(time)
-            timeIndex += 1
-        }
-        if let firstTime = frequentTimes.first {
-            if time - firstTime <= 60 &&
-                frequentTimes.count > longestFrequentTimes.count {
+        for time in sortedTimes {
+            if frequentTimes.count > longestFrequentTimes.count {
                 longestFrequentTimes = frequentTimes
             }
+            while let firstTime = frequentTimes.first, time - firstTime > 60 {
+                frequentTimes.removeFirst()
+            }
+            frequentTimes.append(time)
+        }
+        if frequentTimes.count > longestFrequentTimes.count {
+            longestFrequentTimes = frequentTimes
         }
         print("longestFrequentTimes: \(longestFrequentTimes)")
         if longestFrequentTimes.count > 2 {
-            var unpaddedTimes = longestFrequentTimes.map { time in
-                let paddedString = timeStringFrom(minutes: time) //"\(Int(timeString) ?? 0)"
-                return paddedString
-            }
+            let unpaddedTimes = longestFrequentTimes.map { timeStringFrom(minutes: $0) }
             result[name] = unpaddedTimes
         }
     }

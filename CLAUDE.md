@@ -13,7 +13,7 @@ This is a Swift interview preparation repository containing coding challenges, s
 - Follow Swift naming conventions (camelCase for variables/functions, PascalCase for types)
 
 ## Project Structure
-- **Playgrounds**: Interview coding challenges for different companies (Bard1, ChatGPT, InfoSys, Intryst, Kaiser, Karat, Meta, MyTime, Photon, Walmart)
+- **Playgrounds**: Interview coding challenges for different companies (Bard1, ChatGPT, InfoSys, Intryst, Kaiser, Kaiser2, Karat, Meta, MyTime, Photon, SwiftConcurrency, Walmart)
 - **Sample Apps**: Complete iOS applications demonstrating various concepts (Login, Mail, QuickSearch, StoryboardTest, SwiftUIApp)
 - **Documentation**: Markdown files covering iOS topics (General iOS.md, InfoSys.md, RealmDB.md, SwiftUI.md)
 - **Extensions**: AutoRefreshExtension for browser automation

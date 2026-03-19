@@ -35,13 +35,13 @@ Swift and Objective-C are both programming languages used for iOS, macOS, watchO
 - It has Struct and enum, with side type
 - It has operations like `map`, `filter`, `reduce`
 - It has concept of `generics`, which can enable us to use one function to deal with many different types
-- It hs Swift Concurrency, which is a new concept only in Swift
+- It has Swift Concurrency, which is a new concept only in Swift
 - It has SwiftUI
 
 In summary, while both Swift and Objective-C are used for Apple ecosystem development, Swift is often considered the preferred language for new projects due to its modern features, safety, and performance benefits. However, Objective-C remains relevant, especially in maintaining and updating existing codebases.
 
 
-## Interview questions about cocoa framework and mac os apps
+## Interview questions about cocoa framework and macOS apps
 
 When preparing for an interview related to Cocoa framework and macOS app development, you might encounter questions that assess your knowledge of Cocoa, Objective-C or Swift, macOS development practices, and the overall app development lifecycle. Here are some potential interview questions:
 
