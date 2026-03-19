@@ -20,7 +20,10 @@
       location = "group:MyTime.playground">
    </FileRef>
    <FileRef
-      location = "group:RealmDB.md">
+      location = "group:GoogleAssesment.md">
+   </FileRef>
+   <FileRef
+      location = "group:Database.md">
    </FileRef>
    <FileRef
       location = "group:CLAUDE.md">
