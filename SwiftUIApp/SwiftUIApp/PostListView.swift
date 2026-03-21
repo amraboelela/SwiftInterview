@@ -49,7 +49,6 @@ struct PostListView: View {
             //try await Task.sleep(nanoseconds: 5 * 1_000_000_000)
             Task { @MainActor in
                 posts = finalPosts
-                
             }
         } catch {
             print("Error fetching data: \(error)")
