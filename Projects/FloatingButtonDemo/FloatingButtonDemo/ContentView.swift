@@ -8,23 +8,28 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var items: [String] = ["Item 1", "Item 2", "Item 3"]
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-            Button(
-                action: {
-                    print("button tapped")
-                },
-                label: {
-                    Text("Demo")
-                }
-            )
-            .floatingButton
+        NavigationStack {
+            List(items, id: \.self) { item in
+                Text(item)
+            }
+            .navigationTitle("FloatingButton Demo")
         }
-        .padding()
+        .floatingButton(
+            options: [
+                FloatingButtonOption(label: "Add Item", systemImage: "plus.circle") {
+                    items.append("Item \(items.count + 1)")
+                },
+                FloatingButtonOption(label: "Camera", systemImage: "camera") {
+                    print("Camera tapped")
+                },
+                FloatingButtonOption(label: "Share", systemImage: "square.and.arrow.up") {
+                    print("Share tapped")
+                }
+            ]
+        )
     }
 }
 

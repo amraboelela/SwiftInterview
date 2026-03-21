@@ -1,5 +1,15 @@
 # JobTwine Interview Questions
 
+## Add extension to UIImageView to allow image caching
+
+The standard approach is to use `NSCache` as the backing store — it behaves like a dictionary but automatically evicts entries under memory pressure, which makes it ideal for image caching. You store the cache as a static property on the extension so it is shared across all `UIImageView` instances.
+
+The extension adds a method that takes a URL, checks the cache first using the URL string as the key, and returns the cached image immediately if it exists. On a cache miss, it downloads the image data asynchronously using `URLSession`, decodes it into a `UIImage`, stores it in the cache, and then dispatches back to the main thread to set `self.image`. You must always dispatch the image assignment to the main thread because `URLSession` completion handlers run on a background thread and UIKit is not thread-safe.
+
+A subtle but important detail is the stale-load problem: in a `UITableView` or `UICollectionView`, a cell can be requeued and assigned a new URL before the previous download finishes. When the old download completes it will overwrite the new image. The fix is to tag the image view with the requested URL before starting the download, then check inside the completion handler that the image view's current URL still matches — if it doesn't, you discard the result.
+
+For production use, `SDWebImage` or `Kingfisher` are the standard third-party libraries. They handle all of the above plus disk caching (so images survive app restarts), progressive loading, image transformations, and cancellation. The extension approach is appropriate when you want zero dependencies or are demonstrating the underlying concept in an interview.
+
 ## How to convert Objective-C code so it uses async/await swift instead?
 
 Objective-C APIs that use completion handlers can be bridged into Swift's async/await system in two ways.
@@ -66,42 +76,6 @@ An `actor` is a Swift language construct that gives you compile-time data race p
 
 `@MainActor` is a global actor that replaces the common pattern of dispatching UI updates to `DispatchQueue.main` — annotating a class or function with `@MainActor` tells the compiler to always run it on the main thread, and violations are caught at compile time.
 
-
-## How does the iOS rendering pipeline work and what causes dropped frames?
-
-The GPU renders at 60fps (or 120fps on ProMotion displays), meaning each frame has roughly 16ms (or 8ms) to complete. The pipeline has two main phases: the CPU phase and the GPU phase.
-
-In the CPU phase, Core Animation traverses the layer tree, computes layout, prepares drawing commands, and commits a transaction to the render server (a separate process called `backboardd`). In the GPU phase, the render server composites all the layers into the final frame using the GPU.
-
-Dropped frames happen when either phase takes too long. Common CPU-side causes are performing expensive work on the main thread (network, disk I/O, heavy computation), complex Auto Layout constraint solving, and large `UITableView`/`UICollectionView` cell preparations that aren't deferred. Common GPU-side causes are offscreen rendering (triggered by `cornerRadius` with `masksToBounds`, shadows without an explicit `shadowPath`, and `shouldRasterize`), transparent overlapping layers (blending), and very large textures.
-
-You diagnose this using Instruments' Core Animation template, which shows CPU and GPU usage per frame, and Xcode's Debug > Color Blended Layers / Offscreen-Rendered overlays which highlight problem areas directly in the simulator.
-
-
-## How do you architect a large iOS app for testability and maintainability?
-
-The goal is to separate concerns so that each layer can be tested in isolation and replaced without rippling changes through the codebase.
-
-The most common approach is a layered architecture — typically **Presentation**, **Domain**, and **Data** layers. The Presentation layer contains views and view models with no business logic. The Domain layer contains use cases and models that are pure Swift with no UIKit or framework dependencies. The Data layer handles networking, persistence, and mapping external models to domain models.
-
-Dependency injection ties these layers together. Rather than having objects create their own dependencies, they receive them through initializers or property injection. This makes it trivial to swap real implementations for mocks in tests. A dependency container (or a lightweight DI framework like Needle or Swinject) manages the wiring at the app's composition root.
-
-For state management at scale, unidirectional data flow patterns like **TCA (The Composable Architecture)** enforce that state only changes through explicit actions, making the app fully predictable and every state transition unit-testable. For simpler apps, MVVM with Combine or `@Observable` is sufficient.
-
-Protocol-based abstractions at layer boundaries are essential — the domain layer should depend on protocols for its data sources, never on concrete networking or database classes. This is the **Dependency Inversion Principle** and it's what makes the architecture actually testable.
-
-
-## How does Core Data handle concurrency and what are the common pitfalls?
-
-Core Data is not thread-safe. Every `NSManagedObjectContext` and the `NSManagedObject` instances it vends must be used only on the thread or queue they were created on. Accessing them from the wrong thread causes random crashes and data corruption.
-
-The standard modern setup uses a **persistent container** with a `viewContext` for read-only UI work on the main thread, and `newBackgroundContext()` or `performBackgroundTask` for writes on a private background queue. Core Data automatically merges changes from background contexts into the `viewContext` when you set `automaticallyMergesChangesFromParent = true`.
-
-Common pitfalls: passing `NSManagedObject` instances across threads instead of passing their `NSManagedObjectID` and re-fetching on the target context; forgetting to call `context.perform` or `context.performAndWait` when doing work on a background context; saving a child context without saving its parent (the changes never reach the persistent store); and performing fetches on the `viewContext` from background threads.
-
-For large imports, doing everything in one context and one save is much faster than saving after every object — batching writes and using `NSBatchInsertRequest` (iOS 13+) can be orders of magnitude faster because it bypasses the change tracking overhead of individual `NSManagedObject` instances.
-
-
 ## How do you handle deep linking and universal links in an iOS app?
 
 Deep links let external URLs or push notifications navigate the user to a specific screen inside the app. There are two mechanisms: **URL schemes** (custom `myapp://` URLs) and **Universal Links** (standard `https://` URLs via the Associated Domains entitlement).
@@ -112,13 +86,3 @@ On the architecture side, the app needs a central router or coordinator that par
 
 For testing, the `xcrun simctl openurl booted "myapp://path"` command opens a URL in the simulator without needing a real device.
 
-
-## What strategies do you use to reduce app launch time?
-
-Launch time is split into **pre-main** (everything before `main()` runs, controlled by the OS and dynamic linker) and **post-main** (your `AppDelegate`/`SceneDelegate` setup and the first frame render).
-
-To reduce pre-main time: minimize the number of dynamic frameworks (each one adds dylib loading overhead), avoid `+load` methods in Objective-C (they run at link time before `main`), and prefer `+initialize` or lazy initialization. Swift's initializers are generally fine since they run on demand.
-
-To reduce post-main time: defer everything non-essential. Don't set up analytics SDKs, register for remote notifications, or initialize third-party libraries synchronously in `application(_:didFinishLaunchingWithOptions:)`. Use `DispatchQueue.main.async` or `Task { }` to push non-critical setup to after the first frame. Avoid synchronous disk reads or network calls at launch. Pre-warm caches lazily.
-
-Measure with Instruments' App Launch template, which gives a timeline from process start to first frame with flame graphs for every method called. The `DYLD_PRINT_STATISTICS` environment variable in the scheme's launch arguments also prints a breakdown of pre-main phases directly in the Xcode console.
