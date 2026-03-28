@@ -95,10 +95,11 @@ protocol URLSessionProtocol {
     func dataTaskPublisher(for request: URLRequest) -> AnyPublisher<(data: Data, response: URLResponse), URLError>
 }
 
-// Step 2: Wrap real URLSession to avoid naming conflict with Combine's dataTaskPublisher
-struct LiveURLSession: URLSessionProtocol {
+// Step 2: Extend URLSession to conform to URLSessionProtocol
+extension URLSession: URLSessionProtocol {
     func dataTaskPublisher(for request: URLRequest) -> AnyPublisher<(data: Data, response: URLResponse), URLError> {
-        URLSession.shared.dataTaskPublisher(for: request).eraseToAnyPublisher()
+        let publisher: URLSession.DataTaskPublisher = dataTaskPublisher(for: request)
+        return publisher.eraseToAnyPublisher()
     }
 }
 
@@ -127,7 +128,7 @@ struct User: Decodable {
 class APIService {
     private let session: URLSessionProtocol
 
-    init(session: URLSessionProtocol = LiveURLSession()) {
+    init(session: URLSessionProtocol = URLSession.shared) {
         self.session = session
     }
 
@@ -221,3 +222,63 @@ apiService.fetchUser(id: 1)
 // - named: parameter distinguishes the two snapshots so both are stored separately
 // - Set isRecording = true on the test to regenerate reference images after intentional UI changes
 // - Works with UIHostingController to bridge SwiftUI into UIKit snapshot infrastructure
+
+
+// MARK: - Q5: How to mock URLSession using async/await (no Combine)?
+
+// Step 1: Define a protocol with an async throws signature
+protocol URLSessionAsyncProtocol {
+    func data(for request: URLRequest) async throws -> (Data, URLResponse)
+}
+
+// Step 2: Extend URLSession to conform
+extension URLSession: URLSessionAsyncProtocol {}
+
+// Step 3: Create a mock session
+struct MockURLSessionAsync: URLSessionAsyncProtocol {
+    let responseData: Data
+    let response: URLResponse
+    let error: URLError?
+
+    func data(for request: URLRequest) async throws -> (Data, URLResponse) {
+        if let error {
+            throw error
+        }
+        return (responseData, response)
+    }
+}
+
+// Step 4: Service using async/await
+class APIServiceAsync {
+    private let session: URLSessionAsyncProtocol
+
+    init(session: URLSessionAsyncProtocol = URLSession.shared) {
+        self.session = session
+    }
+
+    func fetchUser(id: Int) async throws -> User {
+        let request = URLRequest(url: URL(string: "https://api.example.com/users/\(id)")!)
+        let (data, _) = try await session.data(for: request)
+        return try JSONDecoder().decode(User.self, from: data)
+    }
+}
+
+// Step 5: Use the mock
+let mockSessionAsync = MockURLSessionAsync(responseData: mockData, response: mockResponse, error: nil)
+let apiServiceAsync = APIServiceAsync(session: mockSessionAsync)
+
+Task {
+    do {
+        let user = try await apiServiceAsync.fetchUser(id: 1)
+        print("Fetched user: \(user.name)") // Fetched user: Alice
+    } catch {
+        print("Error: \(error)")
+    }
+}
+
+// Key points:
+// - Same DI pattern as Combine but the protocol uses async throws instead of AnyPublisher
+// - URLSession already has data(for:) so the extension conformance is empty
+// - MockURLSessionAsync throws the error directly instead of using Fail
+// - No cancellables needed — Task handles the async lifecycle
+// - Prefer this approach in new code; use Combine only if the codebase already depends on it
