@@ -8,8 +8,13 @@
 
 **1. Xcode Memory Graph Debugger** — most common answer
 - Run the app, click the **Memory Graph** button in the debug bar
+
+![Memory Graph Debugger button](assets/graph_debugger.png)
+
 - Look for objects that should have been deallocated — purple `!` icons indicate leaked objects
 - Inspect retain cycles between view models, closures, or data sources
+
+![Memory leak in Memory Graph](assets/memory_leak.png)
 
 **2. Instruments — Leaks Tool** — most powerful
 - Profile via **Product > Profile > Leaks**
