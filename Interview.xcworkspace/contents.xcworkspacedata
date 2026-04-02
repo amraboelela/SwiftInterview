@@ -5,6 +5,9 @@
       location = "group:README.md">
    </FileRef>
    <FileRef
+      location = "group:Amr_resume.md">
+   </FileRef>
+   <FileRef
       location = "group:InfoSys.md">
    </FileRef>
    <FileRef
