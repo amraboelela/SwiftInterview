@@ -29,7 +29,7 @@
 | **Other Systems** | JSON, XML, SQL Server Reporting Services, IIS, Apache, Active Reports, Crystal Reports, Web Services, SOAP XML Messaging, MediaWiki, git |
 | **Technologies** | Telematics, Location Services, AI, Machine Learning, Deep Learning |
 | **Industries** | Social Media, CRM, High Tech Manufacturing, Government, Medical, E-Commerce, Educational, Retailer, Insurance, Legal, Elections & Voting Registration |
-| **Operating Systems** | Linux (Ubuntu), macOS, iOS, Android, Oculus |
+| **Operating Systems** | Linux, macOS, iOS, Android, Oculus |
 | **Notable Projects** | Google Fiber, TwisterNews, GlobalLocator, Apple Retail Backstage, PepperMob, wPedia, Chess |
 
 ---

@@ -63,13 +63,16 @@ function extractJobTitles() {
     const jobTitles = [];
 
     if (hostname.includes('linkedin.com')) {
-        // LinkedIn: job titles and timestamps share span.f5bf1c61; filter out "Posted on..." entries
-        const jobTiles = document.querySelectorAll('span.f5bf1c61');
-        jobTiles.forEach(tile => {
-            let title = tile.textContent.trim().toLowerCase();
-            if (!title || title.startsWith('posted on') || title.length < 10 || title.length > 200) return;
-            title = title.replace(/\s*\(verified job\)\s*$/, '').trim();
-            if (title) {
+        // LinkedIn: extract titles from dismiss button aria-labels e.g. "Dismiss Senior iOS Developer job"
+        // This is stable because aria-labels are accessibility-driven and don't use hashed class names
+        const dismissButtons = document.querySelectorAll('button[aria-label^="Dismiss "]');
+        dismissButtons.forEach(btn => {
+            let title = btn.getAttribute('aria-label')
+                .replace(/^Dismiss\s+/i, '')
+                .replace(/\s+job$/i, '')
+                .trim()
+                .toLowerCase();
+            if (title && title.length > 5 && title.length < 200) {
                 jobTitles.push(title);
             }
         });
