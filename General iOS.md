@@ -2,78 +2,39 @@
 
 ## Tell Me About Your Experience
 
-I have 13 years of experience in iOS development. I've worked on a wide range of projects, from consumer-facing apps to enterprise solutions. In my previous role at Company X, I led a team of iOS developers in building a high-traffic social media app that reached millions of users and maintained a 4.9-star rating.
+I have 25 years of software development experience overall, with 16 years focused on iOS and macOS development using Objective-C and Swift. I've worked on a wide range of projects, from consumer-facing apps to enterprise solutions. Most recently, I served as Lead macOS/iOS Developer at Apple, where I led a dev team building IS&T client applications used internally by Apple employees, using Swift, SwiftUI, and MVVM architecture. Prior to that, I was a Senior iOS Developer at Intuit working on the QuickBooks Money app, and at CVS developing their mobile application. I've also contributed to open source Swift projects and have published several apps on the App Store, including Google Fiber, QuickBooks Accounting, and Spinnr.
 
 ## iOS Architecture
-In iOS development, I'm well-versed in various architectural patterns. For example, in our recent project, we used the MVVM pattern to separate the presentation logic from the views and models. This allowed for easy unit testing and scalability.
+I'm well-versed in MVC, MVVM, and VIPER. My primary pattern is MVVM — ViewModels expose state via `@Observable` (iOS 17+) or `ObservableObject`/`@Published` for older targets, and SwiftUI views bind to them directly. At Apple I led a team using MVVM with `@Observable`, which eliminated the need for Combine just to drive UI updates.
 
 ## Memory Management
 I primarily work with Automatic Reference Counting (ARC) to manage memory in iOS applications. It simplifies memory management by automatically deallocating objects when they're no longer in use. We also use instruments like Xcode's Leaks tool to identify and fix memory leaks in our apps.
 
 ## Concurrency
-For handling concurrency, I often use Grand Central Dispatch (GCD). GCD is great for performing tasks in the background, and I use it for tasks like downloading data or image processing. It simplifies multithreading and ensures efficient resource usage.
+I use Swift Concurrency — `async/await`, `Task`, `TaskGroup`, and `actors` — as the primary approach for managing concurrency. It makes asynchronous code linear and readable, eliminates callback nesting, and integrates with structured concurrency so tasks are automatically cancelled when their scope ends. For CPU-bound work like image processing I use `TaskGroup` to fan out work in parallel. I still encounter GCD in legacy codebases, but for new code I default to Swift Concurrency.
 
 ## Core Data
 I've had extensive experience with Core Data, especially in projects requiring complex data models. We optimize performance by setting up parent-child contexts, using fetch limits, and implementing proper indexing. This ensures our apps maintain good performance even with large datasets.
 
 ## Dependency Management
-I've used CocoaPods and Swift Package Manager to manage dependencies in iOS projects. CocoaPods offers a wide range of libraries and simplifies dependency resolution. I've also worked with Carthage, which focuses on binary frameworks.
+Swift Package Manager (SPM) is my default for new projects — it's built into Xcode, requires no extra tooling, and supports binary targets and private packages via Git URLs or local paths. I've worked with CocoaPods on older codebases and know how to migrate packages from CocoaPods to SPM. Carthage is largely legacy at this point.
 
 ## Networking
-In terms of networking, I use URLSession for making network requests, and I've also integrated third-party libraries like Alamofire. When dealing with RESTful APIs, I ensure proper request and response handling, including error handling, and use Codable for data parsing.
+I use `URLSession` with `async/await` — `URLSession.shared.data(for:)` returns directly without callbacks, making error handling straightforward with `do/try/catch`. I use `Codable` for JSON parsing. For streaming responses (e.g. Server-Sent Events), I use `URLSession.bytes(for:)` with `AsyncSequence`. Third-party libraries like Alamofire aren't needed for most use cases now that URLSession has first-class async support.
 
 ## Design Patterns
-Design patterns are crucial for maintainable code. I've used Singleton for managing shared resources like the user session. The Delegate pattern is useful for establishing communication between view controllers, providing loose coupling and better code organization.
+For thread-safe shared state I use `actor` instead of Singleton + locks — the compiler enforces mutual exclusion. `@MainActor` marks types or functions that must run on the main thread, replacing manual `DispatchQueue.main.async` calls. The Delegate pattern is still useful in UIKit for one-to-one communication, but in SwiftUI I prefer passing closures or using `@Observable` / `@Environment` for cross-component communication.
 
 ## Testing
-Testing is a fundamental part of our development process. We create unit tests using XCTest to verify the functionality of our code. For UI testing, we use XCUITest to automate interactions and validate user flows. This helps us maintain code quality and catch regressions early.
+I use the Swift Testing framework (introduced in Xcode 16) for unit tests — `@Test` and `@Suite` macros, `#expect` and `#require` for assertions, and parameterized tests with `@Test(arguments:)`. For legacy code I still work with XCTest. For UI testing, XCUITest remains the standard. At Apple I also wrote XCUITest suites to validate accessibility flows end-to-end.
 
 ## App Store Submission
 Submitting an app to the App Store involves multiple steps. First, we ensure our app complies with Apple's App Store Review Guidelines. Then, we code sign the app, prepare necessary assets, and create a compelling app store listing. Finally, we submit the app through App Store Connect and monitor its status.
 
 ## Tell Me About a Design Project You're Proud Of
-One project I'm particularly proud of is a mobile app for a healthcare startup. I designed an intuitive and user-friendly interface, keeping patient needs in mind. The app resulted in a 20% increase in patient engagement and received positive feedback.
+One project I'm particularly proud of is the Backstage app I built at Apple for their retail stores, which ran on iPods with attached barcode scanners to manage back-of-house inventory. I designed the interface to be fast and intuitive for retail staff working in physically demanding environments, with minimal taps needed to complete common tasks. The app integrated with Apple's internal JSON Web Services API and had to be reliable in a high-turnover, high-stakes setting — mistakes in inventory management had real business consequences.
 
-## Explain the UX Design Process
-The UX design process involves research, design, testing, and implementation. I start with user research, create user personas, and conduct usability tests. Then, I move to wireframing, prototyping, and user testing to iterate and refine the design.
-
-## How Do You Approach Information Architecture?
-Information architecture is essential for organizing content. I start by creating a clear hierarchy, using techniques like card sorting and tree testing. I make sure the navigation is intuitive, and content is structured logically to enhance user understanding.
-
-## Designing for Mobile vs. Desktop
-Designing for mobile and desktop requires different considerations. For mobile, I focus on simplicity, minimizing content, and touch-friendly interactions. For desktop, I can leverage a larger screen for more complex layouts and interactions.
-
-## What Is a Design System, and How Do You Use It?
-A design system is a collection of reusable design components and guidelines. It ensures consistency and efficiency. I use design systems to maintain a unified brand identity, streamline the design process, and enhance collaboration among designers and developers.
-
-## Balancing Aesthetics and Usability
-A balance between aesthetics and usability is crucial. While aesthetics attract users, usability ensures a positive experience. I always aim to create visually appealing designs that don't compromise the user's ability to navigate the product.
-
-## Dealing with Feedback and Criticism
-Feedback is valuable for growth. I welcome constructive criticism, as it helps me identify areas for improvement. I maintain a positive attitude, listen actively, and apply feedback to refine my designs.
-
-## Responsive Web Design
-Responsive web design is about creating websites that adapt to various screen sizes. I use CSS media queries to adjust layouts and optimize images. It's crucial to ensure content remains accessible and readable on different devices.
-
-## Accessibility in Design
-Accessibility is non-negotiable. I follow WCAG guidelines to ensure my designs are accessible to all users, including those with disabilities. This includes providing alternative text for images, maintaining good color contrast, and creating keyboard-friendly designs.
-
-## Challenges in Collaborative Design
-Collaborative design can be challenging due to differing perspectives. I foster open communication, respect diverse viewpoints, and use design collaboration tools to streamline feedback and revisions. Ultimately, it leads to better design outcomes.
-
-## What is the Model-View-Controller (MVC) design pattern and how do you implement it in your iOS apps?
-
-The Model-View-Controller (MVC) design pattern is a software design pattern that separates the user interface, data, and application logic of an application into three separate components: models, views, and controllers.
-
-Models represent the data of the application. Views represent the user interface of the application. Controllers handle the interaction between the models and the views.
-
-In iOS apps, you can implement the MVC design pattern by using the following classes:
-
-* Models: Use `NSObject` subclasses to represent your models.
-* Views: Use `UIView` subclasses to represent your views.
-* Controllers: Use `UIViewController` subclasses to represent your controllers.
-
-## Explain the MVC architecture in iOS. How does it help in organizing code?
+## What is the Model-View-Controller (MVC) design pattern and how does it help in organizing code?
 
 The Model-View-Controller (MVC) architecture is a design pattern commonly used in iOS development to organize code in a structured and modular way. It divides an application into three interconnected components, each with a specific responsibility:
 
@@ -111,7 +72,7 @@ Often observes the Model for changes to update the UI.
 
 - Scalability: As the application grows, MVC provides a scalable structure. Additional features can be added by extending existing components or introducing new ones.
 
-In summary, the MVC architecture in iOS promotes a clear separation of concerns, making code more modular, maintainable, and scalable. Each component plays a specific role, contributing to the overall organization and structure of the application.
+MVC promotes a clear separation of concerns, making code more modular, maintainable, and scalable.
 
 ## Can you explain the concept of optionals in Swift? How are they used, and when would you use guard statements?
 
@@ -151,12 +112,6 @@ A strong reference is a reference that keeps the object it points to alive. A we
 
 Strong references are typically used when you need to ensure that an object remains alive until you are finished with it. Weak references are typically used when you do not want to prevent an object from being deallocated, but you still need to be able to access it if it is still alive. Unowned references are typically used when you know that the object you are pointing to will not be deallocated before you are finished with it.
 
-## What is Grand Central Dispatch (GCD) and how do you use it to manage concurrency in your iOS apps?
-
-Grand Central Dispatch (GCD) is a low-level concurrency framework that allows you to manage the execution of tasks on multiple threads. GCD provides a number of features that make it easy to write concurrent code, such as queues, work groups, and semaphores.
-
-In iOS apps, you can use GCD to manage concurrency by creating queues and assigning tasks to those queues. GCD will then manage the execution of those tasks on multiple threads.
-
 ## What is unit testing and how do you use it to test your iOS apps?
 
 Unit testing is a software testing method that tests individual units of code, such as functions, classes, and modules. Unit tests are typically written using a unit testing framework, such as XCTest.
@@ -171,7 +126,7 @@ To use CI/CD to automate the development and deployment of your iOS apps, you ca
 
 ## What is your experience with using version control systems like Git and how do you use them to manage your code?
 
-Git is a distributed version control system that allows you to track changes to your code and collaborate with other developers. Git is widely used in the software development industry
+Git is a distributed version control system that allows you to track changes to your code and collaborate with other developers. I use feature branches, pull requests, and code reviews as part of daily workflow. I've used both GitHub and internal tools like Apple's Fig and Critique for code review and version management.
 
 ## What is @autoclosure in swift?
 
@@ -190,234 +145,89 @@ printMessage(messageProvider: "Hello, World!")
 
 In this example, the printMessage function takes a closure with the type () -> String as its parameter, but the @autoclosure attribute allows you to call this function with a simple string literal instead of a full closure. The closure is created implicitly, and the expression is only evaluated when it's invoked inside the function with messageProvider().
 
-Without @autoclosure, you would need to pass a closure explicitly, like this:
+Without `@autoclosure`, callers would need to pass an explicit closure `{ return "Hello, World!" }`. Use `@autoclosure` for simple, side-effect-free expressions where delayed evaluation is safe.
 
-```
-func printMessage(messageProvider: () -> String) {
-    print(messageProvider())
-}
+## What is the difference between GCD and Swift Concurrency?
 
-// Usage
-printMessage(messageProvider: { return "Hello, World!" })
+Both manage concurrent execution, but Swift Concurrency is the modern approach and GCD is the legacy one.
 
-```
-
-By using @autoclosure, you can achieve a more concise syntax when dealing with simple expressions or literals. Keep in mind that using @autoclosure is most effective when the evaluation of the expression has no side effects and can be safely delayed.
-
-## What is the difference between NSOperation queue and GCD?
-
-`NSOperationQueue` and Grand Central Dispatch (GCD) are both concurrency mechanisms in Swift and Objective-C for executing multiple operations (tasks) concurrently and managing multiple threads. While they share some common goals, they offer different levels of abstraction and features.
-
-### Grand Central Dispatch (GCD)
-
-1. **Low-Level C API**: GCD is a lower-level C-based API.
-2. **Queues**: It works primarily with queues (dispatch queues) to execute tasks. There are two types of queues: serial (executes one task at a time) and concurrent (executes multiple tasks concurrently).
-3. **Simplicity and Control**: It's generally simpler to use for executing blocks of code asynchronously or synchronously on either a background or the main thread.
-4. **Manual Thread Management**: It requires more manual management of tasks and execution.
-5. **Performance**: GCD is often faster for simpler, straightforward tasks due to less overhead.
-6. **Custom Dispatch Queues**: You can create custom queues and decide whether they should be serial or concurrent.
-
-### NSOperationQueue
-
-1. **High-Level Objective-C API**: `NSOperationQueue` is a higher-level Objective-C API, which is object-oriented.
-2. **Operations**: It works with `NSOperation` objects, which represent a single task. `NSOperation` is an abstract class that can be subclassed to define specific tasks.
-3. **Additional Features**: It offers more features, like the ability to set dependencies between operations (an operation can be set to wait until another completes), cancel operations, or specify the maximum number of concurrent operations.
-4. **Easier Management**: It's easier to manage complex task dependencies and execution order.
-5. **Integration with Cocoa**: Being part of the Cocoa framework, it integrates well with other Cocoa APIs.
-6. **Operation Types**: It provides ready-to-use operation types like `BlockOperation` and `InvocationOperation`.
-
-### Summary of Differences
-
-- **Level of Abstraction**: GCD is more low-level; `NSOperationQueue` offers a higher-level, object-oriented approach.
-- **API and Language**: GCD is a C-based API, while `NSOperationQueue` is Objective-C based.
-- **Control and Flexibility**: GCD offers finer-grained control with less overhead, ideal for simpler tasks. `NSOperationQueue` makes complex task management (like dependencies and cancellations) easier.
-- **Performance**: GCD might have a performance edge for simpler tasks due to lower overhead, but `NSOperationQueue` simplifies complex task management which can be more efficient in scenarios with complex task interdependencies.
-- **Use Case**: Choose GCD for simple, straightforward concurrency tasks. Prefer `NSOperationQueue` when you need advanced features like operation dependencies, priorities, and cancellation.
-
-Developers often choose based on the specific needs of the task at hand, considering factors like complexity, required features, and the desired level of abstraction.
-
-## How do you use size classes in creating a UIView from code in swift?
-
-Using size classes in Swift to create a UIView programmatically involves responding to changes in the environment's size class and adjusting the view's layout or properties accordingly. Size classes (Regular and Compact) provide a way to create adaptive interfaces that work across different devices and orientations.
-
-Here's a step-by-step guide on how to use size classes when creating a UIView from code:
-
-### 1. Creating the UIView
-
-First, you need to create a UIView subclass or an instance of UIView:
+| | GCD | Swift Concurrency |
+|---|---|---|
+| **API style** | C-based, closure callbacks | Native Swift, async/await |
+| **Thread management** | Manual (you pick the queue) | Cooperative thread pool managed by the runtime |
+| **Cancellation** | No built-in support | Structured via `Task` and `TaskGroup` |
+| **Data safety** | No compile-time guarantees | `actor` and `Sendable` enforced by the compiler |
+| **Parallel work** | `DispatchGroup` + `DispatchQueue.concurrentPerform` | `async let` or `TaskGroup` |
 
 ```swift
-class CustomView: UIView {
-    // Custom view setup goes here
+// GCD (legacy)
+DispatchQueue.global().async {
+    let result = heavyWork()
+    DispatchQueue.main.async { self.update(result) }
+}
+
+// Swift Concurrency (modern)
+Task {
+    let result = await heavyWork()
+    await MainActor.run { update(result) }
 }
 ```
 
-Or:
+Prefer Swift Concurrency for new code. GCD still appears in UIKit internals and older codebases.
+
+## How do you handle adaptive layouts for different screen sizes?
+
+In SwiftUI, I use the `@Environment(\.horizontalSizeClass)` and `@Environment(\.verticalSizeClass)` values to adapt layout declaratively — no subclassing or overrides needed:
 
 ```swift
-let myView = UIView()
-```
+struct AdaptiveView: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
-### 2. Observing Trait Collection Changes
-
-You need to override `traitCollectionDidChange(_:)` in your UIView subclass to respond to changes in the trait collection, which includes size class changes:
-
-```swift
-class CustomView: UIView {
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        // Initialization code
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-
-        if traitCollection.horizontalSizeClass != previousTraitCollection?.horizontalSizeClass ||
-           traitCollection.verticalSizeClass != previousTraitCollection?.verticalSizeClass {
-            // Size class changed, update the view
-            updateViewForCurrentSizeClass()
-        }
-    }
-    
-    private func updateViewForCurrentSizeClass() {
-        if traitCollection.horizontalSizeClass == .compact {
-            // Adjust layout for compact width
+    var body: some View {
+        if horizontalSizeClass == .compact {
+            VStack { content }
         } else {
-            // Adjust layout for regular width
+            HStack { content }
         }
-
-        // Similarly, you can check for vertical size class
     }
 }
 ```
 
-### 3. Adjusting Layout Based on Size Class
+For more granular control, `GeometryReader` gives exact dimensions. In UIKit, `traitCollectionDidChange` is still used in legacy code, but note that Apple deprecated it in iOS 17 in favor of `registerForTraitChanges(_:handler:)`.
 
-In `updateViewForCurrentSizeClass`, you can adjust the properties of your view based on the current size class. For example, you might change constraints, font sizes, or any other properties that should adapt to the size class.
 
-### 4. Adding the Custom View to a View Controller
+## How do you handle accessibility in Swift?
 
-Finally, you add your custom view to a view controller, typically in `viewDidLoad` or `viewWillLayoutSubviews`:
+In SwiftUI, accessibility is built in via modifiers — much less boilerplate than UIKit:
 
 ```swift
-class MyViewController: UIViewController {
+Image("sunset")
+    .accessibilityLabel("Sunset over the ocean")
 
-    let customView = CustomView()
+Button("Play") { play() }
+    .accessibilityHint("Starts playing the video")
+    .accessibilityAddTraits(.startsMediaSession)
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        customView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(customView)
+// Group related elements into a single accessible unit
+HStack { icon; label }
+    .accessibilityElement(children: .combine)
 
-        // Set up constraints for customView
-    }
-}
+// Custom actions (e.g. swipe actions in a list row)
+.accessibilityAction(named: "Mark as Favorite") { markFavorite() }
 ```
 
-### 5. Handling Layout Constraints
-
-When setting up constraints for the custom view, you might want to create different sets of constraints for different size classes. You can activate and deactivate these constraints in the `updateViewForCurrentSizeClass` method of your custom view.
-
-### Conclusion
-
-This approach allows your UIView to adapt its layout and properties according to the size class of the device, making your UI more flexible and adaptable to various screen sizes and orientations. Remember, the real power of size classes comes into play when you're dealing with more complex views and view hierarchies, where different layouts are needed for different environmental conditions.
-
-## How do you handle accessibility in swift code?
-
-Handling accessibility in Swift, especially for iOS apps, is crucial for ensuring that your application is usable by as many people as possible, including those with disabilities. Apple provides a robust set of tools and APIs as part of the UIKit framework to help developers make their apps accessible. Here's a guide on how to handle accessibility in Swift:
-
-### 1. **Using Accessibility Labels**
-
-Accessibility labels are used by assistive technologies (like VoiceOver) to describe what an element is. It's important to provide clear and concise labels for UI elements.
+Dynamic Type is automatic when using `.font(.body)` — no extra configuration needed. For layout changes that should be announced to VoiceOver:
 
 ```swift
-button.accessibilityLabel = "Play"
-imageView.accessibilityLabel = "Sunset over the ocean"
-```
+// SwiftUI
+.accessibilityScrollAction { ... }
 
-### 2. **Accessibility Hints**
-
-Hints provide additional context about what an action will do. They are particularly useful for interactive elements.
-
-```swift
-button.accessibilityHint = "Starts playing the video"
-```
-
-### 3. **Accessibility Traits**
-
-Traits describe the state and behavior of UI elements. For instance, a button can be marked as a button, so assistive technologies understand how to interact with it.
-
-```swift
-button.accessibilityTraits = .button
-```
-
-### 4. **Grouping Elements**
-
-Sometimes, it's helpful to group elements together to make the UI easier to understand and navigate. You can group elements by enclosing them in a parent view and setting the `accessibilityElements` property.
-
-```swift
-let container = UIView()
-container.accessibilityElements = [element1, element2, label1]
-```
-
-### 5. **Custom Actions**
-
-For complex UI elements, you might need to provide custom actions that can be performed.
-
-```swift
-let customAction = UIAccessibilityCustomAction(name: "Mark as Favorite", target: self, selector: #selector(markAsFavorite))
-accessibilityCustomActions = [customAction]
-
-@objc func markAsFavorite() -> Bool {
-    // Implement action
-    return true
-}
-```
-
-### 6. **Dynamic Type and Text Size Adjustments**
-
-Supporting Dynamic Type ensures that text in your app can adjust to the user's preferred text size.
-
-```swift
-label.adjustsFontForContentSizeCategory = true
-label.font = UIFont.preferredFont(forTextStyle: .body)
-```
-
-### 7. **UIAccessibility Notifications**
-
-Use these to notify the accessibility system of changes in the UI.
-
-```swift
+// UIKit (still used in mixed codebases)
 UIAccessibility.post(notification: .layoutChanged, argument: element)
 ```
 
-### 8. **Testing with Accessibility Tools**
+I have direct experience with VoiceOver at Google Fiber, where UI Accessibility was a primary focus. Testing is done with the Accessibility Inspector in Xcode and VoiceOver on device.
 
-Always test your app with VoiceOver and other accessibility tools. This can be done through the Simulator or on a physical device. 
-
-- Enable VoiceOver on iOS: Settings > Accessibility > VoiceOver
-- Use the Accessibility Inspector in Xcode.
-
-### 9. **Semantic Content Attributes**
-
-This is important for supporting right-to-left languages.
-
-```swift
-view.semanticContentAttribute = .forceLeftToRight
-```
-
-### 10. **Avoiding Redundancy**
-
-Make sure not to repeat information in labels and hints. If a button's title is self-explanatory, it might not need an additional label or hint.
-
-### Conclusion
-
-Accessibility support is a continuous process. As your app evolves, keep testing and updating accessibility features. By following these guidelines, you can ensure your Swift app is more accessible to a broader range of users, including those with disabilities. Remember, a well-designed accessible app not only helps users with disabilities but often improves the user experience for all users.
 
 ## What is accessibilityId used for?
 
@@ -462,19 +272,6 @@ loginButton.tap()
 3. **Separate from Localization**: Since these identifiers are not user-facing, they should be independent of the app's localization.
 4. **Exclusive for Testing**: Use `accessibilityIdentifier` primarily for testing purposes. For accessibility (VoiceOver, etc.), use `accessibilityLabel`, `accessibilityHint`, and `accessibilityTraits`.
 
-### Conclusion
-
-`accessibilityIdentifier` is a valuable tool in iOS development, primarily used for identifying UI elements during automated UI testing. It ensures a stable and efficient way to reference UI components, independent of their visible properties or localization settings, which is crucial in creating robust and reliable UI tests.
-
-## If it is not used in accessibility then why is it called like that?
-
-The term `accessibilityIdentifier` in iOS might initially seem a bit misleading since it's primarily used for UI testing rather than directly aiding accessibility features like VoiceOver. The reason for its naming and inclusion in the accessibility framework can be understood from a broader perspective of what "accessibility" encompasses in software development.
-
-### Broader Definition of Accessibility
-
-1. **General Accessibility**: In a broad sense, "accessibility" in software refers to making applications more "accessible" or usable to as many users as possible. This includes people with various disabilities but can also encompass a wider range of scenarios like different device orientations, screen sizes, and even different testing and development environments.
-
-2. **Accessibility for Developers**: From a developer's standpoint, making UI elements easily identifiable and "accessible" for testing purposes falls under this broader umbrella. The ability to reliably interact with UI elements in automated tests is crucial for ensuring that an app remains usable and stable, which indirectly contributes to its overall accessibility.
 
 ## How to identify and fix memory leaks in swift?
 
@@ -513,22 +310,23 @@ Identifying and fixing memory leaks in Swift, especially in iOS development, is 
 
 ### Fixing Memory Leaks
 
-1. **Breaking Retain Cycles**:
-   - Use `weak` or `unowned` references for delegates or in closures where appropriate.
-   - `weak` is used when the reference can become `nil` at some point.
-   - `unowned` is used when the reference is guaranteed to never be `nil` during its lifetime.
+1. **Breaking Retain Cycles**: Use `weak` for delegates and in closures where `self` could be nil; use `unowned` only when you're certain the reference outlives the closure.
 
    ```swift
    class MyClass {
        weak var delegate: MyDelegate?
    }
 
-   [unowned self] in
-   // Closure code
+   // Closure capture list
+   Task { [weak self] in
+       guard let self else { return }
+       await self.doWork()
+   }
    ```
 
-2. **Proper Management of Observers**:
-   - Always remove observers when they are no longer needed, such as in `deinit`.
+2. **Swift Concurrency and retain cycles**: `Task { }` bodies capture `self` strongly by default. Always use `[weak self]` in detached or long-lived tasks, then guard at the start.
+
+3. **Observers**: With Combine, store `AnyCancellable` in a `Set<AnyCancellable>` — cancellation and deallocation are automatic when the owner is deallocated. With NotificationCenter in UIKit, remove observers in `deinit`:
 
    ```swift
    deinit {
@@ -536,16 +334,8 @@ Identifying and fixing memory leaks in Swift, especially in iOS development, is 
    }
    ```
 
-3. **Singletons**:
-   - Use singletons judiciously and ensure they release any resources they hold when no longer needed.
+4. **Testing and Profiling**: Use Instruments (Leaks + Allocations) and Xcode's Memory Graph Debugger. Write `addTeardownBlock` assertions in XCTest to verify objects deallocate after each test.
 
-4. **Testing and Profiling**:
-   - Regularly test your application with Instruments and the Memory Graph Debugger.
-   - Look for unexpected object lifetimes and fix any leaks you find.
-
-### Conclusion
-
-Memory management is a critical aspect of Swift development. By understanding common causes of memory leaks and regularly using tools like Xcode Instruments and Memory Graph Debugger, you can identify and fix these issues effectively. Always consider the lifecycle of your objects and prefer `weak` or `unowned` references in situations where retain cycles are possible, such as in closures and delegate patterns. Regular profiling and vigilant code review are your best tools in combating memory leaks.
 
 
 ## What is the meaning of VIPER design pattern?
@@ -583,9 +373,6 @@ VIPER is an architectural pattern in software engineering, particularly used in 
 
 VIPER is best suited for large-scale applications with complex business logic and multiple developers working on it. It's less advantageous for small projects where simpler architectures like MVC or MVVM could be more efficient.
 
-### Conclusion
-
-VIPER provides a robust and scalable architecture for iOS application development by enforcing a strict separation of concerns. While it offers many benefits in terms of modularity, testability, and maintainability, it also introduces complexity that may not be necessary for smaller applications. Understanding when and how to effectively implement VIPER is key to leveraging its strengths without being burdened by its complexity.
 
 
 ## How to create and share a private cocoapod?
@@ -659,56 +446,35 @@ Instead of using the public CocoaPods spec repo, you need to create a private on
 
 - When you make changes to your pod, increment the version number in your podspec, and repeat the process of pushing to your private spec repo.
 
-### Conclusion
-
-Creating and sharing a private CocoaPod involves setting up your library, creating a private spec repository, and then using that repository in your projects. It's an excellent way to share code within a team or organization while keeping it proprietary. Remember to manage access to your private repositories securely.
 
 
-## Tell me about combine in swift
+## Combine vs Swift Concurrency — when do you use each?
 
-Combine is a framework introduced by Apple in 2019, starting from iOS 13, macOS 10.15, watchOS 6, and tvOS 13. It's a functional reactive programming (FRP) framework, designed to help developers work with asynchronous events and data streams in a more declarative and efficient way. Combine provides a Swift-native way to write and process asynchronous code, similar in concept to RxSwift and ReactorKit but integrated directly into the Apple ecosystem.
-
-Here are some key concepts and components of Combine:
-
-1. **Publishers**: Publishers are at the heart of Combine. They emit a sequence of values over time. A publisher can emit zero or more values and can optionally finish by either completing successfully or with an error. 
-
-2. **Subscribers**: Subscribers listen to publishers and react to the values they emit. When a subscriber receives a value, it can process it, pass it along, or cancel the subscription. When a publisher finishes (either successfully or with an error), the subscriber gets notified.
-
-3. **Operators**: Combine provides a range of operators that you can use to manipulate and transform the data emitted by publishers before they reach subscribers. These operators include familiar functional programming concepts like `map`, `filter`, `reduce`, and many more.
-
-4. **Subjects**: Subjects act as both a publisher and a subscriber. They provide a way to inject values into a stream, either individually using `PassthroughSubject` or with state using `CurrentValueSubject`.
-
-5. **Schedulers**: Schedulers in Combine control when and on which thread code execution occurs. They're used for managing the execution context for both publishers and subscribers, such as performing work on background threads and updating the UI on the main thread.
-
-6. **Cancellable**: Subscriptions in Combine are represented by the `Cancellable` protocol. Storing the return value of a subscription (which conforms to `Cancellable`) allows you to cancel the subscription later, typically when the subscription is no longer needed or the context in which it was created is being deinitialized.
-
-7. **@Published**: Combine introduces the `@Published` property wrapper, which automatically creates a publisher for any property in a class that's marked with it. This is particularly useful in SwiftUI for creating observable objects that can trigger UI updates when their properties change.
-
-8. **Integration with SwiftUI**: Combine works seamlessly with SwiftUI, Apple's declarative UI framework. SwiftUI uses Combine publishers to handle state changes and UI updates.
-
-A simple example of Combine usage:
+Combine (iOS 13+) is a functional reactive framework for working with event streams. Its key concepts: **Publishers** emit values over time, **Subscribers** consume them, **Operators** (`map`, `filter`, `debounce`, etc.) transform streams, **Subjects** (`PassthroughSubject`, `CurrentValueSubject`) inject values imperatively, and `AnyCancellable` manages subscription lifetime.
 
 ```swift
-import Combine
-
-// Define a publisher
-let myPublisher = [1, 2, 3, 4, 5].publisher
-
-// Define a subscriber
-let mySubscriber = Subscribers.Sink<Int, Never> { completion in
-    switch completion {
-    case .finished:
-        print("Finished")
-    case .failure(let error):
-        print("Received error: \(error)")
-    }
-} receiveValue: { value in
-    print("Received value: \(value)")
-}
-
-// Connect the publisher and subscriber
-myPublisher.subscribe(mySubscriber)
+$searchText
+    .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+    .removeDuplicates()
+    .sink { [weak self] query in self?.search(query) }
+    .store(in: &cancellables)
 ```
 
-This framework is particularly powerful for managing complex asynchronous code, streamlining event handling, and binding UI components to data sources, especially in SwiftUI. As with any advanced framework, there's a learning curve, but it brings substantial benefits in terms of code readability, maintainability, and performance in many cases.
+**Swift Concurrency** (`async/await` + `AsyncSequence`) is now preferred for most new code. It's simpler, compiler-checked for data races, and doesn't require managing `AnyCancellable` lifetimes.
+
+```swift
+for await value in someAsyncSequence {
+    process(value)
+}
+```
+
+**When to still use Combine:**
+- `@Published` + `ObservableObject` in SwiftUI (though `@Observable` macro from iOS 17 reduces this need)
+- Operators like `debounce`, `throttle`, `combineLatest`, and `zip` — no direct async/await equivalent
+- Existing codebases already built on Combine
+
+**When to prefer Swift Concurrency:**
+- One-shot async operations (network calls, file I/O)
+- Structured task hierarchies with cancellation
+- Anything new in Swift 5.5+
 
