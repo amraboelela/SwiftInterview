@@ -69,3 +69,140 @@ In Swift, the `some` keyword is used in a few different contexts:
 3. **Existential Types:** When working with existential types (e.g., protocol types), `some` can be used to refer to a concrete type that conforms to a protocol. This is similar to how `some` is used with opaque return types but can also be used in other contexts where existential types are involved.
 
 Overall, `some` is used to express the idea of an opaque or unknown type, typically when working with protocols, generics, or SwiftUI views. It helps improve type safety and encapsulation while allowing for flexible and dynamic behavior.
+
+## What is `.debounce` in SwiftUI, where is it defined, and when/how do you use it?
+
+### Where it's defined
+
+`.debounce` is defined in the **Combine** framework, as an operator on `Publisher`. It is NOT a SwiftUI-specific API — it lives in `Combine.Publisher` and is used alongside SwiftUI through `@Published` properties or other Combine publishers.
+
+```swift
+import Combine
+```
+
+### What it does
+
+`.debounce(for:scheduler:)` waits until a publisher has been silent for a specified duration before emitting the most recent value. It suppresses rapid successive values and only forwards one after the pause.
+
+### When to use it
+
+- **Search fields**: avoid firing a network request on every keystroke — wait until the user stops typing.
+- **Form validation**: don't validate on every character change, only after the user pauses.
+- **Resize/scroll events**: coalesce rapid UI events into a single action.
+
+### How to use it
+
+**Example: debouncing a search field in SwiftUI**
+
+```swift
+import SwiftUI
+import Combine
+
+class SearchViewModel: ObservableObject {
+    @Published var searchText = ""
+    @Published var results: [String] = []
+
+    private var cancellables = Set<AnyCancellable>()
+
+    init() {
+        $searchText
+            .debounce(for: .seconds(0.5), scheduler: DispatchQueue.main)
+            .removeDuplicates()
+            .sink { [weak self] query in
+                self?.fetchResults(for: query)
+            }
+            .store(in: &cancellables)
+    }
+
+    private func fetchResults(for query: String) {
+        // perform search/network call
+        results = query.isEmpty ? [] : ["Result for \(query)"]
+    }
+}
+
+struct SearchView: View {
+    @StateObject private var viewModel = SearchViewModel()
+
+    var body: some View {
+        VStack {
+            TextField("Search...", text: $viewModel.searchText)
+                .textFieldStyle(.roundedBorder)
+                .padding()
+
+            List(viewModel.results, id: \.self) { result in
+                Text(result)
+            }
+        }
+    }
+}
+```
+
+### Key parameters
+
+| Parameter   | Description |
+|-------------|-------------|
+| `for:`      | The quiet period (e.g. `.seconds(0.5)`) before emitting |
+| `scheduler:` | Where to deliver the value — typically `DispatchQueue.main` for UI updates |
+
+### `.debounce` vs `.throttle`
+
+- **`.debounce`** — emits only after the source has been silent for the given duration. Best for "fire after user stops."
+- **`.throttle`** — emits at most once per interval regardless of silence. Best for "fire at a steady rate."
+
+
+## Explain cancellables
+
+When the object owning `cancellables` is deallocated:
+1. `deinit` is called
+2. All stored properties are destroyed, including the `Set<AnyCancellable>`
+3. When `AnyCancellable` is destroyed, it **automatically calls `.cancel()`** on itself
+
+So cancellation **does happen** — but it's triggered by **ARC memory deallocation**, not by `deinit` explicitly.
+
+### You Do NOT Need to Do This:
+```swift
+deinit {
+    cancellables.forEach { $0.cancel() } // ❌ unnecessary
+    cancellables.removeAll()             // ❌ also unnecessary
+}
+```
+
+### The Cleanup is Automatic — But Timing Matters
+
+The issue is **when** the object gets deallocated:
+
+```swift
+class MyViewModel: ObservableObject {
+    private var cancellables = Set<AnyCancellable>()
+    
+    init() {
+        Timer.publish(every: 1, on: .main, in: .common)
+            .autoconnect()
+            .sink { _ in print("tick") }
+            .store(in: &cancellables) // ✅ cancelled when VM deallocates
+    }
+}
+```
+
+If `MyViewModel` is **retained longer than expected** (e.g. retain cycle), the cancellables **won't cancel** either — because `deinit` never gets called.
+
+### When You DO Need Manual Cancellation:
+```swift
+// If you need to cancel BEFORE deallocation
+func stopListening() {
+    cancellables.removeAll() // triggers cancel on all
+}
+
+// Or cancel a specific one
+var specificTask: AnyCancellable?
+specificTask?.cancel()
+```
+
+### Cancellables Summary
+| Scenario | Cancellation happens? |
+|---|---|
+| Object deallocates normally | ✅ Yes, automatically |
+| Retain cycle exists | ❌ No, deinit never called |
+| You need early cancellation | ⚠️ Manual cancel needed |
+
+The real thing to watch out for is **retain cycles** — that's what prevents the automatic cleanup from ever happening.

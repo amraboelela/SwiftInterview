@@ -19,6 +19,8 @@
 		F5F7207A2B32616500D1ED38 /* PostListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F720792B32616500D1ED38 /* PostListView.swift */; };
 		F5F7207C2B326A3400D1ED38 /* TaskListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F7207B2B326A3400D1ED38 /* TaskListView.swift */; };
 		F5F7207F2B32811800D1ED38 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F5F7207E2B32811800D1ED38 /* RealmSwift */; };
+		F5F720812B326A3400D1ED38 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F720802B326A3400D1ED38 /* SearchView.swift */; };
+		F5F720832B326A3400D1ED38 /* CancellablesDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F720822B326A3400D1ED38 /* CancellablesDemo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +37,8 @@
 		F5F720772B325EB900D1ED38 /* CustomCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCard.swift; sourceTree = "<group>"; };
 		F5F720792B32616500D1ED38 /* PostListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostListView.swift; sourceTree = "<group>"; };
 		F5F7207B2B326A3400D1ED38 /* TaskListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskListView.swift; sourceTree = "<group>"; };
+		F5F720802B326A3400D1ED38 /* SearchView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
+		F5F720822B326A3400D1ED38 /* CancellablesDemo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CancellablesDemo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +81,8 @@
 				F5F720712B325B5000D1ED38 /* ItemListView.swift */,
 				F5F720792B32616500D1ED38 /* PostListView.swift */,
 				F5F7207B2B326A3400D1ED38 /* TaskListView.swift */,
+				F5F720802B326A3400D1ED38 /* SearchView.swift */,
+				F5F720822B326A3400D1ED38 /* CancellablesDemo.swift */,
 				F5F720482B324FD900D1ED38 /* Assets.xcassets */,
 				F5F7204A2B324FD900D1ED38 /* SwiftUIApp.entitlements */,
 				F5F7204B2B324FD900D1ED38 /* Preview Content */,
@@ -177,6 +183,8 @@
 				F5F720762B325DA400D1ED38 /* UserInputFormView.swift in Sources */,
 				F5F720722B325B5000D1ED38 /* ItemListView.swift in Sources */,
 				F5F720782B325EB900D1ED38 /* CustomCard.swift in Sources */,
+				F5F720812B326A3400D1ED38 /* SearchView.swift in Sources */,
+				F5F720832B326A3400D1ED38 /* CancellablesDemo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
