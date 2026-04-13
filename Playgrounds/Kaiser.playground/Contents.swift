@@ -1,66 +1,36 @@
 import Foundation
 
-// How to create a function in swift with generic type to add / concat 2 numbers or 2 strings?
+// MARK: - Generic function to add/concat 2 numbers or 2 strings
 
-// Creating a generic function in Swift that can handle both addition for numbers and concatenation for strings involves using generics along with protocol constraints. Swift doesn't have a single protocol that both `String` and numeric types like `Int`, `Double`, etc., conform to directly, but you can define a custom protocol and extend existing types to conform to this protocol.
-
-// Here's an example of how you can achieve this:
-
-// Define a custom protocol
 protocol Addable {
     static func + (lhs: Self, rhs: Self) -> Self
 }
 
-// Extend existing types to conform to the Addable protocol
-extension Int: Addable {
-}
+extension Int: Addable {}
+extension Double: Addable {}
+extension String: Addable {}
 
-extension Double: Addable {
-}
-
-extension String: Addable {
-}
-
-// Define a generic function
 func addOrConcatenate<T: Addable>(_ a: T, _ b: T) -> T {
     return a + b
 }
 
-// Usage examples
-let sum = addOrConcatenate(5, 10)        // Works with Int
-let decimalSum = addOrConcatenate(5.5, 4.5)  // Works with Double
-let concatenatedString = addOrConcatenate("Hello, ", "World!") // Works with String
+let sum = addOrConcatenate(5, 10)
+let decimalSum = addOrConcatenate(5.5, 4.5)
+let concatenatedString = addOrConcatenate("Hello, ", "World!")
 
-print(sum)              // Output: 15
-print(decimalSum)       // Output: 10.0
-print(concatenatedString) // Output: "Hello, World!"
-
-
-/*In this implementation:
-
-1. A custom protocol `Addable` is defined, which requires any conforming type to implement the `+` operator.
-2. Existing types like `Int`, `Double`, and `String` are extended to conform to the `Addable` protocol. Since these types already have implementations of the `+` operator, no additional implementation is needed.
-3. A generic function `addOrConcatenate` is defined that takes two parameters of type `T`, where `T` conforms to `Addable`. This allows the function to use the `+` operator on these parameters.
-
-This approach uses Swift's powerful type system and protocols to create a versatile function that can handle different types in a type-safe manner.
-*/
+print(sum)               // 15
+print(decimalSum)        // 10.0
+print(concatenatedString) // Hello, World!
 
 
-// Using operation queue how to make sure that class Database is accessed safely from different threads?
-
-/*To ensure that a class, like `Database`, is accessed safely from different threads in Swift, you can use an `OperationQueue`. An `OperationQueue` manages a queue of operations (`NSOperation` objects) executing them either serially or concurrently. When you want to guarantee thread safety for accessing and modifying a shared resource like a database, you should use a serial queue, which executes one operation at a time.
-
-Here's a basic example of how you might implement this:
-*/
-
-import Foundation
+// MARK: - Thread-safe Database access using OperationQueue
 
 class Database {
-    static let shared = Database() // Singleton instance
+    static let shared = Database()
     private let operationQueue = OperationQueue()
 
     init() {
-        operationQueue.maxConcurrentOperationCount = 1 // Makes it a serial queue
+        operationQueue.maxConcurrentOperationCount = 1 // serial queue
     }
 
     func performDatabaseOperation(_ operationBlock: @escaping () -> Void) {
@@ -69,19 +39,15 @@ class Database {
         }
     }
 
-    // Example of a database operation
     func saveData(data: String) {
         // Save data to the database
     }
 
-    // Example of another database operation
     func fetchData() -> String {
-        // Fetch data from the database
         return "data"
     }
 }
 
-// Usage
 Database.shared.performDatabaseOperation {
     Database.shared.saveData(data: "Sample Data")
 }
@@ -91,13 +57,132 @@ Database.shared.performDatabaseOperation {
     print(data)
 }
 
-/*
-In this example:
 
-- `Database` is a singleton class, ensuring that the same instance is used throughout the application.
-- It contains an `OperationQueue` with `maxConcurrentOperationCount` set to 1, making it a serial queue.
-- The `performDatabaseOperation` method takes a closure (`operationBlock`) and adds it to the operation queue. This method ensures that all database operations are executed serially, one at a time, regardless of which thread they are called from.
-- `saveData` and `fetchData` are examples of database operations that you might want to perform. They should be executed through the `performDatabaseOperation` method to ensure thread safety.
+// MARK: - Network layer with endpoints, protocols, and error handling
 
-By using this approach, you can safely access and modify your database from multiple threads without running into race conditions or other concurrency-related issues.
-*/
+enum APIEndpoint {
+    case fetchPosts
+    case fetchUser(userId: Int)
+
+    var urlString: String {
+        switch self {
+        case .fetchPosts:
+            return "https://jsonplaceholder.typicode.com/posts"
+        case .fetchUser(let userId):
+            return "https://jsonplaceholder.typicode.com/users/\(userId)"
+        }
+    }
+}
+
+enum NetworkError: Error {
+    case invalidURL
+    case noData
+}
+
+struct Post: Codable {
+    var time: Int
+    var title: String
+    var message: String
+}
+
+struct User: Codable {
+    var username: String
+    var firstName: String
+    var lastName: String
+}
+
+// Callback-based
+
+protocol NetworkServiceProtocol {
+    func fetch<T: Decodable>(
+        endpoint: APIEndpoint,
+        completion: @escaping (Result<T, Error>) -> Void
+    )
+}
+
+class NetworkService: NetworkServiceProtocol {
+    func fetch<T: Decodable>(
+        endpoint: APIEndpoint,
+        completion: @escaping (Result<T, Error>) -> Void
+    ) {
+        guard let url = URL(string: endpoint.urlString) else {
+            completion(.failure(NetworkError.invalidURL))
+            return
+        }
+
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            DispatchQueue.main.async {
+                if let error {
+                    completion(.failure(error))
+                    return
+                }
+                guard let data else {
+                    completion(.failure(NetworkError.noData))
+                    return
+                }
+                do {
+                    let decoded = try JSONDecoder().decode(T.self, from: data)
+                    completion(.success(decoded))
+                } catch {
+                    completion(.failure(error))
+                }
+            }
+        }
+        task.resume()
+    }
+}
+
+let networkService = NetworkService()
+
+networkService.fetch(endpoint: .fetchPosts) { (result: Result<[Post], Error>) in
+    switch result {
+    case .success(let posts): print(posts)
+    case .failure(let error): print(error.localizedDescription)
+    }
+}
+
+// async/await-based
+
+protocol NetworkServiceProtocolSC {
+    func fetch<T: Decodable>(endpoint: APIEndpoint) async throws -> T
+}
+
+class NetworkServiceSC: NetworkServiceProtocolSC {
+    func fetch<T: Decodable>(endpoint: APIEndpoint) async throws -> T {
+        guard let url = URL(string: endpoint.urlString) else {
+            throw NetworkError.invalidURL
+        }
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return try JSONDecoder().decode(T.self, from: data)
+    }
+}
+
+let networkServiceSC = NetworkServiceSC()
+
+Task { @MainActor in
+    do {
+        let posts: [Post] = try await networkServiceSC.fetch(endpoint: .fetchPosts)
+        print(posts)
+    } catch {
+        print(error.localizedDescription)
+    }
+
+    do {
+        let user: User = try await networkServiceSC.fetch(endpoint: .fetchUser(userId: 1))
+        print(user)
+    } catch {
+        print(error.localizedDescription)
+    }
+}
+
+
+// MARK: - Sum of squares of even numbers: 2^2+4^2+6^2+8^2+10^2
+
+func squareSum(numbers: [Int]) -> Int {
+    numbers.reduce(0) { current, number in
+        number % 2 == 0 ? current + number * number : current
+    }
+}
+
+let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+print(squareSum(numbers: numbers)) // 220

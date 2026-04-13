@@ -10,9 +10,22 @@
    <FileRef
       location = "group:Cognizant.md">
    </FileRef>
-   <FileRef
-      location = "group:Database.md">
-   </FileRef>
+   <Group
+      location = "group:General"
+      name = "General">
+      <FileRef
+         location = "group:Database.md">
+      </FileRef>
+      <FileRef
+         location = "group:iOS.md">
+      </FileRef>
+      <FileRef
+         location = "group:Swift.md">
+      </FileRef>
+      <FileRef
+         location = "group:SwiftUI.md">
+      </FileRef>
+   </Group>
    <FileRef
       location = "group:GoogleAssesment.md">
    </FileRef>
@@ -20,19 +33,10 @@
       location = "group:InfoSys.md">
    </FileRef>
    <FileRef
-      location = "group:iOS.md">
-   </FileRef>
-   <FileRef
       location = "group:JobTwine.md">
    </FileRef>
    <FileRef
       location = "group:README.md">
-   </FileRef>
-   <FileRef
-      location = "group:Swift.md">
-   </FileRef>
-   <FileRef
-      location = "group:SwiftUI.md">
    </FileRef>
    <Group
       location = "group:Playgrounds"
@@ -54,9 +58,6 @@
       </FileRef>
       <FileRef
          location = "group:Kaiser.playground">
-      </FileRef>
-      <FileRef
-         location = "group:Kaiser2.playground">
       </FileRef>
       <FileRef
          location = "group:Karat.playground">
