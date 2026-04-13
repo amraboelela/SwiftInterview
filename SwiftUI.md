@@ -206,3 +206,73 @@ specificTask?.cancel()
 | You need early cancellation | ⚠️ Manual cancel needed |
 
 The real thing to watch out for is **retain cycles** — that's what prevents the automatic cleanup from ever happening.
+
+## When we say @Published var searchText = "", would the compiler inject Published protocol functions implementation to searchText String ?
+
+Not exactly — `@Published` is a **property wrapper**, not a protocol. Here's what actually happens:
+
+### What the Compiler Actually Does
+
+When you write:
+```swift
+@Published var searchText = ""
+```
+
+The compiler **transforms it** into roughly this:
+```swift
+var searchText: String {
+    get { _searchText.wrappedValue }
+    set { _searchText.wrappedValue = newValue }
+}
+
+var _searchText: Published<String> = Published(wrappedValue: "")
+var $searchText: Published<String>.Publisher { _searchText.projectedValue }
+```
+
+So it's **not injecting into String** at all — it's **wrapping** `String` inside a `Published<String>` struct.
+
+### The Three Things You Get
+
+```swift
+@Published var searchText = ""
+
+searchText        // the String value itself (wrappedValue)
+_searchText       // the Published<String> wrapper (backing storage)
+$searchText       // the Publisher you subscribe to (projectedValue)
+```
+
+### What `Published<String>` Actually Does
+
+```swift
+// Simplified internals of @Published
+@propertyWrapper
+struct Published<Value> {
+    var wrappedValue: Value        // the actual String
+    var projectedValue: Publisher  // the Combine publisher ($searchText)
+    
+    // when wrappedValue is SET, it fires the publisher
+    // which notifies ObservableObject to call objectWillChange
+}
+```
+
+### The Chain of Events on Change
+
+```swift
+searchText = "hello"
+// 1. setter is called on Published<String>
+// 2. Published fires its publisher
+// 3. ObservableObject picks it up
+// 4. objectWillChange.send() is triggered
+// 5. SwiftUI re-renders the view
+```
+
+### Publisher Summary
+
+| What you think | What actually happens |
+|---|---|
+| Injects into `String` | ❌ No |
+| Wraps `String` in `Published<T>` | ✅ Yes |
+| `Published` is a protocol | ❌ No, it's a property wrapper (struct) |
+| `$searchText` is magic | It's just `projectedValue` from the wrapper |
+
+So `String` itself is completely untouched — `@Published` just **boxes it** inside a generic `Published<Value>` struct that adds the publisher behavior around it.

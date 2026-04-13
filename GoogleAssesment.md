@@ -307,7 +307,4 @@ Each question has 3 statements. Choose which **MOST** describes you and which **
 ## Tips for Answering
 
 - **Be consistent** — Google cross-checks your answers for contradictions across similar questions
-- **Don't try to game it** — there are no universally "correct" answers; they look for self-awareness and fit
-- **Most = your natural default behavior**, not what sounds best
-- **Least = what feels least like you**, not what sounds worst
 - Aim to reflect **Googleyness**: collaboration, ownership, comfort with ambiguity, and user focus
