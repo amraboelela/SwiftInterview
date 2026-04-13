@@ -117,44 +117,30 @@ struct User: Codable {
 /*
 2. **Create the POST Request**: Set up the URL, request, and the body of your POST request.*/
 
-func loadUsers() {
-    guard let url = URL(string: "https://jsonplaceholder.typicode.com/posts") else { return
-    }
-    
+func loadUsers() async throws {
+    guard let url = URL(string: "https://jsonplaceholder.typicode.com/posts") else { return }
+
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    
+
     let newUser = User(name: "John Doe", email: "johndoe@example.com")
-    request.httpBody = try? JSONEncoder().encode(newUser)
-    
-    /*
-     3. **Perform the Request with URLSession**: Use `URLSession` to perform the request and handle the response in a completion handler.
-     */
-    
-    let task = URLSession.shared.dataTask(with: request) { data, response, error in
-        // Check for errors
-        if let error {
-            print("Error: \(error)")
-            return
-        }
-        
-        // Check for valid data
-        guard let data else { return }
-        
-        // Optionally, handle the response data
-        do {
-            let user = try JSONDecoder().decode(User.self, from: data)
-            print("Received user: \(user)")
-        } catch {
-            print("Error decoding data: \(error)")
-        }
-    }
-    
-    task.resume()  // Don't forget to resume the task!
+    request.httpBody = try JSONEncoder().encode(newUser)
+
+    let (data, _) = try await URLSession.shared.data(for: request)
+
+    let user = try JSONDecoder().decode(User.self, from: data)
+    print("Received user: \(user)")
 }
 
-loadUsers()
+// See Swift.md — "Will the app crash if an async throwing function throws inside a Task?"
+Task {
+    do {
+        try await loadUsers()
+    } catch {
+        print("Error: \(error)")
+    }
+}
 
 /*
 In this example, `URLSession.shared.dataTask` is used to create a task that sends the HTTP request. The completion handler is called when the request is complete, providing you with the data, response, and any errors.

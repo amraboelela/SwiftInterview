@@ -2,19 +2,10 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:README.md">
-   </FileRef>
-   <FileRef
       location = "group:Amr_resume.md">
    </FileRef>
    <FileRef
-      location = "group:InfoSys.md">
-   </FileRef>
-   <FileRef
-      location = "group:JobTwine.md">
-   </FileRef>
-   <FileRef
-      location = "group:GoogleAssesment.md">
+      location = "group:CLAUDE.md">
    </FileRef>
    <FileRef
       location = "group:Cognizant.md">
@@ -22,9 +13,36 @@
    <FileRef
       location = "group:Database.md">
    </FileRef>
+   <FileRef
+      location = "group:GoogleAssesment.md">
+   </FileRef>
+   <FileRef
+      location = "group:InfoSys.md">
+   </FileRef>
+   <FileRef
+      location = "group:iOS.md">
+   </FileRef>
+   <FileRef
+      location = "group:JobTwine.md">
+   </FileRef>
+   <FileRef
+      location = "group:README.md">
+   </FileRef>
+   <FileRef
+      location = "group:Swift.md">
+   </FileRef>
+   <FileRef
+      location = "group:SwiftUI.md">
+   </FileRef>
    <Group
       location = "group:Playgrounds"
       name = "Playgrounds">
+      <FileRef
+         location = "group:Bard1.playground">
+      </FileRef>
+      <FileRef
+         location = "group:ChatGPT.playground">
+      </FileRef>
       <FileRef
          location = "group:InfoSys.playground">
       </FileRef>
@@ -35,45 +53,30 @@
          location = "group:JobTwine.playground">
       </FileRef>
       <FileRef
-         location = "group:MyTime.playground">
+         location = "group:Kaiser.playground">
       </FileRef>
       <FileRef
          location = "group:Kaiser2.playground">
       </FileRef>
       <FileRef
-         location = "group:Walmart.playground">
-      </FileRef>
-      <FileRef
-         location = "group:Photon.playground">
+         location = "group:Karat.playground">
       </FileRef>
       <FileRef
          location = "group:Meta.playground">
       </FileRef>
       <FileRef
+         location = "group:MyTime.playground">
+      </FileRef>
+      <FileRef
+         location = "group:Photon.playground">
+      </FileRef>
+      <FileRef
          location = "group:SwiftConcurrency.playground">
       </FileRef>
       <FileRef
-         location = "group:ChatGPT.playground">
-      </FileRef>
-      <FileRef
-         location = "group:Kaiser.playground">
-      </FileRef>
-      <FileRef
-         location = "group:Karat.playground">
-      </FileRef>
-      <FileRef
-         location = "group:Bard1.playground">
+         location = "group:Walmart.playground">
       </FileRef>
    </Group>
-   <FileRef
-      location = "group:CLAUDE.md">
-   </FileRef>
-   <FileRef
-      location = "group:General iOS.md">
-   </FileRef>
-   <FileRef
-      location = "group:SwiftUI.md">
-   </FileRef>
    <FileRef
       location = "group:AutoRefreshExtension">
    </FileRef>
