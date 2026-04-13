@@ -276,3 +276,112 @@ searchText = "hello"
 | `$searchText` is magic | It's just `projectedValue` from the wrapper |
 
 So `String` itself is completely untouched — `@Published` just **boxes it** inside a generic `Published<Value>` struct that adds the publisher behavior around it.
+
+## What is the difference between Publisher and AsyncStream?
+
+### Origin
+| | Publisher | AsyncStream |
+|---|---|---|
+| Framework | Combine | Swift Concurrency (`async/await`) |
+| Introduced | iOS 13 | iOS 15 |
+| Paradigm | Reactive/functional | Structured concurrency |
+
+### Mental Model
+
+- **Publisher** — a pipeline. You chain operators (`.map`, `.filter`, `.debounce`) and attach a subscriber. Data flows through the chain.
+- **AsyncStream** — an `async` sequence. You `await` values one at a time in a `for await` loop, like reading from a stream in order.
+
+### Syntax Comparison
+
+**Publisher:**
+```swift
+$searchText
+    .debounce(for: .seconds(0.5), scheduler: DispatchQueue.main)
+    .filter { !$0.isEmpty }
+    .sink { print($0) }
+    .store(in: &cancellables)
+```
+
+**AsyncStream:**
+```swift
+let stream = AsyncStream<String> { continuation in
+    continuation.yield("hello")
+    continuation.finish()
+}
+
+for await value in stream {
+    print(value)
+}
+```
+
+### Key Differences
+
+| | Publisher | AsyncStream |
+|---|---|---|
+| Operators | Rich built-ins (`.map`, `.filter`, `.debounce`, `.zip`, `.merge`, ...) | None — use `for await` + plain Swift logic |
+| Cancellation | `AnyCancellable` / `.store(in:)` | Structured — cancelled when the `Task` is cancelled |
+| Backpressure | Supported (demand-based) | Not supported — producer runs freely |
+| Error handling | Typed (`Failure` generic) | Use `AsyncThrowingStream` for errors |
+| Multiple subscribers | Yes (multicast) | No — single consumer only |
+| Learning curve | Higher (reactive mindset) | Lower (reads like normal async code) |
+
+### When to Use Each
+
+**Use Publisher when:**
+- You need operators like `.debounce`, `.combineLatest`, `.zip`, `.throttle`
+- You're working with `@Published` / `ObservableObject`
+- Multiple subscribers need the same data stream
+
+**Use AsyncStream when:**
+- You're wrapping a callback-based API into `async/await`
+- You want structured concurrency and automatic task cancellation
+- The logic is simple enough that Combine operators would be overkill
+
+### They Can Work Together
+```swift
+// Convert a Publisher to an AsyncStream — use for await on any Publisher
+for await value in publisher.values {
+    print(value)
+}
+```
+
+The bottom line: **Combine is more powerful but more complex**. **AsyncStream is simpler and fits naturally into `async/await` code**, but lacks the operator ecosystem.
+
+## Is `.sink` an implicit subscription?
+
+Yes, exactly. `.sink` creates a subscription and returns an `AnyCancellable` — but the subscription stays alive **only as long as you hold onto that `AnyCancellable`**.
+
+```swift
+// This subscription dies immediately — AnyCancellable is discarded
+publisher.sink { print($0) }
+
+// This keeps it alive as long as `cancellables` lives
+publisher
+    .sink { print($0) }
+    .store(in: &cancellables)  // ← the explicit "keep alive"
+```
+
+### The Flow
+
+1. `.sink` — creates the subscription and starts listening
+2. Returns `AnyCancellable` — a handle to that subscription
+3. `.store(in: &cancellables)` — keeps the handle alive so the subscription isn't immediately cancelled
+
+### Push vs Pull
+
+The key distinction vs `AsyncStream`:
+
+- **`.sink`** — the publisher **pushes** values to you. The closure is called automatically whenever a value arrives. You're not driving it.
+- **`for await`** — **you pull** values from the stream. You're explicitly iterating and driving the consumption.
+
+```swift
+// Publisher pushes — you react
+publisher.sink { value in
+    print(value)  // called for you
+}
+
+// AsyncStream pulls — you drive
+for await value in stream {
+    print(value)  // you asked for the next value
+}
+```
