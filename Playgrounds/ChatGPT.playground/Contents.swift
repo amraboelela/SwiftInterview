@@ -31,7 +31,7 @@ let missingNumber = findMissingNumber(array: missingNumberArray)
 print(missingNumber) // 4
 
 
-// Two Sum
+// Two Sum, return two indexes which sum to the target number.
 
 func twoSum(array: [Int], target: Int) -> [Int]? {
     var dictionary = [Int: Int]()
@@ -106,8 +106,8 @@ fizzBuzz()
 // Linked List Cycle Detection
 
 class Node {
-    var next: Node?
     var value: Int
+    var next: Node?
 
     init(_ value: Int) {
         self.value = value
@@ -265,11 +265,17 @@ func areAnagrams(_ str1: String, _ str2: String) -> Bool {
 let string1 = "listen"
 let string2 = "silent"
 if areAnagrams(string1, string2) {
-    print("The strings are anagrams.")
+    print("string1 and string2 are anagrams.")
 } else {
-    print("The strings are not anagrams.")
+    print("string1 and string2 are not anagrams.")
 }
-
+let string3 = "Maalem"
+let string4 = "Lazem"
+if areAnagrams(string3, string4) {
+    print("string3 and string4 are anagrams.")
+} else {
+    print("string3 and string4 are not anagrams.")
+}
 
 // Find the Largest Element in a Binary Tree
 
@@ -316,7 +322,7 @@ if let largest = findLargestElement(root) {
 func fibonacci(upTo number: Int) -> [Int] {
     var fibonacciSequence = [Int]()
     
-    if number <= 0 {
+    guard number > 0 else {
         return fibonacciSequence
     }
     

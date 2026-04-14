@@ -42,13 +42,13 @@
       location = "group:Playgrounds"
       name = "Playgrounds">
       <FileRef
-         location = "group:Bard1.playground">
+         location = "group:Bard.playground">
       </FileRef>
       <FileRef
          location = "group:ChatGPT.playground">
       </FileRef>
       <FileRef
-         location = "group:InfoSys.playground">
+         location = "group:Infosys.playground">
       </FileRef>
       <FileRef
          location = "group:Intryst.playground">
