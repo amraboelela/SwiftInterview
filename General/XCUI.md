@@ -108,6 +108,44 @@ Both are only injected during testing — they have no effect on App Store build
 
 ---
 
+**Q: What is the difference between `XCUIElementQuery.tap()` and `XCUIElement.tap()`?**
+
+A: `XCUIElementQuery` does **not** have a `.tap()` method — only `XCUIElement` does. You must first resolve a query to an element before interacting with it:
+
+```swift
+app.buttons              // XCUIElementQuery — "all buttons", no .tap()
+app.buttons["login"]     // XCUIElement — subscript resolves the query, has .tap()
+app.buttons.firstMatch   // XCUIElement — resolved via .firstMatch, has .tap()
+app.buttons.element      // XCUIElement — resolved via .element, has .tap()
+
+app.buttons["login"].tap()    // ✅
+app.buttons.firstMatch.tap()  // ✅
+app.buttons.element.tap()     // ✅
+```
+
+| Expression | Type | Has `.tap()`? |
+|---|---|---|
+| `app.buttons` | `XCUIElementQuery` | No |
+| `app.buttons["x"]` | `XCUIElement` | Yes |
+| `app.buttons.firstMatch` | `XCUIElement` | Yes |
+| `app.buttons.element` | `XCUIElement` | Yes |
+
+The query describes *what to find*; the element is *what you found*. The rule is: **query → resolve → interact**.
+
+`app.buttons["login"]` always returns a valid `XCUIElement` object, never `nil`. If the element doesn't exist in the UI, it returns a phantom element with `exists == false`. Calling `.tap()` on it fails the test; checking `.exists` is always safe:
+
+```swift
+let button = app.buttons["login"]  // always returns XCUIElement, never nil
+button.exists                      // false if not found in UI
+button.tap()                       // fails the test because exists == false
+
+if button.exists {
+    button.tap()                   // safe
+}
+```
+
+---
+
 **Q: How do you find and interact with UI elements?**
 
 A:
