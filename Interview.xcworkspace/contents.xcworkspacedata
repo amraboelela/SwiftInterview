@@ -25,6 +25,9 @@
       <FileRef
          location = "group:SwiftUI.md">
       </FileRef>
+      <FileRef
+         location = "group:XCUI.md">
+      </FileRef>
    </Group>
    <FileRef
       location = "group:GoogleAssesment.md">
