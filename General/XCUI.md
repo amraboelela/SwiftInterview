@@ -641,3 +641,44 @@ func testScrollingPerformance() {
     }
 }
 ```
+
+---
+
+**Q: What architecture is used in XCUI testing when using POM, and how does it compare to MVC/MVVM?**
+
+A: When using the **Page Object Model (POM)** in XCUI testing, the pattern itself *is* the architecture — commonly referred to as the **Page Object Pattern**. There is no single branded name like MVC or MVVM, but **POM** is the standard term in the UI testing world. In its more advanced form it can evolve into the **Screenplay Pattern**.
+
+The layers map similarly to MVC/MVVM:
+
+| Layer | MVC/MVVM | POM in XCUI |
+|-------|----------|-------------|
+| UI | View | `XCUIElement` queries |
+| Logic | Controller / ViewModel | Page Object classes |
+| Actions / Data | Model | Test cases / actions |
+
+Example Page Object:
+
+```swift
+struct LoginPage {
+    let app: XCUIApplication
+
+    var emailField: XCUIElement { app.textFields["emailField"] }
+    var passwordField: XCUIElement { app.secureTextFields["passwordField"] }
+    var loginButton: XCUIElement { app.buttons["loginButton"] }
+
+    func login(email: String, password: String) {
+        emailField.tap()
+        emailField.typeText(email)
+        passwordField.tap()
+        passwordField.typeText(password)
+        loginButton.tap()
+    }
+}
+
+// In the test:
+func testLogin() {
+    let login = LoginPage(app: app)
+    login.login(email: "user@example.com", password: "pass123")
+    XCTAssertTrue(app.staticTexts["Welcome"].waitForExistence(timeout: 5))
+}
+```
