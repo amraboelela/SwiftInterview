@@ -282,7 +282,7 @@ func waitForExistence(_ element: XCUIElement, timeout: TimeInterval = 5) async t
 | Async | No | Yes (`async throws`) |
 | Test annotation | `func test...()` | `@Test func ...()` |
 
-Swift Testing is still maturing — `waitForExistence` style built-in support for UI elements is not yet available as of Xcode 16.
+Swift Testing still has no built-in `waitForExistence` equivalent as of Xcode 26. The polling workaround above remains the standard approach.
 
 ---
 
@@ -317,13 +317,11 @@ A:
 // By type only
 app.buttons.firstMatch
 
-// By accessibility identifier
+// By accessibilityIdentifier — these two are equivalent
 app.buttons["submitButton"]
+app.buttons.matching(identifier: "submitButton").firstMatch
 
-// By label (displayed text)
-app.buttons.matching(identifier: "Submit").firstMatch
-
-// Using NSPredicate
+// By label (displayed text) — using NSPredicate
 let predicate = NSPredicate(format: "label CONTAINS 'Submit'")
 app.buttons.matching(predicate).firstMatch
 ```
@@ -343,6 +341,47 @@ if alert.waitForExistence(timeout: 3) {
     alert.buttons["Allow"].tap()
 }
 ```
+
+---
+
+**Q: What are `app.cells` in XCUITest and how do they map to SwiftUI?**
+
+A: `app.cells` refers to `UITableViewCell` or `UICollectionViewCell` elements. XCUITest maps every UI component to an element type via the accessibility tree:
+
+| Query | UIKit | SwiftUI |
+|---|---|---|
+| `app.buttons` | `UIButton` | `Button` |
+| `app.staticTexts` | `UILabel` | `Text` |
+| `app.textFields` | `UITextField` | `TextField` |
+| `app.secureTextFields` | `UITextField` (secure) | `SecureField` |
+| `app.switches` | `UISwitch` | `Toggle` |
+| `app.cells` | `UITableViewCell` / `UICollectionViewCell` | `List` row |
+| `app.tables` | `UITableView` | `List` |
+| `app.collectionViews` | `UICollectionView` | `LazyVGrid` / `LazyHGrid` |
+| `app.images` | `UIImageView` | `Image` |
+| `app.sliders` | `UISlider` | `Slider` |
+| `app.alerts` | `UIAlertController` | `Alert` |
+
+In SwiftUI, set the identifier using `.accessibilityIdentifier()` modifier:
+
+```swift
+// SwiftUI production code
+Button("Login") { }
+    .accessibilityIdentifier("loginButton")
+
+List {
+    ForEach(items) { item in
+        Text(item.title)
+            .accessibilityIdentifier("cell_\(item.id)")
+    }
+}
+
+// XCUITest — same as UIKit
+app.buttons["loginButton"].tap()
+app.cells["cell_123"].tap()
+```
+
+Note: complex SwiftUI custom views or containers like `VStack`/`Group` may appear as `other` type in the accessibility tree. Use **Accessibility Inspector** in Xcode to verify what XCUITest actually sees, and use `.accessibilityElement(children: .combine)` when needed.
 
 ---
 
@@ -585,3 +624,36 @@ For actual accessibility (VoiceOver), use these instead:
 | `accessibilityLabel` | Yes | Yes |
 | `accessibilityHint` | Yes | No |
 | `accessibilityValue` | Yes | No |
+
+---
+
+**Q: Does `accessibilityIdentifier` have to be unique within the whole app or just the screen?**
+
+A: It does not have to be unique within the whole app — only within the **current query scope**. XCUITest resolves elements based on the query hierarchy, so the same identifier can exist on multiple screens without conflict as long as only one screen is visible at a time:
+
+```swift
+// Both screens can have a "submitButton" — no conflict
+app.buttons["submitButton"].tap()  // finds the visible one
+```
+
+Within the **same screen**, duplicate identifiers cause ambiguity:
+
+```swift
+app.buttons["submitButton"].tap()          // ❌ ambiguous — may tap wrong one
+app.buttons["submitButton"].firstMatch.tap() // taps the first one found
+app.buttons["submitButton"].element.tap()    // ❌ fails — multiple matches
+```
+
+For repeated elements like table cells, scope your query to avoid ambiguity:
+
+```swift
+// Each cell has a "titleLabel" — scope to a specific cell
+let cell = app.cells.element(boundBy: 0)
+cell.staticTexts["titleLabel"].tap()  // scoped — no ambiguity
+```
+
+| Scope | Requirement |
+|---|---|
+| Across different screens | Can reuse identifiers safely |
+| Within the same screen | Should be unique |
+| Within a reusable cell | Same identifier repeats — scope query to parent cell |
