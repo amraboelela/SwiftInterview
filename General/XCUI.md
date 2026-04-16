@@ -73,16 +73,18 @@ app.launch()
 
 A:
 
-**`launchArguments = ["--uitesting"]`** — passes string flags to the app at launch. Your app detects them via `CommandLine.arguments` and changes behavior specifically for testing:
+**`launchArguments = ["--uitesting"]`** — passes string flags to the app at launch. Your app detects them via `ProcessInfo.processInfo.arguments` and changes behavior specifically for testing:
 
 ```swift
 // In app code
-if CommandLine.arguments.contains("--uitesting") {
+if ProcessInfo.processInfo.arguments.contains("--uitesting") {
     // Skip onboarding
     // Use mock data instead of real API
     // Reset app state to a clean slate
 }
 ```
+
+Note: `CommandLine.arguments` is an equivalent Swift stdlib alternative, but using `ProcessInfo` for both arguments and environment keeps everything consistent in one place.
 
 The benefit is **test isolation** — every test starts from a known, predictable state without depending on previous runs or real backend data.
 
@@ -100,7 +102,7 @@ The benefit is **speed and reliability** — animations cause tests to fail beca
 | | `launchArguments` | `launchEnvironment` |
 |---|---|---|
 | Type | Array of strings | Dictionary of strings |
-| Read via | `CommandLine.arguments` | `ProcessInfo.processInfo.environment` |
+| Read via | `ProcessInfo.processInfo.arguments` | `ProcessInfo.processInfo.environment` |
 | Best for | Feature flags / modes | Configuration values |
 | Example | `"--uitesting"`, `"--reset"` | `"DISABLE_ANIMATIONS": "1"`, `"BASE_URL": "mock"` |
 
@@ -108,7 +110,61 @@ Both are only injected during testing — they have no effect on App Store build
 
 ---
 
-**Q: What is the difference between `XCUIElementQuery.tap()` and `XCUIElement.tap()`?**
+**Q: Why use `setUpWithError() throws` instead of `setUp()`?**
+
+A: `setUpWithError()` lets you throw errors — if something in setup fails, the test fails immediately with a clear error message instead of silently continuing with broken state.
+
+```swift
+// Legacy — can't throw, failures are silent or cause crashes
+override func setUp() {
+    super.setUp()
+}
+
+// Modern — can throw, test fails immediately with a clear message
+override func setUpWithError() throws {
+    continueAfterFailure = false
+    app = XCUIApplication()
+    app.launch()
+}
+```
+
+| | `setUp()` | `setUpWithError()` |
+|---|---|---|
+| Can throw | No | Yes |
+| Introduced | Original XCTest | Xcode 11 |
+| Recommended | Legacy | Yes (modern default) |
+
+Xcode generates `setUpWithError()` by default in new test files — use it consistently even if you don't throw today, it's future-proof.
+
+---
+
+**Q: What does `continueAfterFailure = false` do?**
+
+A: When set to `false`, the test stops immediately after the first assertion failure. This prevents cascading failures where subsequent steps fail only because an earlier step failed, making it easier to diagnose the root cause. It is recommended to set this in `setUp` for UI tests.
+
+---
+
+**Q: How do you find and interact with UI elements?**
+
+A:
+```swift
+let app = XCUIApplication()
+
+// Tap a button by accessibility identifier
+app.buttons["loginButton"].tap()
+
+// Type into a text field
+let emailField = app.textFields["emailField"]
+emailField.tap()
+emailField.typeText("user@example.com")
+
+// Assert a label exists
+XCTAssertTrue(app.staticTexts["Welcome"].exists)
+```
+
+---
+
+**Q: What is the difference between `XCUIElementQuery` and `XCUIElement`?**
 
 A: `XCUIElementQuery` does **not** have a `.tap()` method — only `XCUIElement` does. You must first resolve a query to an element before interacting with it:
 
@@ -146,29 +202,9 @@ if button.exists {
 
 ---
 
-**Q: How do you find and interact with UI elements?**
-
-A:
-```swift
-let app = XCUIApplication()
-
-// Tap a button by accessibility identifier
-app.buttons["loginButton"].tap()
-
-// Type into a text field
-let emailField = app.textFields["emailField"]
-emailField.tap()
-emailField.typeText("user@example.com")
-
-// Assert a label exists
-XCTAssertTrue(app.staticTexts["Welcome"].exists)
-```
-
----
-
 **Q: What happens if you call `.tap()` on an element that doesn't exist?**
 
-A: The test **fails** (not crashes) with "Failed to find matching element". Element queries are lazy — they don't fail until you call an interaction like `.tap()` or `.typeText()`. Use `waitForExistence` or `.exists` to handle it safely:
+A: The test **fails** (not crashes) with "Failed to find matching element". Use `waitForExistence` or `.exists` to handle it safely:
 
 ```swift
 // ❌ Fails the test if element is missing
@@ -187,10 +223,66 @@ if button.exists {
 
 | Code | Element missing behavior |
 |------|--------------------------|
-| `app.buttons["x"]` | Returns a query — no failure yet |
+| `app.buttons["x"]` | Returns phantom XCUIElement, exists == false |
 | `.exists` | Returns `false` — safe |
 | `.tap()` / `.click()` | Fails the test immediately |
 | `.waitForExistence(timeout:)` | Returns `false` after timeout — safe |
+
+---
+
+**Q: How do you wait for an element to appear?**
+
+A:
+```swift
+let button = app.buttons["submitButton"]
+let exists = button.waitForExistence(timeout: 5)
+XCTAssertTrue(exists, "Submit button did not appear in time")
+```
+
+---
+
+**Q: What is the Swift Testing equivalent of `waitForExistence(timeout:)`?**
+
+A: Swift Testing has no built-in equivalent — you poll manually with `Task.sleep`:
+
+```swift
+// XCTest
+XCTAssertTrue(button.waitForExistence(timeout: 5))
+
+// Swift Testing — poll until element exists
+@Test func buttonAppears() async throws {
+    let button = app.buttons["submitButton"]
+    let deadline = Date.now.addingTimeInterval(5)
+    while !button.exists && Date.now < deadline {
+        try await Task.sleep(for: .milliseconds(100))
+    }
+    #expect(button.exists)
+}
+```
+
+Or wrap it in a reusable helper:
+```swift
+func waitForExistence(_ element: XCUIElement, timeout: TimeInterval = 5) async throws {
+    let deadline = Date.now.addingTimeInterval(timeout)
+    while !element.exists && Date.now < deadline {
+        try await Task.sleep(for: .milliseconds(100))
+    }
+}
+
+@Test func buttonAppears() async throws {
+    try await waitForExistence(app.buttons["submitButton"])
+    #expect(app.buttons["submitButton"].exists)
+}
+```
+
+| | XCTest | Swift Testing |
+|---|---|---|
+| Wait API | `waitForExistence(timeout:)` | No built-in — poll manually |
+| Assert | `XCTAssertTrue` | `#expect` |
+| Async | No | Yes (`async throws`) |
+| Test annotation | `func test...()` | `@Test func ...()` |
+
+Swift Testing is still maturing — `waitForExistence` style built-in support for UI elements is not yet available as of Xcode 16.
 
 ---
 
@@ -208,20 +300,13 @@ app.buttons["loginButton"].click()
 
 ---
 
-**Q: What does `continueAfterFailure = false` do?**
-
-A: When set to `false`, the test stops immediately after the first assertion failure. This prevents cascading failures where subsequent steps fail only because an earlier step failed, making it easier to diagnose the root cause. It is recommended to set this in `setUp` for UI tests.
-
----
-
-**Q: How do you wait for an element to appear?**
+**Q: What is the difference between `.firstMatch` and `.element`?**
 
 A:
-```swift
-let button = app.buttons["submitButton"]
-let exists = button.waitForExistence(timeout: 5)
-XCTAssertTrue(exists, "Submit button did not appear in time")
-```
+- `.element` — resolves to the single matching element; fails with an error if there are multiple matches
+- `.firstMatch` — resolves to the first matching element without raising an error for multiple matches; faster because the query stops at the first result
+
+Use `.firstMatch` when you know there may be multiple matches and you want the first one. Use `.element` when you expect exactly one match and want a diagnostic error if that assumption is violated.
 
 ---
 
@@ -242,16 +327,6 @@ app.buttons.matching(identifier: "Submit").firstMatch
 let predicate = NSPredicate(format: "label CONTAINS 'Submit'")
 app.buttons.matching(predicate).firstMatch
 ```
-
----
-
-**Q: What is the difference between `.firstMatch` and `.element`?**
-
-A:
-- `.element` — resolves to the single matching element; fails with an error if there are multiple matches
-- `.firstMatch` — resolves to the first matching element without raising an error for multiple matches; faster because the query stops at the first result
-
-Use `.firstMatch` when you know there may be multiple matches and you want the first one. Use `.element` when you expect exactly one match and want a diagnostic error if that assumption is violated.
 
 ---
 
