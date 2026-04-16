@@ -188,55 +188,183 @@ app.buttons.element.tap()     // ✅
 
 The query describes *what to find*; the element is *what you found*. The rule is: **query → resolve → interact**.
 
-`app.buttons["login"]` always returns a valid `XCUIElement` object, never `nil`. If the element doesn't exist in the UI, it returns a phantom element with `exists == false`. Calling `.tap()` on it fails the test; checking `.exists` is always safe:
-
-```swift
-let button = app.buttons["login"]  // always returns XCUIElement, never nil
-button.exists                      // false if not found in UI
-button.tap()                       // fails the test because exists == false
-
-if button.exists {
-    button.tap()                   // safe
-}
-```
-
----
-
-**Q: What happens if you call `.tap()` on an element that doesn't exist?**
-
-A: The test **fails** (not crashes) with "Failed to find matching element". Use `waitForExistence` or `.exists` to handle it safely:
-
-```swift
-// ❌ Fails the test if element is missing
-app.buttons["loginButton"].tap()
-
-// ✅ Wait for it to appear
-let button = app.buttons["loginButton"]
-XCTAssertTrue(button.waitForExistence(timeout: 5))
-button.tap()  // or .click() on macOS
-
-// ✅ Conditional interaction
-if button.exists {
-    button.tap()  // or .click() on macOS
-}
-```
+`app.buttons["login"]` always returns a valid `XCUIElement` object, never `nil`. If the element doesn't exist in the UI, it returns a phantom element with `exists == false`:
 
 | Code | Element missing behavior |
 |------|--------------------------|
 | `app.buttons["x"]` | Returns phantom XCUIElement, exists == false |
 | `.exists` | Returns `false` — safe |
-| `.tap()` / `.click()` | Fails the test immediately |
+| `.tap()` / `.click()` | Fails the test immediately with "Failed to find matching element" |
 | `.waitForExistence(timeout:)` | Returns `false` after timeout — safe |
+
+```swift
+let button = app.buttons["loginButton"]
+
+// ✅ Wait for it to appear, then tap
+XCTAssertTrue(button.waitForExistence(timeout: 5))
+button.tap()
+
+// ✅ Conditional interaction
+if button.exists {
+    button.tap()
+}
+```
+
+---
+
+**Q: What is the difference between `.firstMatch` and `.element`?**
+
+A:
+- `.element` — resolves to the single matching element; fails with an error if there are multiple matches
+- `.firstMatch` — resolves to the first matching element without raising an error for multiple matches; faster because the query stops at the first result
+
+Use `.firstMatch` when you know there may be multiple matches and you want the first one. Use `.element` when you expect exactly one match and want a diagnostic error if that assumption is violated.
+
+---
+
+**Q: How do you query elements by type and accessibility label?**
+
+A:
+```swift
+// By type only
+app.buttons.firstMatch
+
+// By accessibilityIdentifier — these two are equivalent
+app.buttons["submitButton"]
+app.buttons.matching(identifier: "submitButton").firstMatch
+
+// By label (displayed text) — using NSPredicate
+let predicate = NSPredicate(format: "label CONTAINS 'Submit'")
+app.buttons.matching(predicate).firstMatch
+```
+
+---
+
+**Q: What are `app.cells` in XCUITest and how do they map to SwiftUI?**
+
+A: `app.cells` refers to `UITableViewCell` or `UICollectionViewCell` elements. XCUITest maps every UI component to an element type via the accessibility tree:
+
+| Query | UIKit | SwiftUI |
+|---|---|---|
+| `app.buttons` | `UIButton` | `Button` |
+| `app.staticTexts` | `UILabel` | `Text` |
+| `app.textFields` | `UITextField` | `TextField` |
+| `app.secureTextFields` | `UITextField` (secure) | `SecureField` |
+| `app.switches` | `UISwitch` | `Toggle` |
+| `app.cells` | `UITableViewCell` / `UICollectionViewCell` | `List` row |
+| `app.tables` | `UITableView` | `List` |
+| `app.collectionViews` | `UICollectionView` | `LazyVGrid` / `LazyHGrid` |
+| `app.images` | `UIImageView` | `Image` |
+| `app.sliders` | `UISlider` | `Slider` |
+| `app.alerts` | `UIAlertController` | `Alert` |
+
+In SwiftUI, set the identifier using `.accessibilityIdentifier()` modifier:
+
+```swift
+// SwiftUI production code
+Button("Login") { }
+    .accessibilityIdentifier("loginButton")
+
+List {
+    ForEach(items) { item in
+        Text(item.title)
+            .accessibilityIdentifier("cell_\(item.id)")
+    }
+}
+
+// XCUITest — same as UIKit
+app.buttons["loginButton"].tap()
+app.cells["cell_123"].tap()
+```
+
+Note: complex SwiftUI custom views or containers like `VStack`/`Group` may appear as `other` type in the accessibility tree. Use **Accessibility Inspector** in Xcode to verify what XCUITest actually sees, and use `.accessibilityElement(children: .combine)` when needed.
+
+---
+
+**Q: Is `accessibilityIdentifier` only useful for XCUITest?**
+
+A: Yes. `accessibilityIdentifier` is a string used to uniquely identify UI elements in tests without depending on localized text or visual appearance. It is purely a testing hook — VoiceOver and other assistive technologies completely ignore it. It has zero runtime cost or user-facing impact, so most teams leave it in production builds. Some codebases strip it in release builds anyway:
+
+```swift
+// Set in production code
+loginButton.accessibilityIdentifier = "loginButton"
+
+// Used in UI test
+app.buttons["loginButton"].tap()
+
+// Optionally stripped from release builds
+#if DEBUG
+button.accessibilityIdentifier = "loginButton"
+#endif
+```
+
+For actual accessibility (VoiceOver), use these instead:
+
+| Property | VoiceOver | XCUITest |
+|---|---|---|
+| `accessibilityIdentifier` | No | Yes |
+| `accessibilityLabel` | Yes | Yes |
+| `accessibilityHint` | Yes | No |
+| `accessibilityValue` | Yes | No |
+
+---
+
+**Q: Does `accessibilityIdentifier` have to be unique within the whole app or just the screen?**
+
+A: It does not have to be unique within the whole app — only within the **current query scope**. XCUITest resolves elements based on the query hierarchy, so the same identifier can exist on multiple screens without conflict as long as only one screen is visible at a time:
+
+```swift
+// Both screens can have a "submitButton" — no conflict
+app.buttons["submitButton"].tap()  // finds the visible one
+```
+
+Within the **same screen**, duplicate identifiers cause ambiguity:
+
+```swift
+app.buttons["submitButton"].tap()          // ❌ ambiguous — may tap wrong one
+app.buttons["submitButton"].firstMatch.tap() // taps the first one found
+app.buttons["submitButton"].element.tap()    // ❌ fails — multiple matches
+```
+
+For repeated elements like table cells, scope your query to avoid ambiguity:
+
+```swift
+// Each cell has a "titleLabel" — scope to a specific cell
+let cell = app.cells.element(boundBy: 0)
+cell.staticTexts["titleLabel"].tap()  // scoped — no ambiguity
+```
+
+`XCUIElementQuery` has no `[Int]` subscript by default, so `query[0]` doesn't compile. You can add one via extension:
+
+```swift
+extension XCUIElementQuery {
+    subscript(index: Int) -> XCUIElement {
+        element(boundBy: index)
+    }
+}
+```
+
+Then use it like an array:
+```swift
+wait(for: sectionHeaderText[0], toShow: "7 text files")
+wait(for: sectionHeaderText[1], toShow: "3 pdf files")
+wait(for: sectionHeaderText[2], toShow: "1 image file")
+```
+
+| Scope | Requirement |
+|---|---|
+| Across different screens | Can reuse identifiers safely |
+| Within the same screen | Should be unique |
+| Within a reusable cell | Same identifier repeats — scope query to parent cell |
 
 ---
 
 **Q: How do you wait for an element to appear?**
 
-A:
+A: Use `waitForExistence(timeout:)` — it returns a `Bool`, so you can pass a failure message:
 ```swift
 let button = app.buttons["submitButton"]
-let exists = button.waitForExistence(timeout: 5)
-XCTAssertTrue(exists, "Submit button did not appear in time")
+XCTAssertTrue(button.waitForExistence(timeout: 5), "Submit button did not appear in time")
 ```
 
 ---
@@ -301,30 +429,25 @@ app.buttons["loginButton"].click()
 
 ---
 
-**Q: What is the difference between `.firstMatch` and `.element`?**
-
-A:
-- `.element` — resolves to the single matching element; fails with an error if there are multiple matches
-- `.firstMatch` — resolves to the first matching element without raising an error for multiple matches; faster because the query stops at the first result
-
-Use `.firstMatch` when you know there may be multiple matches and you want the first one. Use `.element` when you expect exactly one match and want a diagnostic error if that assumption is violated.
-
----
-
-**Q: How do you query elements by type and accessibility label?**
+**Q: How do you simulate a swipe gesture?**
 
 A:
 ```swift
-// By type only
-app.buttons.firstMatch
+app.tables.firstMatch.swipeUp()
+app.tables.firstMatch.swipeDown()
 
-// By accessibilityIdentifier — these two are equivalent
-app.buttons["submitButton"]
-app.buttons.matching(identifier: "submitButton").firstMatch
+// Swipe on a specific element
+app.cells["myCell"].swipeLeft()
+```
 
-// By label (displayed text) — using NSPredicate
-let predicate = NSPredicate(format: "label CONTAINS 'Submit'")
-app.buttons.matching(predicate).firstMatch
+---
+
+**Q: How do you test a UIPickerWheel or date picker?**
+
+A:
+```swift
+let picker = app.pickerWheels.firstMatch
+picker.adjust(toPickerWheelValue: "March")
 ```
 
 ---
@@ -345,47 +468,6 @@ if alert.waitForExistence(timeout: 3) {
 
 ---
 
-**Q: What are `app.cells` in XCUITest and how do they map to SwiftUI?**
-
-A: `app.cells` refers to `UITableViewCell` or `UICollectionViewCell` elements. XCUITest maps every UI component to an element type via the accessibility tree:
-
-| Query | UIKit | SwiftUI |
-|---|---|---|
-| `app.buttons` | `UIButton` | `Button` |
-| `app.staticTexts` | `UILabel` | `Text` |
-| `app.textFields` | `UITextField` | `TextField` |
-| `app.secureTextFields` | `UITextField` (secure) | `SecureField` |
-| `app.switches` | `UISwitch` | `Toggle` |
-| `app.cells` | `UITableViewCell` / `UICollectionViewCell` | `List` row |
-| `app.tables` | `UITableView` | `List` |
-| `app.collectionViews` | `UICollectionView` | `LazyVGrid` / `LazyHGrid` |
-| `app.images` | `UIImageView` | `Image` |
-| `app.sliders` | `UISlider` | `Slider` |
-| `app.alerts` | `UIAlertController` | `Alert` |
-
-In SwiftUI, set the identifier using `.accessibilityIdentifier()` modifier:
-
-```swift
-// SwiftUI production code
-Button("Login") { }
-    .accessibilityIdentifier("loginButton")
-
-List {
-    ForEach(items) { item in
-        Text(item.title)
-            .accessibilityIdentifier("cell_\(item.id)")
-    }
-}
-
-// XCUITest — same as UIKit
-app.buttons["loginButton"].tap()
-app.cells["cell_123"].tap()
-```
-
-Note: complex SwiftUI custom views or containers like `VStack`/`Group` may appear as `other` type in the accessibility tree. Use **Accessibility Inspector** in Xcode to verify what XCUITest actually sees, and use `.accessibilityElement(children: .combine)` when needed.
-
----
-
 **Q: How do you find elements that are not immediately visible (e.g., inside a scroll view)?**
 
 A: Scroll to reveal the element, then interact with it:
@@ -396,37 +478,6 @@ table.swipeUp()
 let cell = app.cells["targetCell"]
 XCTAssertTrue(cell.waitForExistence(timeout: 3))
 cell.tap()
-```
-
----
-
-**Q: How do you use Page Object Model (POM) in XCUITest?**
-
-A: POM encapsulates UI element queries and interactions in dedicated screen objects, separating test logic from UI details:
-
-```swift
-struct LoginScreen {
-    let app: XCUIApplication
-
-    var emailField: XCUIElement { app.textFields["emailField"] }
-    var passwordField: XCUIElement { app.secureTextFields["passwordField"] }
-    var loginButton: XCUIElement { app.buttons["loginButton"] }
-
-    func login(email: String, password: String) {
-        emailField.tap()
-        emailField.typeText(email)
-        passwordField.tap()
-        passwordField.typeText(password)
-        loginButton.tap()
-    }
-}
-
-// In test
-func testLogin() {
-    let login = LoginScreen(app: app)
-    login.login(email: "user@example.com", password: "pass")
-    XCTAssertTrue(app.staticTexts["Welcome"].waitForExistence(timeout: 5))
-}
 ```
 
 ---
@@ -471,16 +522,52 @@ override func setUpWithError() throws {
 
 ---
 
-**Q: How do you simulate a swipe gesture?**
+**Q: How do you use Page Object Model (POM) in XCUITest?**
+
+A: POM encapsulates UI element queries and interactions in dedicated screen objects, separating test logic from UI details:
+
+```swift
+struct LoginScreen {
+    let app: XCUIApplication
+
+    var emailField: XCUIElement { app.textFields["emailField"] }
+    var passwordField: XCUIElement { app.secureTextFields["passwordField"] }
+    var loginButton: XCUIElement { app.buttons["loginButton"] }
+
+    func login(email: String, password: String) {
+        emailField.tap()
+        emailField.typeText(email)
+        passwordField.tap()
+        passwordField.typeText(password)
+        loginButton.tap()
+    }
+}
+
+// In test
+func testLogin() {
+    let login = LoginScreen(app: app)
+    login.login(email: "user@example.com", password: "pass")
+    XCTAssertTrue(app.staticTexts["Welcome"].waitForExistence(timeout: 5))
+}
+```
+
+---
+
+**Q: What is the difference between `app.windows.firstMatch.groups.firstMatch` and `app.windows.matching(identifier:).firstMatch`?**
 
 A:
-```swift
-app.tables.firstMatch.swipeUp()
-app.tables.firstMatch.swipeDown()
+- `app.windows.firstMatch.groups.firstMatch` — grabs the first available window then the first group inside it. Generic and works without knowing any identifiers, but fragile if multiple windows are open (sheets, popovers) since you may get the wrong one.
+- `app.windows.matching(identifier: "com_apple_SwiftUI_Settings_window").firstMatch` — targets a specific window by its accessibility identifier. The identifier `com_apple_SwiftUI_Settings_window` is auto-generated by SwiftUI for the Settings scene on macOS.
 
-// Swipe on a specific element
-app.cells["myCell"].swipeLeft()
+```swift
+// Generic — simple apps with one window
+let group = app.windows.firstMatch.groups.firstMatch
+
+// Precise — macOS SwiftUI apps with multiple windows/scenes
+let settingsWindow = app.windows.matching(identifier: "com_apple_SwiftUI_Settings_window").firstMatch
 ```
+
+Use `.firstMatch` chains for simple single-window apps. Use `.matching(identifier:)` on macOS when multiple windows can be open simultaneously (e.g., Settings window vs main window) to avoid accidentally targeting the wrong one.
 
 ---
 
@@ -493,16 +580,6 @@ let attachment = XCTAttachment(screenshot: screenshot)
 attachment.name = "Login Screen"
 attachment.lifetime = .keepAlways
 add(attachment)
-```
-
----
-
-**Q: How do you test a UIPickerWheel or date picker?**
-
-A:
-```swift
-let picker = app.pickerWheels.firstMatch
-picker.adjust(toPickerWheelValue: "March")
 ```
 
 ---
@@ -560,90 +637,3 @@ func testScrollingPerformance() {
     }
 }
 ```
-
----
-
-**Q: What is the difference between `app.windows.firstMatch.groups.firstMatch` and `app.windows.matching(identifier:).firstMatch`?**
-
-A:
-- `app.windows.firstMatch.groups.firstMatch` — grabs the first available window then the first group inside it. Generic and works without knowing any identifiers, but fragile if multiple windows are open (sheets, popovers) since you may get the wrong one.
-- `app.windows.matching(identifier: "com_apple_SwiftUI_Settings_window").firstMatch` — targets a specific window by its accessibility identifier. The identifier `com_apple_SwiftUI_Settings_window` is auto-generated by SwiftUI for the Settings scene on macOS.
-
-```swift
-// Generic — simple apps with one window
-let group = app.windows.firstMatch.groups.firstMatch
-
-// Precise — macOS SwiftUI apps with multiple windows/scenes
-let settingsWindow = app.windows.matching(identifier: "com_apple_SwiftUI_Settings_window").firstMatch
-```
-
-Use `.firstMatch` chains for simple single-window apps. Use `.matching(identifier:)` on macOS when multiple windows can be open simultaneously (e.g., Settings window vs main window) to avoid accidentally targeting the wrong one.
-
----
-
-**Q: Is `accessibilityIdentifier` only useful for XCUITest?**
-
-A: Yes. `accessibilityIdentifier` is a string used to uniquely identify UI elements in tests without depending on localized text or visual appearance. It is purely a testing hook — VoiceOver and other assistive technologies completely ignore it. It has zero runtime cost or user-facing impact, so most teams leave it in production builds. Some codebases strip it in release builds anyway:
-
-```swift
-// Set in production code
-loginButton.accessibilityIdentifier = "loginButton"
-
-// Used in UI test
-app.buttons["loginButton"].tap()
-
-// Optionally stripped from release builds
-#if DEBUG
-button.accessibilityIdentifier = "loginButton"
-#endif
-```
-
-For actual accessibility (VoiceOver), use these instead:
-
-| Property | VoiceOver | XCUITest |
-|---|---|---|
-| `accessibilityIdentifier` | No | Yes |
-| `accessibilityLabel` | Yes | Yes |
-| `accessibilityHint` | Yes | No |
-| `accessibilityValue` | Yes | No |
-
----
-
-**Q: Does `accessibilityIdentifier` have to be unique within the whole app or just the screen?**
-
-A: It does not have to be unique within the whole app — only within the **current query scope**. XCUITest resolves elements based on the query hierarchy, so the same identifier can exist on multiple screens without conflict as long as only one screen is visible at a time:
-
-```swift
-// Both screens can have a "submitButton" — no conflict
-app.buttons["submitButton"].tap()  // finds the visible one
-```
-
-Within the **same screen**, duplicate identifiers cause ambiguity:
-
-```swift
-app.buttons["submitButton"].tap()          // ❌ ambiguous — may tap wrong one
-app.buttons["submitButton"].firstMatch.tap() // taps the first one found
-app.buttons["submitButton"].element.tap()    // ❌ fails — multiple matches
-```
-
-For repeated elements like table cells, scope your query to avoid ambiguity:
-
-```swift
-// Each cell has a "titleLabel" — scope to a specific cell
-let cell = app.cells.element(boundBy: 0)
-cell.staticTexts["titleLabel"].tap()  // scoped — no ambiguity
-```
-
-`element(boundBy:)` is the only way to access elements by index — `XCUIElementQuery` has no `[Int]` subscript, so `query[0]` doesn't compile.
-
-```swift
-// Verify multiple section headers in order
-wait(for: sectionHeaderText.element(boundBy: 0), toShow: "text files")
-wait(for: sectionHeaderText.element(boundBy: 1), toShow: "pdf files")
-```
-
-| Scope | Requirement |
-|---|---|
-| Across different screens | Can reuse identifiers safely |
-| Within the same screen | Should be unique |
-| Within a reusable cell | Same identifier repeats — scope query to parent cell |
