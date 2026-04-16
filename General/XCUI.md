@@ -440,6 +440,18 @@ app.tables.firstMatch.swipeDown()
 app.cells["myCell"].swipeLeft()
 ```
 
+`swipeUp()` scrolls a fixed distance (roughly one screen height) — not all the way to the bottom. To scroll until a specific element is visible, use `scrollToElement` or loop:
+
+```swift
+// Preferred — scroll directly to element
+app.tables.firstMatch.scrollToElement(app.cells["targetCell"])
+
+// Alternative — loop until visible
+while !app.cells["targetCell"].exists {
+    app.tables.firstMatch.swipeUp()
+}
+```
+
 ---
 
 **Q: How do you test a UIPickerWheel or date picker?**
