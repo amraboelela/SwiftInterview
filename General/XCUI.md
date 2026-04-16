@@ -254,7 +254,7 @@ XCTAssertTrue(button.waitForExistence(timeout: 5))
     let button = app.buttons["submitButton"]
     let deadline = Date.now.addingTimeInterval(5)
     while !button.exists && Date.now < deadline {
-        try await Task.sleep(for: .milliseconds(100))
+        try await Task.sleep(for: .seconds(0.1))
     }
     #expect(button.exists)
 }
@@ -265,13 +265,14 @@ Or wrap it in a reusable helper:
 func waitForExistence(_ element: XCUIElement, timeout: TimeInterval = 5) async throws {
     let deadline = Date.now.addingTimeInterval(timeout)
     while !element.exists && Date.now < deadline {
-        try await Task.sleep(for: .milliseconds(100))
+        try await Task.sleep(for: .seconds(0.1))
     }
 }
 
 @Test func buttonAppears() async throws {
-    try await waitForExistence(app.buttons["submitButton"])
-    #expect(app.buttons["submitButton"].exists)
+    let button = app.buttons["submitButton"]
+    try await waitForExistence(button)
+    #expect(button.exists)
 }
 ```
 
@@ -395,25 +396,6 @@ table.swipeUp()
 let cell = app.cells["targetCell"]
 XCTAssertTrue(cell.waitForExistence(timeout: 3))
 cell.tap()
-```
-
----
-
-**Q: How do you disable animations to speed up UI tests?**
-
-A: Pass a launch environment variable and handle it in the app:
-
-```swift
-// In UI test setUp
-app.launchEnvironment = ["DISABLE_ANIMATIONS": "1"]
-app.launch()
-```
-
-```swift
-// In AppDelegate or app entry point
-if ProcessInfo.processInfo.environment["DISABLE_ANIMATIONS"] == "1" {
-    UIView.setAnimationsEnabled(false)
-}
 ```
 
 ---
@@ -650,6 +632,14 @@ For repeated elements like table cells, scope your query to avoid ambiguity:
 // Each cell has a "titleLabel" — scope to a specific cell
 let cell = app.cells.element(boundBy: 0)
 cell.staticTexts["titleLabel"].tap()  // scoped — no ambiguity
+```
+
+`element(boundBy:)` is the only way to access elements by index — `XCUIElementQuery` has no `[Int]` subscript, so `query[0]` doesn't compile.
+
+```swift
+// Verify multiple section headers in order
+wait(for: sectionHeaderText.element(boundBy: 0), toShow: "text files")
+wait(for: sectionHeaderText.element(boundBy: 1), toShow: "pdf files")
 ```
 
 | Scope | Requirement |
