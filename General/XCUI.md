@@ -429,7 +429,7 @@ app.buttons["loginButton"].click()
 
 ---
 
-**Q: How do you simulate a swipe gesture?**
+**Q: How do you simulate a swipe gesture, and how do you scroll to an element not yet visible?**
 
 A:
 ```swift
@@ -450,6 +450,10 @@ app.tables.firstMatch.scrollToElement(app.cells["targetCell"])
 while !app.cells["targetCell"].exists {
     app.tables.firstMatch.swipeUp()
 }
+
+// Then wait and interact
+XCTAssertTrue(app.cells["targetCell"].waitForExistence(timeout: 3))
+app.cells["targetCell"].tap()
 ```
 
 ---
@@ -476,20 +480,6 @@ let alert = app.alerts.firstMatch
 if alert.waitForExistence(timeout: 3) {
     alert.buttons["Allow"].tap()
 }
-```
-
----
-
-**Q: How do you find elements that are not immediately visible (e.g., inside a scroll view)?**
-
-A: Scroll to reveal the element, then interact with it:
-```swift
-let table = app.tables.firstMatch
-table.swipeUp()
-
-let cell = app.cells["targetCell"]
-XCTAssertTrue(cell.waitForExistence(timeout: 3))
-cell.tap()
 ```
 
 ---
@@ -536,7 +526,9 @@ override func setUpWithError() throws {
 
 **Q: How do you use Page Object Model (POM) in XCUITest?**
 
-A: POM encapsulates UI element queries and interactions in dedicated screen objects, separating test logic from UI details:
+A: The name comes from web testing (Selenium), where each web **page** gets its own object. iOS inherited the pattern and the name — "Screen Object Model" would be more accurate since each object maps to a screen, and many iOS teams use that term internally. In interviews, "Page Object Model" is the expected term.
+
+POM encapsulates UI element queries and interactions in dedicated screen objects, separating test logic from UI details:
 
 ```swift
 struct LoginScreen {
