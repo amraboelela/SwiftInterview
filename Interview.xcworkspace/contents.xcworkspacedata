@@ -10,6 +10,9 @@
    <FileRef
       location = "group:Cognizant.md">
    </FileRef>
+   <FileRef
+      location = "group:IMCS.md">
+   </FileRef>
    <Group
       location = "group:General"
       name = "General">

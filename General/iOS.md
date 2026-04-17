@@ -41,35 +41,28 @@ The Model-View-Controller (MVC) architecture is a design pattern commonly used i
 ### Model:
 
 - Responsibility: The Model represents the application's data and business logic. It manages the data's storage, retrieval, and manipulation.
-
 - Characteristics: Contains the data structures and business rules. Independent of the user interface (UI). Notifies observers (usually Views) about changes in the data.
 
 ### View:
 
 - Responsibility: The View is responsible for presenting the user interface and displaying information to the user. It receives input from the user and sends it to the Controller for processing.
-
 - Characteristics: Displays information to the user.
+
 Sends user input to the Controller for processing.
 Often observes the Model for changes to update the UI.
 
 ### Controller:
 
 - Responsibility: The Controller acts as an intermediary between the Model and the View. It processes user input, updates the Model, and manages the flow of data between the Model and the View.
-
 - Characteristics: Receives user input from the View. Interacts with the Model to perform business logic and update data. Updates the View based on changes in the Model.
 
 ### Benefits of MVC Architecture in iOS:
 
 - Separation of Concerns: MVC separates the application into distinct components, making it easier to manage and understand each component's responsibilities.
-
 - Modularity: Each component (Model, View, Controller) is modular and can be developed, tested, and maintained independently. Changes in one component have minimal impact on others.
-
 - Reusability: The separation of concerns allows for better code reuse. For example, a Model can be reused with different Views or Controllers.
- 
 - Maintainability: Changes or updates to one component do not require modifications to the entire application. This simplifies maintenance and enhances code maintainability.
-
 - Testability: Components can be tested independently, facilitating unit testing. For example, the business logic in the Controller and data manipulation in the Model can be tested separately.
-
 - Scalability: As the application grows, MVC provides a scalable structure. Additional features can be added by extending existing components or introducing new ones.
 
 MVC promotes a clear separation of concerns, making code more modular, maintainable, and scalable.
@@ -77,7 +70,6 @@ MVC promotes a clear separation of concerns, making code more modular, maintaina
 ## Describe the purpose of delegates and protocols in iOS development. Provide an example of when you might use them.
 
 - Delegates: Delegates are a design pattern used in iOS development to allow one object to communicate with another. They provide a way for objects to send messages and data to a delegate, enabling customization and flexibility in the behavior of objects.
-
 - Protocols: Protocols define a blueprint of methods, properties, and other requirements that can be adopted by classes, structures, or enumerations. They allow objects to conform to a set of rules, promoting a common interface for different types. This pattern promotes separation of concerns and modular design, making the code more maintainable and extensible. It allows different parts of the application to communicate without creating tight dependencies between them.
 
 ## What is the difference between a delegate and a notification?
@@ -163,7 +155,6 @@ I have direct experience with VoiceOver at Google Fiber, where UI Accessibility 
 ### Purpose
 
 1. **Accessibility**: While the primary intention of `accessibilityIdentifier` is not for accessibility features like VoiceOver, it can sometimes be used to distinguish UI elements when creating accessible apps, especially in complex interfaces.
-
 2. **UI Testing**: The primary use of `accessibilityIdentifier` is for UI testing. It provides a way to reference UI elements in a stable and consistent manner. This is especially useful in automated UI tests using XCTest framework or other testing tools.
 
 ### Characteristics
@@ -209,13 +200,9 @@ VIPER is an architectural pattern in software engineering, particularly used in 
 ### Components of VIPER
 
 1. **View**: Responsible for presenting information to the user and capturing user inputs. The View is passive and only performs tasks when instructed by the Presenter. It knows nothing about the business logic.
-
 2. **Interactor**: Contains the business logic of your application. It's where the data is manipulated and the main operations of your app are performed. Interactors are independent of the user interface.
-
 3. **Presenter**: Acts as the middleman between the View and the rest of the application. It retrieves data from the Interactor, formats it for display, and then passes it to the View. It also handles user inputs forwarded by the View and translates them into requests to the Model or Interactor.
-
 4. **Entity**: Represents the data structure used by Interactors. These are the model objects manipulated by the Interactor. They're plain data objects, typically without any business logic.
-
 5. **Router (or Wireframe)**: Contains the navigation logic for describing which screens are shown in which order. It connects the different parts of the application and has the task of initial setup of VIPER modules.
 
 ### Advantages of VIPER
@@ -246,13 +233,12 @@ Creating and sharing a private Swift package involves setting up the package man
 1. **Create the Package**:
    - Run `swift package init --name YourLibraryName --type library` in a new directory.
    - This generates the standard `Sources/`, `Tests/`, and `Package.swift` structure.
-
 2. **Develop Your Library**:
    - Add your Swift code under `Sources/YourLibraryName/`.
    - Make sure your code is well-structured and documented.
-
 3. **Edit `Package.swift`**:
    - Set the minimum platform version, products, targets, and any dependencies:
+
      ```swift
      // swift-tools-version: 5.9
      import PackageDescription
@@ -274,9 +260,9 @@ Creating and sharing a private Swift package involves setting up the package man
 
 1. **Create a Private Repo**:
    - Host your package on GitHub, GitLab, Bitbucket, or any Git service — set it to private.
-
 2. **Tag a Release**:
    - SPM uses Git tags for versioning. Create a tag that follows semantic versioning:
+
      ```bash
      git tag 1.0.0
      git push origin 1.0.0

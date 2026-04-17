@@ -68,7 +68,11 @@
 
 ### Lead macOS/iOS Developer — Apple | Sunnyvale, CA | May 2024 – March 2026
 
-Worked as a dev team lead, developing IS&T client applications internally used by Apple employees.
+Led a development team building internal iOS/macOS client applications used by Apple employees across the organization within the IS&T division.
+
+- **Devices App** — Internal iOS app enabling managers to track their reportees' devices, ensure compliance, and facilitate device upgrades for Apple employees.
+- **ADO (Apple Document Organizer)** — Internal app enabling Apple employees to reorganize their files by ensuring personal files remain in personal directories while work files are routed to work-only directories on the cloud or internal drives.
+
 **Stack:** Swift, SwiftUI, Xcode, SPM, XCTest, XCUITest | **Architecture:** MVVM
 
 ---

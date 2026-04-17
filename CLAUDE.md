@@ -32,3 +32,27 @@ This is a Swift interview preparation repository containing coding challenges, s
 
 ## Attribution
 - Created by Amr Aboelela
+
+## Rules
+In .md files add an extra new line after line items so it doesn't appear like this in the chrome browser:
+Q: What is defer in Swift? A: Executes a block of code just before the current scope exits, regardless of how it exits. Useful for cleanup (e.g., closing files, releasing locks).
+
+Exception for list items with "-" or "1", "2" (numbers), e.g.:
+- Profile via **Product > Profile > Leaks**
+- Scroll the `List` repeatedly, watch for **red bars** in the Leaks track
+- Shows exactly which object is leaking and the retain cycle
+
+And except in something like:
+2. View service worker logs:
+   - Go to `chrome://extensions/`
+   - Find "Auto Refresh Extension"
+   - Click "service worker" to open DevTools
+   
+And exception for list items with "1", "2" (numbers), e.g.:
+1. Swift & iOS fundamentals
+2. Memory management & ARC
+3. Concurrency (GCD, async/await, actors)
+
+And except for lists using "*" marks, e.g.:
+* **Bard1.playground** — Google Bard interview questions
+* **ChatGPT.playground** — OpenAI-style interview questions

@@ -5,13 +5,11 @@
 Optionals are a fundamental concept in Swift that allows variables to have a "no-value" state. This is particularly useful for scenarios where a value might be absent, either because it hasn't been set yet or because it doesn't exist.
  
 - Force Unwrapping: To use the value inside an optional, you "force unwrap" it using !. However, this should be done cautiously, as it can lead to a runtime crash if the optional is nil.
-
 - Conditional Unwrapping (if let): A safer way to unwrap optionals is using if let or guard let statements, which check for the presence of a value before unwrapping.
 
 ### When to Use Guard Statements:
 
 - Early Exit in Functions: guard statements are often used for early exit from functions or methods when a certain condition is not met.
-
 - Clarity and Readability: guard statements make the code more readable by explicitly stating the conditions under which execution should continue.
 
 ## What is the difference between a struct and a class in Swift?
@@ -83,16 +81,13 @@ Identifying and fixing memory leaks in Swift, especially in iOS development, is 
    - Use the **Leaks** and **Allocations** tools in Instruments to detect memory leaks.
    - Run your app with Instruments attached and monitor the memory usage. Look for objects that should have been deallocated but are still in memory.
    - The **Leaks** instrument can help pinpoint where leaks are occurring.
-
 2. **Xcode Memory Graph Debugger**:
    - Xcode's Memory Graph Debugger can visually show you the relationships between objects in memory.
    - It's useful for identifying retain cycles and reference count issues.
    - Activate the Memory Graph Debugger while your app is running in the Debug area.
-
 3. **Code Analysis**:
    - Manually review your code, especially for closures and delegate patterns, as they are common sources of retain cycles.
    - Look for places where `weak` or `unowned` should be used to prevent strong reference cycles.
-
 4. **Automated Testing**:
    - Write unit tests to ensure objects are deallocated as expected.
 
@@ -101,10 +96,8 @@ Identifying and fixing memory leaks in Swift, especially in iOS development, is 
 1. **Retain Cycles**:
    - Occur when two or more objects hold strong references to each other, preventing ARC from deallocating them.
    - Common in closures and delegation.
-
 2. **Singletons and Global Variables**:
    - Improper use of singletons or global variables can lead to memory that never gets released.
-
 3. **Notifications and Observers**:
    - Forgetting to remove an object as an observer can lead to leaks.
 
@@ -125,7 +118,6 @@ Identifying and fixing memory leaks in Swift, especially in iOS development, is 
    ```
 
 2. **Swift Concurrency and retain cycles**: `Task { }` bodies capture `self` strongly by default. Always use `[weak self]` in detached or long-lived tasks, then guard at the start.
-
 3. **Observers**: With Combine, store `AnyCancellable` in a `Set<AnyCancellable>` — cancellation and deallocation are automatic when the owner is deallocated. With NotificationCenter in UIKit, remove observers in `deinit`:
 
    ```swift
