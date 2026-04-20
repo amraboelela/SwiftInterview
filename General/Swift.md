@@ -297,6 +297,33 @@ AsyncStream { continuation in
 }
 ```
 
+### Can `Timer` be used with async/await?
+
+`Timer` has no native `async/await` API, but Combine bridges it via `.values`:
+
+```swift
+for await _ in Timer.publish(every: 1.0, on: .main, in: .common).autoconnect().values {
+    print(Date())
+}
+```
+
+`.values` converts the Combine publisher into an `AsyncSequence` so you can consume it with `for await`. Under the hood it still uses the `Timer` object.
+
+The pure Swift Concurrency alternative is `AsyncStream` + `Task.sleep`:
+
+```swift
+func timerStream(interval: Duration) -> AsyncStream<Date> {
+    AsyncStream { continuation in
+        Task {
+            while true {
+                continuation.yield(Date())
+                try? await Task.sleep(for: interval)
+            }
+        }
+    }
+}
+```
+
 So `AsyncStream` is async from the **consumer's** perspective (`for await value in stream`). The setup closure is sync because it just needs to wire up the source — not produce values itself.
 
 This also explains why you need `Task { }` inside the closure — to get an async context so you can use `await`:
@@ -313,6 +340,48 @@ AsyncStream { continuation in
     }
 }
 ```
+
+## `AsyncSequence` vs `AsyncStream`
+
+**`AsyncSequence`** is a protocol — it defines something you can iterate over with `for await`. Like how `Sequence` works for synchronous iteration.
+
+**`AsyncStream`** is a concrete type that **conforms to `AsyncSequence`** — it's the easiest way to create your own async sequence by pushing values through a `continuation`.
+
+```swift
+// AsyncSequence — protocol, you implement it yourself
+struct Countdown: AsyncSequence {
+    typealias Element = Int
+    func makeAsyncIterator() -> AsyncIterator { AsyncIterator() }
+
+    struct AsyncIterator: AsyncIteratorProtocol {
+        var count = 3
+        mutating func next() async -> Int? {
+            guard count > 0 else { return nil }
+            defer { count -= 1 }
+            return count
+        }
+    }
+}
+
+// AsyncStream — concrete, simpler to create
+let countdown = AsyncStream<Int> { continuation in
+    Task {
+        for i in stride(from: 3, to: 0, by: -1) {
+            continuation.yield(i)
+        }
+        continuation.finish()
+    }
+}
+```
+
+| | `AsyncSequence` | `AsyncStream` |
+|---|---|---|
+| **Type** | Protocol | Concrete type |
+| **Use when** | Building a reusable custom type | Quick one-off stream from a callback or Task |
+| **Complexity** | More boilerplate | Minimal setup via continuation |
+| **Conforms to** | Itself | `AsyncSequence` |
+
+In practice, prefer `AsyncStream` unless you need a reusable named type.
 
 ## Will the app crash if an async throwing function throws inside a Task?
 
