@@ -71,6 +71,94 @@ Task {
 
 Prefer Swift Concurrency for new code. GCD still appears in UIKit internals and older codebases.
 
+## `await MainActor.run { }` vs `Task { @MainActor in }`
+
+Both hop execution to the main actor, but they behave very differently.
+
+**`await MainActor.run { }`** — suspends the current task, runs the closure on the main actor, then resumes the caller. The caller waits for the result. This is structured concurrency.
+
+```swift
+let result = await MainActor.run { computeOnMain() }
+```
+
+**`Task { @MainActor in }`** — creates a new unstructured task that runs on the main actor. The caller does NOT wait — it's fire-and-forget unless you explicitly `.value` it.
+
+```swift
+Task { @MainActor in update(result) }  // fire-and-forget
+await Task { @MainActor in update(result) }.value  // caller waits
+```
+
+### When to use which
+
+**Use `await MainActor.run { }`** when you need to hop to the main actor inline inside an existing async task and wait for the result before continuing.
+
+**Use `Task { @MainActor in }`** when you want to dispatch work to the main actor without blocking the current task (e.g. from a background actor or non-async context).
+
+### The modern Swift 6 preferred pattern
+
+If you own the function, annotate it `@MainActor` directly and call it with `await`. No `MainActor.run` needed:
+
+```swift
+@MainActor func update(_ result: SomeType) { ... }
+
+// In an async context:
+await update(result)
+```
+
+This is the cleanest approach. `await MainActor.run { }` is a workaround for when you can't annotate the function (e.g. a closure or third-party API).
+
+## `@MainActor` vs Main Thread
+
+The main thread and `@MainActor` are closely related but not the same concept.
+
+**Main thread** is an OS-level concept — a specific thread managed by the operating system where UIKit and AppKit expect UI updates to happen. You access it via GCD: `DispatchQueue.main.async { }`.
+
+**`@MainActor`** is a Swift concurrency concept — a global actor that serializes execution and guarantees its code runs on the main thread. It is enforced at compile time by the Swift type system.
+
+### Key differences
+
+| | Main Thread (GCD) | `@MainActor` |
+|---|---|---|
+| **Enforcement** | Runtime only | Compile time + runtime |
+| **Data safety** | No guarantees | Compiler prevents data races |
+| **Usage** | `DispatchQueue.main.async` | `@MainActor` annotation or `await MainActor.run` |
+| **Cancellation** | None | Cooperative via Swift Concurrency |
+| **Interop** | Works everywhere | Requires Swift Concurrency context |
+
+### Under the hood
+
+`@MainActor` always dispatches to the main thread — they share the same underlying serial queue (`DispatchQueue.main`). The difference is that `@MainActor` adds compiler-enforced isolation on top.
+
+```swift
+// GCD — runtime-only, no compile-time safety
+DispatchQueue.main.async {
+    self.label.text = "done"
+}
+
+// @MainActor — compiler ensures this only runs on main actor
+@MainActor func updateLabel() {
+    label.text = "done"
+}
+```
+
+### When to use which
+
+- Use `@MainActor` for all new Swift Concurrency code — you get compile-time data race protection for free.
+- Use `DispatchQueue.main` only when working with legacy code, Objective-C APIs, or GCD-based systems that can't adopt Swift Concurrency.
+- Annotate your `ViewModel` or `ObservableObject` with `@MainActor` to ensure all UI-bound state is always updated on the main actor without manual dispatching.
+
+```swift
+@MainActor
+class ViewModel: ObservableObject {
+    @Published var title = ""
+
+    func load() async {
+        let text = await fetchTitle()
+        title = text  // safe — already on MainActor
+    }
+}
+```
+
 ## How to identify and fix memory leaks in Swift?
 
 Identifying and fixing memory leaks in Swift, especially in iOS development, is crucial for maintaining the performance and reliability of your application. Memory leaks happen when allocated memory is not freed up, leading to increased memory usage and potential app crashes.
@@ -140,6 +228,12 @@ $searchText
     .store(in: &cancellables)
 ```
 
+### Why `.store(in:)` must come after `.sink`
+
+`.sink` returns an `AnyCancellable`. If you don't immediately store it, it is deallocated at the end of the expression — which **cancels the subscription right away** and your sink never receives any values.
+
+`.store(in: &cancellables)` is always the last call in the chain, called directly on the `AnyCancellable` that `.sink` (or `.assign`) returns.
+
 **Swift Concurrency** (`async/await` + `AsyncSequence`) is now preferred for most new code. It's simpler, compiler-checked for data races, and doesn't require managing `AnyCancellable` lifetimes.
 
 ```swift
@@ -180,6 +274,45 @@ for await percent in downloadProgress(from: url) {
 - One-shot async operations (network calls, file I/O)
 - Structured task hierarchies with cancellation
 - Anything new in Swift 5.5+
+
+## Why does `AsyncStream` have a synchronous closure if it's async?
+
+It feels contradictory, but the design is intentional.
+
+The closure is the **setup** phase — it runs once synchronously to let you configure how values will be produced (start a Task, register a callback, set up a timer). It is not the producer itself.
+
+The **actual async streaming** happens through the `continuation` — which you call from wherever you want, including inside an async `Task`, a callback, or a delegate method:
+
+```swift
+// From an async Task
+AsyncStream { continuation in
+    Task { await fetchValues(continuation) }
+}
+
+// From a callback/delegate
+AsyncStream { continuation in
+    timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+        continuation.yield(Date())
+    }
+}
+```
+
+So `AsyncStream` is async from the **consumer's** perspective (`for await value in stream`). The setup closure is sync because it just needs to wire up the source — not produce values itself.
+
+This also explains why you need `Task { }` inside the closure — to get an async context so you can use `await`:
+
+```swift
+AsyncStream { continuation in
+    // ❌ can't use await here — this closure is sync
+
+    Task {
+        // ✅ async context — await works here
+        let (bytes, _) = try await URLSession.shared.bytes(from: url)
+        continuation.yield(...)
+        continuation.finish()
+    }
+}
+```
 
 ## Will the app crash if an async throwing function throws inside a Task?
 
