@@ -309,6 +309,12 @@ for await _ in Timer.publish(every: 1.0, on: .main, in: .common).autoconnect().v
 
 `.values` converts the Combine publisher into an `AsyncSequence` so you can consume it with `for await`. Under the hood it still uses the `Timer` object.
 
+### Why no `.store(in: &cancellables)` when using `.values`?
+
+`.store` is only needed with `.sink` because `.sink` returns an `AnyCancellable` you must hold manually — if you don't, the subscription dies immediately.
+
+With `.values` + `for await`, the loop **owns the subscription lifetime**. It stays alive as long as the loop is iterating and is automatically cancelled and cleaned up when the loop exits (via `break`, `Task` cancellation, or scope exit). No manual management needed.
+
 The pure Swift Concurrency alternative is `AsyncStream` + `Task.sleep`:
 
 ```swift
