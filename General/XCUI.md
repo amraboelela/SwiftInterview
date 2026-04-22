@@ -682,3 +682,14 @@ func testLogin() {
     XCTAssertTrue(app.staticTexts["Welcome"].waitForExistence(timeout: 5))
 }
 ```
+
+Q: Why use the Page Object Model (POM) instead of just writing everything directly in `XCTestCase`?
+
+A: For a single test it makes no difference. The problem appears when multiple tests need the same UI interactions — you end up repeating the same taps and queries everywhere. If an accessibility identifier changes (e.g. `"loginButton"` → `"submitButton"`), you'd have to fix every test individually. With POM you fix it in one place.
+
+POM also gives you:
+- **Readability** — `login.login(email:password:)` reads like a spec, not a sequence of raw taps
+- **Reusability** — any test class can use the same screen object
+- **Separation of concerns** — UI navigation logic lives in the screen struct, test assertions stay in `XCTestCase`
+
+Rule of thumb: skip POM for one-off tests, use it once the same UI interactions appear in 2+ tests.

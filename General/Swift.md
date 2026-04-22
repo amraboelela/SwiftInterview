@@ -431,3 +431,12 @@ Task {
 ```
 
 Always use option 3 in production code. Option 1 is acceptable in playgrounds or throwaway scripts where you know the call will succeed. Option 2 should only be used when a failure is truly impossible (e.g. hardcoded valid data) — otherwise it's a ticking time bomb.
+
+Q: What is the difference between `Date()` and `Date.now` in Swift?
+
+A: Both return a `Date` instance representing the current point in time — they are functionally equivalent. `Date.now` is a static property introduced in Swift 5.5 and is preferred in modern Swift for readability. It reads more naturally alongside other static members like `Date.distantFuture` and `Date.distantPast`.
+
+```swift
+let a = Date()      // Date instance, current time
+let b = Date.now    // Same thing, more readable
+```
