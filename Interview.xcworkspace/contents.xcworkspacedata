@@ -5,6 +5,9 @@
       location = "group:Amr_resume.md">
    </FileRef>
    <FileRef
+      location = "group:Amr_resume.pdf">
+   </FileRef>
+   <FileRef
       location = "group:CLAUDE.md">
    </FileRef>
    <FileRef
