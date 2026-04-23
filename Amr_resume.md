@@ -8,7 +8,7 @@
 ## Professional Summary
 
 - 25 years of software development in general.
-- 16 years experience in iOS / macOS, Objective-C & Swift development
+- 16 years of Native iOS / macOS experience (UIKit, SwiftUI, Objective-C & Swift)
 - 1 year experience in Android, Java & Kotlin development
 - 2 years GNUstep Linux, Python, shell scripts experience
 - 7 years of Internet Applications / Web Development
