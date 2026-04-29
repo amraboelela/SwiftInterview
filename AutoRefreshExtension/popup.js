@@ -13,3 +13,18 @@ document.getElementById('resetButton').addEventListener('click', function() {
         });
     });
 });
+
+const pauseButton = document.getElementById('pauseButton');
+
+chrome.storage.local.get('paused', function(result) {
+    pauseButton.textContent = result.paused ? 'Resume' : 'Pause';
+});
+
+pauseButton.addEventListener('click', function() {
+    chrome.storage.local.get('paused', function(result) {
+        const nowPaused = !result.paused;
+        chrome.storage.local.set({ paused: nowPaused }, function() {
+            pauseButton.textContent = nowPaused ? 'Resume' : 'Pause';
+        });
+    });
+});

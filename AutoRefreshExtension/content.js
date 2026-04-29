@@ -208,10 +208,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     } else {
         console.log("#refresh (request.action === 'refresh')");
         if (request.action === 'refresh') {
-            console.log("#refresh yes it is refresh!");
-            const currentJobs = extractJobTitles();
-            saveJobTitlesToStorage(currentJobs);
-            document.location.reload();
+            chrome.storage.local.get('paused', function(result) {
+                if (result.paused) {
+                    console.log('#refresh Paused - skipping refresh');
+                    return;
+                }
+                console.log("#refresh yes it is refresh!");
+                const currentJobs = extractJobTitles();
+                saveJobTitlesToStorage(currentJobs);
+                document.location.reload();
+            });
         }
     }
 });
@@ -226,14 +232,20 @@ const minutes = Math.floor(Math.random() * 5) + 3; // between 2 and 5 minutes
 
 setTimeout(() => {
     console.log("#refresh setTimeout - preparing to refresh");
-    const currentJobs = extractJobTitles();
-    saveJobTitlesToStorage(currentJobs);
+    chrome.storage.local.get('paused', function(result) {
+        if (result.paused) {
+            console.log('#refresh Paused - skipping scheduled reload');
+            return;
+        }
+        const currentJobs = extractJobTitles();
+        saveJobTitlesToStorage(currentJobs);
 
-    // Safety check: only reload if page is fully loaded
-    if (document.readyState === 'complete') {
-        document.location.reload();
-    } else {
-        console.log("#refresh Page not fully loaded, skipping reload");
-    }
+        // Safety check: only reload if page is fully loaded
+        if (document.readyState === 'complete') {
+            document.location.reload();
+        } else {
+            console.log("#refresh Page not fully loaded, skipping reload");
+        }
+    });
 }, minutes * 60 * 1000);
 

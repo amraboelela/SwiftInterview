@@ -10,6 +10,8 @@
 - 25 years of software development in general.
 - 16 years of Native iOS / macOS experience (UIKit, SwiftUI, Objective-C & Swift)
 - 1 year experience in Android, Java & Kotlin development
+- AI/ML experience: designed and trained custom transformer-based neural network models in PyTorch; converted to CoreML (iOS) and TensorFlow Lite (Android); applied similarity search for partial Arabic text recognition
+- 1 year experience using Claude Code Agentic AI for accelerated development workflows
 - 2 years GNUstep Linux, Python, shell scripts experience
 - 7 years of Internet Applications / Web Development
 - 4 years experience using .Net Environment
@@ -61,6 +63,35 @@
 
 **Stack Overflow:**
 - [Get index of currently displayed view in a paging scroll view](https://stackoverflow.com/questions/77766831/get-index-of-currently-displayed-view-in-a-paging-scroll-view/78419913#78419913)
+
+---
+
+## Personal Projects
+
+### Muhaffez — Quran Memorization App | iOS & Android | 2024 – Present
+
+Solo-developed a full-featured Quran memorization companion app, published on the App Store, covering end-to-end product design, AI model training, and native mobile development on two platforms.
+
+**iOS (Swift / SwiftUI)**
+- Built with SwiftUI, MVVM architecture, targeting iOS 15+
+- Integrated Apple Speech framework for real-time Arabic voice recognition and word-by-word recitation feedback
+- Implemented custom Arabic NLP: Tashkeel normalization, Hamza variant handling, and fuzzy text matching for recitation accuracy evaluation
+- Authentic two-page Mushaf layout with navigation by Juz, Surah, Page, and Rub3
+
+**Android (Kotlin / TensorFlow Lite)**
+- Built Android companion app in Kotlin using Jetpack Compose and MVVM architecture
+- Integrated TensorFlow Lite (Float16 quantization) with Android NNAPI hardware acceleration for on-device ML inference
+- Implemented hybrid search pipeline: fast prefix matching → ML model prediction → traditional similarity fallback
+
+**Custom AI Model (Python / PyTorch)**
+- Designed and trained a custom transformer-based neural network to identify a Quran verse from a partial or distorted Arabic input (similarity search)
+- Trained multiple model variants to handle truncated ayahs, offset words, omitted first/last words, and random distortions across all 6,203 ayahs
+- Built a 60-token Arabic vocabulary; model returns top-5 candidate ayahs validated against a 70% similarity threshold
+- Exported PyTorch model to CoreML (iOS) and TFLite (Android) for cross-platform deployment
+
+**Stack:** Swift, SwiftUI, Kotlin, Python, PyTorch, CoreML, TensorFlow Lite, NNAPI | **Architecture:** MVVM
+
+**App:** [Muhaffez on the App Store](https://apps.apple.com/us/app/muhaffez/id6751545838)
 
 ---
 

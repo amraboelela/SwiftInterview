@@ -111,7 +111,8 @@ struct MockURLSession: URLSessionProtocol {
 
     func dataTaskPublisher(for request: URLRequest) -> AnyPublisher<(data: Data, response: URLResponse), URLError> {
         if let error {
-            return Fail(error: error).eraseToAnyPublisher()
+            return Fail(error: error)
+                .eraseToAnyPublisher()
         }
         return Just((data: responseData, response: response))
             .setFailureType(to: URLError.self)
@@ -167,7 +168,7 @@ apiService.fetchUser(id: 1)
     .store(in: &cancellables)
 
 // Key points:
-// - Protocol-based DI lets you swap URLSession for a mock
+// - Protocol-based DI (Dependency Injection) lets you swap URLSession for a mock
 // - Just + setFailureType simulates a successful response
 // - Fail simulates a network error
 // - Alternative: URLProtocol subclassing (works without protocol injection)
