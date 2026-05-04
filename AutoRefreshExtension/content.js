@@ -228,7 +228,7 @@ if (hostname.includes('linkedin.com') || hostname.includes('indeed.com')) {
 } else {
     checkChanges();
 }
-const minutes = Math.floor(Math.random() * 5) + 3; // between 2 and 5 minutes
+const minutes = Math.floor(Math.random() * 11) + 5; // between 5 and 15 minutes
 
 setTimeout(() => {
     console.log("#refresh setTimeout - preparing to refresh");
