@@ -58,9 +58,14 @@ function openMailApp(subject, body) {
     mailtoLink.remove();
 }
 
+// Map of stored-key → human-readable title, for log output when the stored
+// key isn't itself a title (e.g. Google Jobs uses opaque docids).
+let displayTitleByKey = {};
+
 // Extract job titles from the page
 function extractJobTitles() {
     const jobTitles = [];
+    displayTitleByKey = {};
 
     if (hostname.includes('linkedin.com')) {
         // LinkedIn: extract titles from dismiss button aria-labels e.g. "Dismiss Senior iOS Developer job"
@@ -90,6 +95,30 @@ function extractJobTitles() {
         // Layout 2: data-testid attribute
         if (jobTitles.length === 0) {
             document.querySelectorAll('[data-testid="job-title"] span, [data-testid="job-title"]').forEach(tile => {
+                const title = tile.textContent.trim().toLowerCase();
+                if (title && title.length > 5 && title.length < 200 && !seen.has(title)) {
+                    seen.add(title); jobTitles.push(title);
+                }
+            });
+        }
+    } else if (hostname.includes('google.com')) {
+        const seen = new Set();
+        const isJobsVertical = url.searchParams.get('udm') === '8';
+
+        if (isJobsVertical) {
+            // Google Jobs vertical (udm=8): tiles are role=button with a unique docid in `id`.
+            // Class names are hashed so we identify by docid; that's stable per posting.
+            document.querySelectorAll('[role="button"][data-modality][id]').forEach(tile => {
+                const id = tile.id.trim();
+                if (id && id.length > 10 && !seen.has(id)) {
+                    seen.add(id); jobTitles.push(id);
+                    const firstLine = (tile.innerText || '').split('\n').map(s => s.trim()).filter(Boolean)[0];
+                    displayTitleByKey[id] = firstLine || id;
+                }
+            });
+        } else {
+            // Regular Google search: titles in h3 within the results container
+            document.querySelectorAll('#search h3, #rso h3').forEach(tile => {
                 const title = tile.textContent.trim().toLowerCase();
                 if (title && title.length > 5 && title.length < 200 && !seen.has(title)) {
                     seen.add(title); jobTitles.push(title);
@@ -133,7 +162,8 @@ function checkChanges() {
         const newJobs = getNewJobs(previousJobs, currentJobs);
 
         if (newJobs.length > 0) {
-            console.log('#refresh New jobs detected:\n' + newJobs.join('\n'));
+            const labeled = newJobs.map(j => displayTitleByKey[j] || j);
+            console.log('#refresh New jobs detected:\n' + labeled.join('\n'));
 
             // Use Chrome notifications (more reliable than audio autoplay)
             if (isExtensionContextValid()) {
@@ -167,6 +197,9 @@ function playAlertAudio() {
         mimeType = 'audio/wav';
     } else if (hostname.includes('indeed.com') && typeof indeedAlertData !== 'undefined') {
         audioData = indeedAlertData;
+        mimeType = 'audio/mpeg';
+    } else if (hostname.includes('google.com') && typeof googleAlertData !== 'undefined') {
+        audioData = googleAlertData;
         mimeType = 'audio/mpeg';
     } else if (typeof alertData !== 'undefined') {
         audioData = alertData;
@@ -223,7 +256,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 //console.log("before checkChanges();");
-if (hostname.includes('linkedin.com') || hostname.includes('indeed.com')) {
+if (hostname.includes('linkedin.com') || hostname.includes('indeed.com') || hostname.includes('google.com')) {
     setTimeout(checkChanges, 3000);
 } else {
     checkChanges();
