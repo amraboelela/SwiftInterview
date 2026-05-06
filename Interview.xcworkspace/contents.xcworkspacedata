@@ -42,6 +42,9 @@
       location = "group:JobTwine.md">
    </FileRef>
    <FileRef
+      location = "group:Micro1.md">
+   </FileRef>
+   <FileRef
       location = "group:README.md">
    </FileRef>
    <FileRef
@@ -73,6 +76,9 @@
       </FileRef>
       <FileRef
          location = "group:Meta.playground">
+      </FileRef>
+      <FileRef
+         location = "group:Micro1.playground">
       </FileRef>
       <FileRef
          location = "group:MyTime.playground">
