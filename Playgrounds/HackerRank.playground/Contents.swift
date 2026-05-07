@@ -496,3 +496,112 @@ print(minShadeLength(cars: [4, 1, 9, 6], k: 4))     // 9 (9 - 1 + 1)
 
 // k > number of cars → impossible
 print(minShadeLength(cars: [3, 7], k: 5))           // 0
+
+// MARK: - HackerRank — AND Product Over a Range
+//
+// Q: Given two non-negative integers a and b (a <= b), compute the bitwise
+//    AND of every integer in the inclusive range [a, b]:
+//        a & (a + 1) & (a + 2) & ... & b
+//
+// Approach (common-prefix trick):
+//   The AND of [a, b] equals the common high-order binary prefix of a and b,
+//   padded with zeros. Why: any bit that flips somewhere in the range is
+//   ANDed with both a 0 and a 1 at some point, so it ends up 0. Only bits
+//   that are identical across every value in the range survive — those are
+//   the bits in the shared prefix of a and b.
+//
+//   Algorithm: shift a and b right in lockstep until they're equal (that's
+//   the common prefix), then shift back left by the same amount to restore
+//   the place value. O(log b) time, O(1) space — independent of (b - a).
+//
+//   The naive loop `result = a; for x in (a+1)...b { result &= x }` is
+//   O(b - a) and times out when b - a is huge (HackerRank ranges go up to
+//   ~2^31).
+//
+// Edge cases:
+//   • a == b   → loop doesn't run, returns a unchanged.
+//   • a == 0   → result is 0 (any AND with 0 is 0); the shift loop reaches
+//                a == b == 0 and returns 0.
+
+func andProduct(a: Int, b: Int) -> Int {
+    var a = a
+    var b = b
+    var shift = 0
+    while a != b {
+        a >>= 1
+        b >>= 1
+        shift += 1
+    }
+    return a << shift
+}
+
+// MARK: - Examples
+
+// 12 = 1100, 13 = 1101, 14 = 1110, 15 = 1111
+// 12 & 13 & 14 & 15 = 1100 = 12
+print(andProduct(a: 12, b: 15))     // 12
+
+// 5 = 101, 6 = 110, 7 = 111
+// 5 & 6 & 7 = 100 = 4
+print(andProduct(a: 5, b: 7))       // 4
+
+// Single value → returns itself
+print(andProduct(a: 10, b: 10))     // 10
+
+// Crossing a power-of-two boundary forces a high bit to flip → result 0
+print(andProduct(a: 7, b: 8))       // 0
+
+// Anything ANDed across a range that includes 0
+print(andProduct(a: 0, b: 100))     // 0
+
+// Large range — common-prefix trick handles this in O(log b),
+// the naive loop would do ~10^9 iterations
+print(andProduct(a: 1_000_000_000, b: 2_000_000_000))   // 0
+
+// MARK: - Brute force (for contrast)
+//
+// Walk every value in [a, b] and AND it into a running result. Correct, but
+// O(b - a) — times out on HackerRank for ranges of ~10^9.
+//
+// Two pitfalls worth flagging:
+//   1. `var result = 1` is WRONG. The identity for bitwise AND is "all bits
+//      set" (~0), not 1. Seeding with 1 wipes out every bit except bit 0 on
+//      the first iteration, so [12, 15] returns 0 instead of 12.
+//   2. Seeding from `a` itself (as below) sidesteps the identity question
+//      entirely — start at a, then AND in (a + 1)...b.
+//
+// Use this only as a reference / sanity check against the O(log b) version.
+
+func andProductBruteForce(a: Int, b: Int) -> Int {
+    var result = a
+    if a < b {
+        for i in (a + 1)...b {
+            result &= i
+        }
+    }
+    return result
+}
+
+// Sanity-check brute force agrees with the O(log b) version on small inputs.
+print(andProductBruteForce(a: 12, b: 15))   // 12
+print(andProductBruteForce(a: 5, b: 7))     // 4
+print(andProductBruteForce(a: 10, b: 10))   // 10
+print(andProductBruteForce(a: 7, b: 8))     // 0
+print(andProductBruteForce(a: 0, b: 100))   // 0
+// ⚠️ Xcode playgrounds instrument every line for the live results sidebar,
+// so they're orders of magnitude slower than compiled Swift. Even 2^24
+// (~16M iterations) can hang the playground for a long time. Keep this
+// small here; for real benchmarks run as a script:
+//
+//     swift -O yourfile.swift
+//
+// Reference numbers from `swift -O` on this machine:
+//     [0, 2^23] (~8.4M)   brute force: 0.0009s    shift trick: ~0s
+//     [0, 2^30] (~1.07B)  brute force: 0.1365s    shift trick: ~0s
+//     [0, 2^32] (~4.3B)   brute force: ~0s*       shift trick: ~0s
+//     (* the optimizer eliminates the loop once result == 0)
+
+print(Date())
+print(andProductBruteForce(a: 0, b: 1 << 22))   // 0  (~65K iterations)
+print(Date())
+
