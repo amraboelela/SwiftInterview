@@ -602,6 +602,100 @@ print(andProductBruteForce(a: 0, b: 100))   // 0
 //     (* the optimizer eliminates the loop once result == 0)
 
 print(Date())
-print(andProductBruteForce(a: 0, b: 1 << 22))   // 0  (~65K iterations)
+print(andProductBruteForce(a: 0, b: 1 << 15))
 print(Date())
+
+// MARK: - HackerRank — Winning Lottery Ticket
+//
+// Q: You're given `tickets`, an array of strings made up of the digits 0–9.
+//    A pair of tickets (i, j) with i < j is a WINNING pair if, together, the
+//    two strings contain every digit 0–9 at least once. Return the number
+//    of winning pairs.
+//
+// Approach (10-bit bitmask + grouping):
+//   Each ticket only "matters" through which digits it contains, not how
+//   many times or in what order. So encode each ticket as a 10-bit mask
+//   (bit d is set if digit d appears). A pair is winning iff
+//       mask_i | mask_j == 0b1111111111  (= 1023)
+//
+//   Naively pairing every two tickets is O(n²) and TLEs when n is large
+//   (~10^5). But there are only 2^10 = 1024 distinct masks, so:
+//     1) Bucket tickets by mask → counts[mask] = how many tickets have it.
+//     2) For each unordered pair of distinct masks (m1, m2) whose OR is
+//        1023, add counts[m1] * counts[m2].
+//     3) For tickets that already cover all 10 digits on their own
+//        (mask == 1023), any two of them form a winning pair → add
+//        c * (c - 1) / 2 where c = counts[1023].
+//
+// Complexity:
+//   • Building masks: O(total characters across all tickets)
+//   • Pair scan:      O(K²) where K <= 1024 distinct masks → ~10^6 worst
+//                     case, independent of n.
+
+func winningLotteryTicket(tickets: [String]) -> Int {
+    let allDigits = (1 << 10) - 1            // 1023 — every digit 0...9 present
+
+    var counts = [Int: Int]()
+    for ticket in tickets {
+        var mask = 0
+        for ch in ticket {
+            if let d = ch.wholeNumberValue, (0...9).contains(d) {
+                mask |= (1 << d)
+            }
+        }
+        counts[mask, default: 0] += 1
+    }
+
+    let masks = Array(counts.keys)
+    var pairs = 0
+    for i in 0..<masks.count {
+        for j in i..<masks.count {
+            guard (masks[i] | masks[j]) == allDigits else { continue }
+            let ci = counts[masks[i]]!
+            let cj = counts[masks[j]]!
+            if i == j {
+                pairs += ci * (ci - 1) / 2   // unordered pairs within the same bucket
+            } else {
+                pairs += ci * cj
+            }
+        }
+    }
+    return pairs
+}
+
+// MARK: - Examples
+
+// "129300455"     → digits {0,1,2,3,4,5,9}        → missing 6,7,8
+// "5559948277"    → digits {2,4,5,7,8,9}          → missing 0,1,3,6
+// "012334556789"  → digits {0,1,2,3,4,5,6,7,8,9}  → all digits
+//
+// Pairs:
+//   (0,1) → missing 6                  → not winning
+//   (0,2) → all digits via ticket 2    → winning
+//   (1,2) → all digits via ticket 2    → winning
+// → 2 winning pairs
+print(winningLotteryTicket(tickets: [
+    "129300455",
+    "5559948277",
+    "012334556789"
+]))   // 2
+
+// Two complementary tickets that together cover 0...9
+//   "01234"  → {0,1,2,3,4}
+//   "56789"  → {5,6,7,8,9}
+//   union = all → 1 winning pair
+print(winningLotteryTicket(tickets: ["01234", "56789"]))   // 1
+
+// Three tickets that ALL individually contain every digit → C(3, 2) = 3 pairs
+print(winningLotteryTicket(tickets: [
+    "0123456789",
+    "9876543210",
+    "01234567890123456789"
+]))   // 3
+
+// No pair ever covers all 10 digits → 0
+print(winningLotteryTicket(tickets: ["111", "222", "333"]))   // 0
+
+// Single ticket — no pair to form
+print(winningLotteryTicket(tickets: ["0123456789"]))   // 0
 
