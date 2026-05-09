@@ -2,95 +2,6 @@
 
 Interviewer: Zara — iOS
 
-## Q: How does SwiftUI compare to UIKit in terms of performance?
-
-**Answer:**
-
-SwiftUI and UIKit have different performance characteristics. UIKit is the older, more mature framework with predictable performance — you have direct, imperative control over the view hierarchy, and rendering cost is straightforward to reason about. SwiftUI is declarative: the framework diffs the view tree on every state change and decides what to update.
-
-**Where SwiftUI is faster or comparable:**
-
-- Simple to medium-complexity screens — the diffing engine is highly optimized, and SwiftUI uses lighter-weight value types (structs) for views instead of `UIView` subclasses
-- `LazyVStack`, `LazyHStack`, and `List` only instantiate cells as they appear, similar to `UITableView`/`UICollectionView` but with less boilerplate
-- Animations are GPU-accelerated by default and run on the render server
-
-**Where UIKit still wins:**
-
-- Very large, deeply nested view hierarchies — SwiftUI's diffing cost grows with the size of the body
-- Highly custom drawing or per-pixel control — `UIView`'s `draw(_:)` and `CALayer` give you direct Core Graphics access
-- Complex collection views with custom layouts — `UICollectionViewCompositionalLayout` is more flexible than `LazyVGrid` for advanced cases
-- Older iOS versions — SwiftUI requires iOS 13+, and many features need iOS 15/16/17
-
-**Common SwiftUI performance pitfalls:**
-
-- Putting expensive work directly inside `body` — `body` can be called many times per second, so any computation there runs every time
-- Overusing `@StateObject` / `@ObservedObject` at high levels — a single `@Published` change re-evaluates the whole subtree
-- Not using `Equatable` views or `.equatable()` to short-circuit diffing on unchanged data
-- Using `AnyView` excessively — it erases type information and forces SwiftUI to rebuild instead of diff
-
-In practice, modern apps mix both: SwiftUI for most screens, UIKit (via `UIViewRepresentable`) for the few cases where you need fine-grained control.
-
-
-## Q: How do you make networking calls using URLSession?
-
-**Answer:**
-
-`URLSession` is Apple's built-in HTTP client. The modern approach uses `async/await`, which replaces the older completion-handler and Combine APIs.
-
-**Basic GET request:**
-
-```swift
-struct User: Decodable {
-    let id: Int
-    let name: String
-}
-
-func fetchUser(id: Int) async throws -> User {
-    let url = URL(string: "https://api.example.com/users/\(id)")!
-    let (data, response) = try await URLSession.shared.data(from: url)
-
-    guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
-        throw URLError(.badServerResponse)
-    }
-
-    return try JSONDecoder().decode(User.self, from: data)
-}
-```
-
-**POST request with a JSON body:**
-
-```swift
-func createUser(_ user: User) async throws -> User {
-    let url = URL(string: "https://api.example.com/users")!
-    var request = URLRequest(url: url)
-    request.httpMethod = "POST"
-    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    request.httpBody = try JSONEncoder().encode(user)
-
-    let (data, _) = try await URLSession.shared.data(for: request)
-    return try JSONDecoder().decode(User.self, from: data)
-}
-```
-
-**Key points:**
-
-- Always validate the `HTTPURLResponse` status code — `URLSession` only throws on transport errors, not HTTP errors like 404 or 500
-- Use a custom `URLSessionConfiguration` for things like timeout, caching policy, or HTTP headers shared across requests
-- For large downloads/uploads use `URLSession.download(for:)` and `URLSession.upload(for:from:)` which write to disk and stream
-- For authentication, set the `Authorization` header on the request, or implement `URLSessionDelegate` for challenge handling
-- Cancel in-flight requests by storing the `Task` and calling `task.cancel()` — `URLSession` honors task cancellation
-
-**Older completion-handler style (still valid):**
-
-```swift
-URLSession.shared.dataTask(with: url) { data, response, error in
-    // runs on a background thread
-}.resume()
-```
-
-This is what you bridge with `withCheckedThrowingContinuation` if you need to wrap a legacy API into `async/await`.
-
-
 ## Q: How do you measure performance in an iOS app?
 
 **Answer:**
@@ -120,22 +31,7 @@ print(elapsed)  // prints a Duration
 
 Cleaner, modern API. Use this in new code.
 
-### 3. `os_signpost` — for production-friendly tracing
-
-```swift
-import os.signpost
-
-let log = OSLog(subsystem: "com.example.app", category: .pointsOfInterest)
-let id = OSSignpostID(log: log)
-
-os_signpost(.begin, log: log, name: "Load Feed", signpostID: id)
-loadFeed()
-os_signpost(.end, log: log, name: "Load Feed", signpostID: id)
-```
-
-These signposts show up as bands in Instruments' **Points of Interest** track, so you can correlate them with CPU, memory, and rendering data.
-
-### 4. XCTest performance tests
+### 3. XCTest performance tests
 
 ```swift
 func testFeedDecodingPerformance() {
@@ -149,7 +45,7 @@ Xcode runs the block 10 times, computes the mean and standard deviation, and let
 
 You can also use `measure(metrics:)` to capture specific metrics like `XCTClockMetric`, `XCTCPUMetric`, `XCTMemoryMetric`, or `XCTApplicationLaunchMetric`.
 
-### 5. Instruments — the real tool
+### 4. Instruments — the real tool
 
 Profile via **Product > Profile** (`Cmd + I`):
 
@@ -161,23 +57,7 @@ Profile via **Product > Profile** (`Cmd + I`):
 - **Hangs** and **Time Profiler** together — diagnose main-thread stalls
 - **Animation Hitches** — shows frames that missed the 60/120 Hz target
 
-### 6. MetricKit — production telemetry
-
-`MetricKit` delivers daily reports from real users on launch time, hangs, disk usage, battery impact, and crashes:
-
-```swift
-import MetricKit
-
-class MetricsObserver: NSObject, MXMetricManagerSubscriber {
-    func didReceive(_ payloads: [MXMetricPayload]) {
-        // upload to your analytics backend
-    }
-}
-```
-
-Pair this with crash reporting (Sentry, Crashlytics) for a full production view.
-
-### 7. Xcode Organizer
+### 5. Xcode Organizer
 
 For shipped apps, **Window > Organizer > Metrics** shows aggregated launch time, hangs, scrolling hitches, battery, and memory across real users — broken down by device and OS version. No code required, just App Store distribution.
 
@@ -215,28 +95,492 @@ Slow scrolling almost always comes down to the main thread doing too much work p
 Use Instruments' **Animation Hitches** template to find dropped frames, then drill in with Time Profiler.
 
 
-## Q: What's the difference between `URLSession.shared` and a custom session?
+## Q: How do you structure shared state in an iOS app — what does a proper model layer look like?
 
 **Answer:**
 
-`URLSession.shared` is a singleton with default configuration — fine for simple, occasional requests. It uses the global cache, cookies, and credential store, and you can't configure things like timeout, custom headers, or delegate callbacks.
+A clean iOS app keeps state out of the view layer. Views render state and forward intents; they don't own truth. The pattern that scales is a dedicated model layer — usually one or more reference-type stores (often actors or `@MainActor` classes) that hold the canonical data and publish changes.
 
-A custom `URLSession` is created with a `URLSessionConfiguration`:
+**Typical layout:**
 
 ```swift
-let config = URLSessionConfiguration.default
-config.timeoutIntervalForRequest = 30
-config.httpAdditionalHeaders = ["X-API-Key": apiKey]
-config.requestCachePolicy = .reloadIgnoringLocalCacheData
-config.waitsForConnectivity = true
+// 1. Pure data — value types, Codable, Equatable
+struct Post: Identifiable, Codable, Equatable {
+    let id: UUID
+    let title: String
+    let body: String
+}
 
-let session = URLSession(configuration: config)
+// 2. Repository / service — owns I/O and caching, no UI knowledge
+protocol PostRepository {
+    func fetchAll() async throws -> [Post]
+    func save(_ post: Post) async throws
+}
+
+// 3. Store — the single source of truth for a feature, observable by views
+@MainActor
+final class FeedStore: ObservableObject {
+    @Published private(set) var posts: [Post] = []
+    @Published private(set) var isLoading = false
+    @Published private(set) var error: Error?
+
+    private let repository: PostRepository
+
+    init(repository: PostRepository) {
+        self.repository = repository
+    }
+
+    func load() async {
+        isLoading = true
+        defer { isLoading = false }
+        do {
+            posts = try await repository.fetchAll()
+        } catch {
+            self.error = error
+        }
+    }
+}
+
+// 4. View — observes the store, renders, dispatches intents
+struct FeedView: View {
+    @StateObject var store: FeedStore
+
+    var body: some View {
+        List(store.posts) { Text($0.title) }
+            .task { await store.load() }
+    }
+}
 ```
 
-Three configuration types:
+**Why this layering matters:**
 
-- `.default` — disk-cached, persistent cookies, credentials
-- `.ephemeral` — in-memory only, nothing persists between launches (good for private browsing)
-- `.background(withIdentifier:)` — system schedules the transfer; survives app suspension and termination
+- The `Post` value type is safe to pass anywhere — no shared mutable state surprises
 
-Use a custom session whenever you need shared headers, custom timeout, a delegate (for auth challenges, redirects, or progress), or background transfers. Hold a single instance per logical service rather than creating new sessions per request — sessions are expensive to set up and reuse connections internally.
+- The repository hides whether data comes from network, disk, or memory — swap it for tests with a mock conforming to the protocol
+
+- The store is the only thing that mutates state — UI reads `@Published` properties and calls intents (`load`, `save`)
+
+- Dependencies flow inward (View → Store → Repository), never the other way
+
+**For app-wide state** (current user, auth token, theme), use a single shared store injected through `.environmentObject(_:)` (SwiftUI) or a dependency container. Avoid singletons for anything testable — they're impossible to stub.
+
+**Common anti-patterns to avoid:**
+
+- Putting `URLSession` calls directly inside a SwiftUI view's `.task { }`
+
+- Storing model data in `@State` (it's view-local and dies with the view)
+
+- Reaching into a singleton from inside a view body — couples the view to the global graph and breaks previews
+
+- Using `NotificationCenter` to broadcast state changes between unrelated parts of the app — prefer explicit `@Published` properties or a shared store
+
+
+## Q: How should NotificationCenter observers be managed across a view's lifecycle?
+
+**Answer:**
+
+`NotificationCenter` is easy to misuse. The two failure modes are **leaks** (observer outlives its owner and keeps it alive) and **zombies** (observer fires after its owner is deallocated, crashing or reading freed state). The fix is to scope observation to the owner's lifetime.
+
+**Modern Swift — block-based with explicit token:**
+
+```swift
+final class FeedViewController: UIViewController {
+    private var tokens: [NSObjectProtocol] = []
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        let token = NotificationCenter.default.addObserver(
+            forName: .userDidLogin,
+            object: nil,
+            queue: .main
+        ) { [weak self] note in
+            self?.refresh()
+        }
+        tokens.append(token)
+    }
+
+    deinit {
+        tokens.forEach { NotificationCenter.default.removeObserver($0) }
+    }
+}
+```
+
+**Key rules:**
+
+- Always capture `[weak self]` in the block — otherwise the closure retains `self`, the observer retains the closure, and the view controller leaks until the notification fires (which may be never)
+
+- Store the returned token and remove it explicitly on `deinit` — block-based observers do **not** get cleaned up automatically when the observer object is released; only the older `addObserver(_:selector:name:object:)` does
+
+- Prefer specifying an `object:` filter when you only care about a specific sender — reduces noise and bug surface
+
+- Pick a queue intentionally — `.main` for UI updates, `nil` for "deliver on the posting thread"
+
+**Async/await alternative — `notifications(named:)`:**
+
+```swift
+final class FeedStore {
+    private var observationTask: Task<Void, Never>?
+
+    func startObserving() {
+        observationTask = Task { [weak self] in
+            for await _ in NotificationCenter.default.notifications(named: .userDidLogin) {
+                await self?.refresh()
+            }
+        }
+    }
+
+    deinit {
+        observationTask?.cancel()
+    }
+}
+```
+
+The `for await` loop ends automatically when the task is cancelled, so structured concurrency handles teardown for you.
+
+**SwiftUI:**
+
+```swift
+struct FeedView: View {
+    @StateObject var store = FeedStore()
+
+    var body: some View {
+        List(store.posts) { Text($0.title) }
+            .onReceive(NotificationCenter.default.publisher(for: .userDidLogin)) { _ in
+                Task { await store.refresh() }
+            }
+    }
+}
+```
+
+`onReceive` automatically subscribes when the view appears and cancels when it disappears — no manual token management.
+
+**When NOT to use NotificationCenter:**
+
+- Communicating between two specific objects you control — use a closure, delegate, or `@Published` property instead
+
+- Broadcasting state changes inside your own app — a shared store is more testable and type-safe
+
+- Reserve `NotificationCenter` for system events (`UIApplication.didBecomeActiveNotification`, keyboard show/hide, `NSManagedObjectContextDidSave`) and truly cross-cutting events where decoupling outweighs the loss of type safety
+
+
+## Q: How do you safely cancel async tasks in Swift?
+
+**Answer:**
+
+Task cancellation in Swift is **cooperative** — calling `task.cancel()` doesn't stop execution; it sets a flag. The task must check that flag and bail out. Done right, cancellation is fast and leak-free; done wrong, you get wasted work, stale UI updates, and "ghost" requests that overwrite newer ones.
+
+**The three cancellation primitives:**
+
+```swift
+// 1. Throw if cancelled
+try Task.checkCancellation()
+
+// 2. Read the flag without throwing
+if Task.isCancelled { return }
+
+// 3. Suspend and let cancellation propagate
+try await Task.sleep(for: .seconds(1))
+```
+
+`URLSession.data(for:)`, `Task.sleep`, and most async APIs in the standard library check cancellation at every suspension point and throw `CancellationError` (or `URLError(.cancelled)`).
+
+**Pattern 1 — search-as-you-type, cancel the previous in-flight task:**
+
+```swift
+@MainActor
+final class SearchViewModel: ObservableObject {
+    @Published private(set) var results: [Result] = []
+    private var searchTask: Task<Void, Never>?
+
+    func search(_ query: String) {
+        searchTask?.cancel()                       // cancel the previous one
+        searchTask = Task {
+            do {
+                try await Task.sleep(for: .milliseconds(300))   // debounce
+                try Task.checkCancellation()
+                let fetched = try await api.search(query)
+                try Task.checkCancellation()                    // don't publish stale results
+                self.results = fetched
+            } catch is CancellationError {
+                // expected — ignore
+            } catch {
+                // handle real failures
+            }
+        }
+    }
+}
+```
+
+The two `checkCancellation()` calls are deliberate: one before the network call (skip it if the user already typed more), one after (don't overwrite newer results with older ones).
+
+**Pattern 2 — cancel on view disappear (SwiftUI):**
+
+```swift
+struct FeedView: View {
+    @StateObject var store = FeedStore()
+
+    var body: some View {
+        List(store.posts) { Text($0.title) }
+            .task {                              // automatically cancelled when view disappears
+                await store.load()
+            }
+    }
+}
+```
+
+`.task` ties the lifetime of the work to the view's lifetime. No manual bookkeeping.
+
+**Pattern 3 — cancel a long loop yourself:**
+
+```swift
+func processItems(_ items: [Item]) async throws {
+    for item in items {
+        try Task.checkCancellation()             // bail at every iteration
+        try await process(item)
+    }
+}
+```
+
+**Pattern 4 — structured concurrency with `withTaskCancellationHandler`:**
+
+```swift
+func longRunning() async throws -> Data {
+    try await withTaskCancellationHandler {
+        try await downloadAndDecode()
+    } onCancel: {
+        // synchronous cleanup — close file, abort URLSessionTask, etc.
+    }
+}
+```
+
+The `onCancel` closure runs synchronously when cancellation is requested, even if the main work is still suspended. Use it for cleanup that can't go through `async` (file handles, C APIs, `URLSessionTask.cancel()`).
+
+**Common mistakes:**
+
+- Forgetting to check after the await — the network completes, you assign `self.results`, but the user already navigated away (silent stale write, or worse, a crash if the screen tore down state)
+
+- Catching `Error` and treating `CancellationError` like a real failure — it isn't; just return
+
+- Holding a `Task` reference but never cancelling it on `deinit` — the closure keeps `self` alive
+
+- Calling `task.cancel()` and assuming it's done — the task continues running until it hits a checkpoint
+
+
+## Q: How do you build a reusable, type-safe networking layer in Swift?
+
+**Answer:**
+
+A good networking layer hides URLs, HTTP verbs, encoding, and decoding behind a single function call per endpoint, while letting the compiler enforce request and response types. The pattern has three parts: an `Endpoint` describing a request, a generic `APIClient` that executes any endpoint, and per-feature endpoint definitions.
+
+**Step 1 — describe an endpoint as data:**
+
+```swift
+struct Endpoint<Response: Decodable> {
+    enum Method: String { case get = "GET", post = "POST", put = "PUT", delete = "DELETE" }
+
+    let method: Method
+    let path: String
+    let query: [URLQueryItem]
+    let body: Data?
+    let headers: [String: String]
+
+    init(
+        method: Method = .get,
+        path: String,
+        query: [URLQueryItem] = [],
+        body: Data? = nil,
+        headers: [String: String] = [:]
+    ) {
+        self.method = method
+        self.path = path
+        self.query = query
+        self.body = body
+        self.headers = headers
+    }
+}
+```
+
+The generic `Response` parameter ties the endpoint to its return type — the compiler knows `usersEndpoint` returns `[User]` and refuses to decode it as anything else.
+
+**Step 2 — one client that executes any endpoint:**
+
+```swift
+struct APIError: Error {
+    let statusCode: Int
+    let data: Data
+}
+
+actor APIClient {
+    private let baseURL: URL
+    private let session: URLSession
+    private let decoder: JSONDecoder
+    private var defaultHeaders: [String: String] = [:]
+
+    init(baseURL: URL, session: URLSession = .shared, decoder: JSONDecoder = JSONDecoder()) {
+        self.baseURL = baseURL
+        self.session = session
+        self.decoder = decoder
+    }
+
+    func setAuthToken(_ token: String?) {
+        if let token {
+            defaultHeaders["Authorization"] = "Bearer \(token)"
+        } else {
+            defaultHeaders.removeValue(forKey: "Authorization")
+        }
+    }
+
+    func send<Response>(_ endpoint: Endpoint<Response>) async throws -> Response {
+        var components = URLComponents(url: baseURL.appendingPathComponent(endpoint.path), resolvingAgainstBaseURL: false)!
+        if !endpoint.query.isEmpty { components.queryItems = endpoint.query }
+
+        var request = URLRequest(url: components.url!)
+        request.httpMethod = endpoint.method.rawValue
+        request.httpBody = endpoint.body
+
+        for (k, v) in defaultHeaders { request.setValue(v, forHTTPHeaderField: k) }
+        for (k, v) in endpoint.headers { request.setValue(v, forHTTPHeaderField: k) }
+
+        let (data, response) = try await session.data(for: request)
+        try Task.checkCancellation()
+
+        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+            let code = (response as? HTTPURLResponse)?.statusCode ?? -1
+            throw APIError(statusCode: code, data: data)
+        }
+
+        return try decoder.decode(Response.self, from: data)
+    }
+}
+```
+
+**Step 3 — declare endpoints per feature, in one place:**
+
+```swift
+extension Endpoint where Response == [User] {
+    static func listUsers(page: Int = 1) -> Endpoint {
+        Endpoint(path: "/users", query: [URLQueryItem(name: "page", value: "\(page)")])
+    }
+}
+
+extension Endpoint where Response == User {
+    static func createUser(_ body: NewUser) throws -> Endpoint {
+        Endpoint(
+            method: .post,
+            path: "/users",
+            body: try JSONEncoder().encode(body),
+            headers: ["Content-Type": "application/json"]
+        )
+    }
+}
+```
+
+**Call sites become trivial:**
+
+```swift
+let client = APIClient(baseURL: URL(string: "https://api.example.com")!)
+
+let users = try await client.send(.listUsers(page: 2))      // [User] — inferred
+let created = try await client.send(.createUser(newUser))   // User — inferred
+```
+
+**What this design buys you:**
+
+- **Type safety** — wrong response type is a compile error, not a runtime decode crash
+
+- **Testability** — inject a fake `URLSession` (via `URLProtocol`) or a mock `APIClient` conforming to a protocol; no real network in tests
+
+- **Single chokepoint** — auth token, base URL, decoder config, error mapping, and cancellation checks live in one place
+
+- **Composability** — wrap `send` for retries, logging, or circuit breaking without touching call sites
+
+- **Cancellation propagation** — `URLSession` honors task cancellation and `Task.checkCancellation()` after the await prevents stale writes
+
+For larger apps, layer a feature-level repository on top (`UserRepository`, `FeedRepository`) so the rest of the code never imports `APIClient` directly — it only sees domain methods.
+
+
+## Q: How do you solve the "minimum group tickets" problem efficiently — and what's the standard greedy approach?
+
+**Answer:**
+
+**Problem:** Given an array of ages (each `1...120`) and a `maxDiff` (e.g. 5), return the minimum number of groups needed so that within each group, `maxAge - minAge <= maxDiff`.
+
+**Standard greedy approach:**
+
+1. Sort the ages ascending (or use counting sort — see below for the optimization)
+
+2. Walk the sorted ages. Anchor a new group at the smallest unassigned age. Keep extending the group while the next age is within `maxDiff` of the anchor. When it isn't, start a new group anchored there
+
+3. Return the number of anchors opened
+
+**Why greedy works:** Walking ages ascending, the smallest unassigned age MUST be the minimum of its group. Stretching the group as far right as `maxDiff` allows can only reduce or equal the number of groups compared to closing earlier — so the local choice is also globally optimal. This is a textbook **interval-cover** greedy proof.
+
+**O(n log n) sort + sweep:**
+
+```swift
+func minGroupTickets(ages: [Int], maxDiff: Int) -> Int {
+    guard !ages.isEmpty else { return 0 }
+
+    let sorted = ages.sorted()
+    var groups = 1
+    var anchor = sorted[0]
+
+    for age in sorted.dropFirst() {
+        if age - anchor > maxDiff {
+            groups += 1
+            anchor = age
+        }
+    }
+    return groups
+}
+```
+
+**O(n + k) counting sort — beats O(n log n) when values are bounded:**
+
+Because ages are bounded to `1...120`, we can skip the comparison sort entirely:
+
+```swift
+func minGroupTickets(ages: [Int], maxDiff: Int) -> Int {
+    guard !ages.isEmpty else { return 0 }
+
+    var counts = [Int](repeating: 0, count: 121)
+    for age in ages { counts[age] += 1 }
+
+    var groups = 0
+    var anchor = -1
+    for age in 1...120 where counts[age] > 0 {
+        if anchor < 0 || age - anchor > maxDiff {
+            groups += 1
+            anchor = age
+        }
+    }
+    return groups
+}
+```
+
+This is **O(n + k)** where `k = 120` — effectively O(n). On a 100k-age stress test, this version runs in ~15 ms versus ~500 ms for the sort-based set approach (about 33× faster).
+
+**Edge cases to handle:**
+
+- **Empty input** → return 0, not 1
+
+- **Single age** → return 1
+
+- **All same age** → 1 group regardless of `maxDiff`
+
+- **`maxDiff == 0`** → each distinct age becomes its own group
+
+- **`maxDiff` larger than the value range** → 1 group (everyone fits)
+
+- **Unsorted input** → must sort first (or counting-bucket) for correctness
+
+**Common wrong approaches and why they fail:**
+
+- **`Set<Int>` of "anchors" with a symmetric ±`maxDiff` window check** — over-merges. With `[5, 10, 1]` and `maxDiff=5`: 5 → {5}; 10 matches 5; 1 matches 5; returns 1, but `10 - 1 = 9 > 5` so the correct answer is 2. The set never records that the group's max grew to 10
+
+- **Same set approach but "replacing the anchor with a smaller new age"** — still wrong for the same reason: the set tracks one number per group, but a group is defined by its **interval** `[min, max]`. Shrinking the recorded anchor doesn't undo the group's already-extended max
+
+- **Both bugs disappear if you sort first** — once ages arrive ascending, the first age in a group IS its min and STAYS its min, so the single stored anchor is faithful
+
+**Takeaway for interviews:** when a problem has bounded values (`age 1...120`, lowercase letters, byte values), counting sort beats comparison sort. State the greedy invariant out loud — "the smallest unassigned element must be the min of its group" — before coding. Then walk through the edge case list before declaring the solution done.

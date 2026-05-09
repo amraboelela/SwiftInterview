@@ -699,3 +699,52 @@ print(winningLotteryTicket(tickets: ["111", "222", "333"]))   // 0
 // Single ticket — no pair to form
 print(winningLotteryTicket(tickets: ["0123456789"]))   // 0
 
+// MARK: - HackerRank — Xoring Ninja
+//
+// Q: Given an array of n non-negative integers, consider every non-empty
+//    subset and compute the XOR of its elements. Return the SUM of those
+//    subset-XORs, modulo 10^9 + 7.
+//
+// Approach (per-bit counting → closed form):
+//   Look at one bit position b. A subset contributes 2^b to the sum iff an
+//   ODD number of its elements have bit b set. If k of the n elements have
+//   bit b set, the count of subsets with an odd number of those is
+//       (C(k,1) + C(k,3) + ...) · 2^(n-k) = 2^(k-1) · 2^(n-k) = 2^(n-1)
+//   provided k >= 1. If k == 0 the bit is never set in any subset.
+//
+//   So every bit that appears in AT LEAST ONE element contributes
+//   2^b · 2^(n-1) to the sum. Summed over all such bits:
+//       answer = (OR of all elements) · 2^(n-1)   (mod 10^9 + 7)
+//
+//   Sanity check on [1, 2, 3]:
+//     subsets: {1}=1, {2}=2, {3}=3, {1,2}=3, {1,3}=2, {2,3}=1, {1,2,3}=0
+//     sum = 12, and (1|2|3) · 2^2 = 3 · 4 = 12. ✓
+//
+// Complexity: O(n + log n) — one pass to OR, fast exponentiation for 2^(n-1).
+
+func xoringNinja(arr: [Int]) -> Int {
+    let mod = 1_000_000_007
+    guard !arr.isEmpty else { return 0 }
+
+    var orAll = 0
+    for x in arr { orAll |= x }
+
+    // 2^(n-1) mod p via fast exponentiation
+    var power = 1
+    var base = 2
+    var exp = arr.count - 1
+    while exp > 0 {
+        if exp & 1 == 1 { power = power * base % mod }
+        base = base * base % mod
+        exp >>= 1
+    }
+    return orAll % mod * power % mod
+}
+
+// MARK: - Examples
+
+print(xoringNinja(arr: [1, 2, 3]))         // 12
+print(xoringNinja(arr: [3, 3, 3]))         // 12   (OR=3, 2^2=4)
+print(xoringNinja(arr: [7]))               // 7    (only subset is {7})
+print(xoringNinja(arr: [1, 2, 4, 8]))      // 120  (OR=15, 2^3=8)
+
