@@ -112,7 +112,7 @@ function extractJobTitles() {
                 const id = tile.id.trim();
                 if (id && id.length > 10 && !seen.has(id)) {
                     seen.add(id); jobTitles.push(id);
-                    const firstLine = (tile.innerText || '').split('\n').map(s => s.trim()).filter(Boolean)[0];
+                    const firstLine = (tile.innerText || '').split('\n').map(s => s.trim()).filter(s => s.length > 3)[0];
                     displayTitleByKey[id] = firstLine || id;
                 }
             });
