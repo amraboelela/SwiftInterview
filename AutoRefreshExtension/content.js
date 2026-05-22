@@ -106,11 +106,11 @@ function extractJobTitles() {
         const isJobsVertical = url.searchParams.get('udm') === '8';
 
         if (isJobsVertical) {
-            // Google Jobs vertical (udm=8): tiles are role=button with a unique docid in `id`.
+            // Google Jobs vertical (udm=8): tiles are role=button with a unique docid in `id` or `data-docid`.
             // Class names are hashed so we identify by docid; that's stable per posting.
-            document.querySelectorAll('[role="button"][data-modality][id]').forEach(tile => {
-                const id = tile.id.trim();
-                if (id && id.length > 10 && !seen.has(id)) {
+            document.querySelectorAll('[role="button"][data-modality][id], [data-docid]').forEach(tile => {
+                const id = (tile.id || tile.getAttribute('data-docid') || '').trim();
+                if (id && id.length > 5 && !seen.has(id)) {
                     seen.add(id); jobTitles.push(id);
                     const firstLine = (tile.innerText || '').split('\n').map(s => s.trim()).filter(s => s.length > 3)[0];
                     displayTitleByKey[id] = firstLine || id;
@@ -185,7 +185,7 @@ function checkChanges() {
             // Save updated job list for next comparison
             saveJobTitlesToStorage(currentJobs);
         } else {
-            console.log('#refresh No new jobs found');
+            console.log('#refresh No new jobs found. check the refresh content code, for ' + location.href);
         }
     });
 }
@@ -247,8 +247,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     return;
                 }
                 console.log("#refresh yes it is refresh!");
-                const currentJobs = extractJobTitles();
-                saveJobTitlesToStorage(currentJobs);
                 document.location.reload();
             });
         }
@@ -270,8 +268,6 @@ setTimeout(() => {
             console.log('#refresh Paused - skipping scheduled reload');
             return;
         }
-        const currentJobs = extractJobTitles();
-        saveJobTitlesToStorage(currentJobs);
 
         // Safety check: only reload if page is fully loaded
         if (document.readyState === 'complete') {
