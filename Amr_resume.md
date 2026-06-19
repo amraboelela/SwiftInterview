@@ -14,9 +14,6 @@
 - 1 year experience using Claude Code Agentic AI for accelerated development workflows
 - 2 years GNUstep Linux, Python, shell scripts experience
 - 7 years of Internet Applications / Web Development
-- 4 years experience using .Net Environment
-- 3 years experience in E-Commerce
-- 4 years experience in System analysis / design and development for Database applications
 
 ---
 
@@ -68,7 +65,7 @@
 
 ## Personal Projects
 
-### Muhaffez — Quran Memorization App | iOS & Android | 2024 – Present
+### Muhaffez — Quran Memorization App | iOS & Android | 2025
 
 Solo-developed a full-featured Quran memorization companion app, published on the App Store, covering end-to-end product design, AI model training, and native mobile development on two platforms.
 
@@ -104,14 +101,25 @@ Led a development team building internal iOS/macOS client applications used by A
 - **Devices App** — Internal iOS app enabling managers to track their reportees' devices, ensure compliance, and facilitate device upgrades for Apple employees.
 - **ADO (Apple Document Organizer)** — Internal app enabling Apple employees to reorganize their files by ensuring personal files remain in personal directories while work files are routed to work-only directories on the cloud or internal drives.
 
+- Wrote XCUITest UI test suites for the ADO app covering critical user flows: file scanning, directory classification decisions, and the onboarding walkthrough.
+
+- Used XCUITest accessibility identifiers and a Robot/Page Object pattern to keep tests readable and decoupled from layout changes, enabling reliable CI runs across simulator targets.
+
 **Stack:** Swift, SwiftUI, Xcode, SPM, XCTest, XCUITest | **Architecture:** MVVM
 
 ---
 
 ### Senior iOS Developer — Upwork (Freelance) | Feb 2024 – April 2024
 
-Worked on freelancing projects from Upwork.
-**Stack:** Swift, Objective-C, SwiftUI, Xcode | **Architecture:** MVC, MVVM
+Worked on multiple freelance iOS projects delivered through Upwork.
+
+- **Intryst** — Location-discovery iOS app (SwiftUI, MVVM); built OAuth 2.0 auth flow with Keychain token storage, card-based feed with 12+ dynamic card types, MapKit integration, and Amplitude analytics; wrote XCTest unit tests covering API layer and model logic.
+
+- **Spinnr** — Social networking iOS app (UIKit, Swift/Objective-C); added features across the app including push notifications, share extension, and Firebase-backed real-time messaging; managed dependencies via CocoaPods.
+
+- **Velo** — Flutter-based smart scheduling assistant for iOS; contributed to calendar view, travel time reminder logic, and Provider-based state management.
+
+**Stack:** Swift, Objective-C, SwiftUI, UIKit, Flutter, Xcode, Firebase, CocoaPods, MapKit, SwiftData, OAuth 2.0, Keychain, Amplitude | **Architecture:** MVC, MVVM
 
 ---
 
