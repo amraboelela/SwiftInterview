@@ -1,4 +1,4 @@
-# InfoSys questions
+# Infosys questions
 
 
 ## What is the difference between swift and objective-c?

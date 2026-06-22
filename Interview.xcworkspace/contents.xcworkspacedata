@@ -39,7 +39,10 @@
       location = "group:HackerRank.md">
    </FileRef>
    <FileRef
-      location = "group:InfoSys.md">
+      location = "group:Infosys.md">
+   </FileRef>
+   <FileRef
+      location = "group:Infosys2.md">
    </FileRef>
    <FileRef
       location = "group:JobTwine.md">

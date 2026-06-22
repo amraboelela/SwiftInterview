@@ -25,7 +25,7 @@ Swift playgrounds organized by company source:
 
 * **Bard1.playground** — Google Bard interview questions
 * **ChatGPT.playground** — OpenAI-style interview questions
-* **InfoSys.playground** — Infosys interview questions
+* **Infosys.playground** — Infosys interview questions
 * **Intryst.playground** — Intryst interview questions
 * **Kaiser.playground** — Kaiser Permanente interview questions
 * **Kaiser2.playground** — Additional Kaiser questions
@@ -56,7 +56,7 @@ Complete iOS apps demonstrating architecture and best practices:
 Focused learning material:
 
 * **General iOS.md** — Core iOS concepts
-* **InfoSys.md** — Infosys interview prep notes
+* **Infosys.md** — Infosys interview prep notes
 * **RealmDB.md** — Realm database usage
 * **SwiftUI.md** — SwiftUI patterns and practices
 
