@@ -26,7 +26,7 @@ func analyzeWords(in text: String) -> (uniqueCount: Int, mostRepeated: String?) 
 }
 
 // Test
-let text = "Hello world! Hello, Swift. swift is great, isn't it? World world!"
-let result = analyzeWords(in: text)
+let message = "Hello, happy Friday! I hope you will say hello back! This is your interview, and I’m your interviewer. My favorite day of the week is Friday, I’m so glad it’s Friday today."
+let result = analyzeWords(in: message)
 print("Unique word count: \(result.uniqueCount)")
 print("Most repeated word: \(result.mostRepeated ?? "none")")
