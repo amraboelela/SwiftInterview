@@ -33,6 +33,9 @@
       </FileRef>
    </Group>
    <FileRef
+      location = "group:FindMy.md">
+   </FileRef>
+   <FileRef
       location = "group:GoogleAssesment.md">
    </FileRef>
    <FileRef
