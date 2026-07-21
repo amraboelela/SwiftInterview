@@ -1,6 +1,6 @@
 # AMR ABOELELA (M. Sc.)
 
-881 S Winchester Blvd, San Jose, CA 95128 | amraboelela@gmail.com
+3208 El Camino Real, Santa Clara, CA | amraboelela@gmail.com
 [GitHub](https://github.com/amraboelela) | [LinkedIn](https://www.linkedin.com/in/amr-aboelela-b9676413) | [Upwork](https://www.upwork.com/freelancers/~013e2226cb06406060)
 
 ---
@@ -10,8 +10,9 @@
 - 25 years of software development in general.
 - 16 years of Native iOS / macOS experience (UIKit, SwiftUI, Objective-C & Swift)
 - 1 year experience in Android, Java & Kotlin development
-- AI/ML experience: designed and trained custom transformer-based neural network models in PyTorch; converted to CoreML (iOS) and TensorFlow Lite (Android); applied similarity search for partial Arabic text recognition
-- 1 year experience using Claude Code Agentic AI for accelerated development workflows
+- AI/ML experience: designed and trained custom transformer-based neural network models in PyTorch; converted to CoreML (iOS) and TensorFlow Lite (Android)
+- Applied similarity search for partial Arabic text recognition
+- 1 year experience using Claude Code for AI-accelerated development workflows
 - 2 years GNUstep Linux, Python, shell scripts experience
 - 7 years of Internet Applications / Web Development
 
@@ -96,9 +97,9 @@ Solo-developed a full-featured Quran memorization companion app, published on th
 
 ### Lead macOS/iOS Developer — Apple | Sunnyvale, CA | May 2024 – March 2026
 
-Led a development team building internal iOS/macOS client applications used by Apple employees across the organization within the IS&T division.
+Led a development team building internal iOS/macOS applications for Apple employees within the IS&T division.
 
-- **Devices App** — Internal iOS app enabling managers to track their reportees' devices, ensure compliance, and facilitate device upgrades for Apple employees.
+- **Devices App** — Internal iOS app enabling managers to track their direct reports' devices, ensure compliance, and facilitate device upgrades for Apple employees.
 - **ADO (Apple Document Organizer)** — Internal app enabling Apple employees to reorganize their files by ensuring personal files remain in personal directories while work files are routed to work-only directories on the cloud or internal drives.
 
 - Wrote XCUITest UI test suites for the ADO app covering critical user flows: file scanning, directory classification decisions, and the onboarding walkthrough.
