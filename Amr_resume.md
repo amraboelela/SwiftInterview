@@ -131,7 +131,7 @@ Led development of ALConnect app, hosting educational games on iOS, Android, and
 
 ---
 
-### Senior iOS Developer — Intuit | Mountain View, CA | Feb 2022 – June 2023
+### Senior iOS Developer — Intuit | Mountain View, CA | Apr 2022 – June 2023
 
 Worked on QuickBooks Money iOS app and contributed to the QBLive DIFM experience.
 **Stack:** Swift, SwiftUI, Xcode, SPM, XCTest, XCUITest | **Architecture:** MVVM, CocoaPods
@@ -139,10 +139,16 @@ Worked on QuickBooks Money iOS app and contributed to the QBLive DIFM experience
 
 ---
 
-### Senior iOS Developer — CVS | Merced, CA | Nov 2020 – Jan 2022
+### Senior iOS Developer — CVS | Merced, CA | May 2021 – Apr 2022
 
 Developed enhancements for the CVS mobile application.
 **Stack:** Swift, SwiftUI, Xcode, SPM, XCTest, XCUITest | **Architecture:** MVVM, CocoaPods
+
+---
+
+### Senior iOS Developer — Intuit | Mountain View, CA | Dec 2020 – Apr 2021
+Worked on a customer facing intuit app for calculator expenses
+**Stack:** Swift, Xcode, SPM, XCTest, XCUITest | **Architecture:** MVVM, CocoaPods
 
 ---
 
